@@ -20,7 +20,8 @@
 1. **Clona el Repositorio**
 
    ```bash
-   git clone https://github.com/DevByIsaac/TesisCheckListOCRA.git
+   git clone  https://github.com/NandoS19/frontergoug.git
+   
 
 2. **Instala las Dependencias**
 Crea un entorno virtual y activa:
