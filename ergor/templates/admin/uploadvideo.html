@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- </h1>
+    <form action="{{ url_for('auth.upload', id = g.user.user_id) }}" method="post" enctype="multipart/form-data">
+        <label for="video">Selecciona un video:</label>
+        <input type="file" id="video" name="video" accept="video/*" required>
+        <br><br>
+        <button type="submit">Procesar Video</button>
+    </form> -->
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <form class="row mt-5" method="post" enctype="multipart/form-data">
+                <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+                <br><br>
+                <h1>{% block title %} Subir Video {% endblock %}</h1>
+                <!-- Botón para subir video -->
+                <div class="form-group mb-4">
+                    <label for="uploadVideo">Cargar Video:</label>
+                    <br><br>
+                    <input type="file" class="form-control-file" id="uploadVideo" name="uploadVideo" accept="video/*"
+                        required>
+                </div>
+                <!-- Combo box para seleccionar el método -->
+                <div class="form-group mb-4">
+                    <label for="metodo">Método:</label>
+                    <select class="form-control" id="metodo" name="metodo">
+                        <option value="ROSA">ROSA</option>
+                        <option value="NIOSH">NIOSH</option>
+                        <option value="REBA">REBA</option>
+                        <option value="OWAS">OWAS</option>
+                    </select>
+                </div>
+            </form>
+            <!-- Botón para procesar el video -->
+            <!-- Espacio para visualizar el video -->
+            <div class="video-container mb-4">
+                <video id="videoPlayer" controls>
+                    <source src="" id="videoSource" type="video/mp4">
+                    Tu navegador no soporta el elemento de video.
+                </video>
+                <br>
+                <a href="{{ url_for ('auth.upload', id = g.user.user_id) }}" class="btn btn-outline-success">Evaluar
+                    Video</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

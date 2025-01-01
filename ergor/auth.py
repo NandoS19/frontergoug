@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from werkzeug.security import generate_password_hash, check_password_hash
 from ergor.models import User
 from ergor import db
+import os
 
 bp = Blueprint('auth', __name__, url_prefix='/auth') 
 
@@ -114,3 +115,47 @@ def profile(id):
         flash(error)
     return render_template('auth/profile.html', user=user)
 
+# Ruta para subir videos
+@bp.route('/upload/<int:id>', methods=('GET', 'POST'))
+@login_required
+def upload(id):
+    
+    user = User.query.get_or_404(id)
+    
+    if request.method == 'POST':
+       error = None
+       
+       if request.files['uploadVideo']:
+            # Obtener el archivo del formulario
+            video_path = request.files['uploadVideo']
+            
+            # Guardar el archivo en la carpeta definida
+            filename = secure_filename(video_path.filename)
+            
+            #filepath = os.path.join('uploads', filename)
+            #video_path.save(f'ergor/static/uploads/{filename}')
+            filepath = os.path.join('ergor', 'static', 'uploads', filename)
+            video_path.save(filepath)
+            
+            # Guardar la ruta del archivo en la base de datos
+            #user.video_path = f'uploads/{filename}'
+            user.video_path = os.path.join('uploads', filename)
+            
+            if error is None:
+                db.session.commit()
+                flash('Video subido con éxito')
+                return redirect(url_for('evaluate.results', id = user.user_id))
+                # Procesar el video y calcular puntajes
+                #user_id = session['user_id']
+                # scores = process_video(filepath, user_id)
+
+                # return jsonify({
+                #     "message": "Video procesado con éxito",
+                #     "scores": scores
+                # })
+            else:
+                flash(error)
+       else:
+            error = 'No se ha seleccionado un archivo'
+            flash(error)
+    return render_template('admin/uploadvideo.html', user=user)
