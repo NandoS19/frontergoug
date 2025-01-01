@@ -13,6 +13,7 @@ class User(db.Model):
     email = db.Column(db.String(50), nullable=False)
     password = db.Column(db.Text, nullable=False)
     photo = db.Column(db.String(50))
+    video_path = db.Column(db.String(100))
     age = db.Column(db.Integer,  nullable=True)
     height = db.Column(db.Numeric(5, 2),  nullable=True)
     weight = db.Column(db.Numeric(5, 2),  nullable=True)
@@ -29,11 +30,12 @@ class User(db.Model):
     improvement_plans = db.relationship('ImprovementPlan', backref='user', cascade='all, delete-orphan')
     
     
-    def __init__(self, username, email, password, photo = None, age=None, height=None, weight=None, hours = None, gender=None, job_title=None):
+    def __init__(self, username, email, password, photo = None, video_path = None, age=None, height=None, weight=None, hours = None, gender=None, job_title=None):
         self.username = username
         self.email = email
         self.password = password
         self.photo = photo
+        self.video_path = video_path
         self.age = age
         self.height = height
         self.weight = weight
