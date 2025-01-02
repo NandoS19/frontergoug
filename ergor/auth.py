@@ -125,37 +125,41 @@ def upload(id):
     if request.method == 'POST':
        error = None
        
-       if request.files['uploadVideo']:
+       if 'uploadVideo' not in request.files:
+           
+           error = 'No se ha seleccionado un archivo'
+           flash(error)
+           
+       else:
             # Obtener el archivo del formulario
             video_path = request.files['uploadVideo']
             
-            # Guardar el archivo en la carpeta definida
-            filename = secure_filename(video_path.filename)
-            
-            #filepath = os.path.join('uploads', filename)
-            #video_path.save(f'ergor/static/uploads/{filename}')
-            filepath = os.path.join('ergor', 'static', 'uploads', filename)
-            video_path.save(filepath)
-            
-            # Guardar la ruta del archivo en la base de datos
-            #user.video_path = f'uploads/{filename}'
-            user.video_path = os.path.join('uploads', filename)
-            
-            if error is None:
-                db.session.commit()
-                flash('Video subido con éxito')
-                return redirect(url_for('evaluate.results', id = user.user_id))
-                # Procesar el video y calcular puntajes
-                #user_id = session['user_id']
-                # scores = process_video(filepath, user_id)
-
-                # return jsonify({
-                #     "message": "Video procesado con éxito",
-                #     "scores": scores
-                # })
-            else:
+            if video_path.filename == '':
+                error = 'No se ha seleccionado un archivo'
                 flash(error)
-       else:
-            error = 'No se ha seleccionado un archivo'
-            flash(error)
+            
+            if video_path and allowed_file(video_path.filename):
+                
+                # Guardar el archivo en la carpeta definida
+                filename = secure_filename(video_path.filename)
+                filepath = os.path.join('ergor', 'static', 'uploads', filename)
+                video_path.save(filepath)
+
+                # Guardar la ruta del archivo en la base de datos
+                user.video_path = os.path.join('uploads', filename)
+
+                if error is None:
+                    db.session.commit()
+                    flash('Video subido con éxito')
+                    return redirect(url_for('evaluate.results', id = user.user_id))
+                else:
+                    flash(error)
+            else:
+                error = 'Formato de archivo no permitido'
+                flash(error)
+    
     return render_template('admin/uploadvideo.html', user=user)
+
+def allowed_file(filename):
+    ALLOWED_EXTENSIONS = {'mp4', 'avi', 'mov', 'wmv'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

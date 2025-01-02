@@ -21,6 +21,9 @@ def create_app():
     from ergor import auth
     app.register_blueprint(auth.bp)
     
+    from ergor import evaluate
+    app.register_blueprint(evaluate.bp)
+    
     
     #Migrar modelos a base de datos
     from .models import User, RiskLevel, RebaScore, RosaScore, OwasScore, NioshScore, ImprovementPlan
