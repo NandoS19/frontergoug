@@ -3,6 +3,7 @@ from .auth import login_required
 from ergor import db
 from ergor.models import User
 import os
+#pazmiño estuvo aqui
 
 bp = Blueprint('evaluate', __name__, url_prefix='/evaluate') 
 
