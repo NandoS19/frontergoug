@@ -4,7 +4,7 @@ from ergor import db
 from ergor.models import User
 import os
 #pazmiño estuvo aqui
-
+#daniel
 bp = Blueprint('evaluate', __name__, url_prefix='/evaluate') 
 
 @bp.route('/evaluate')
