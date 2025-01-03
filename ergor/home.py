@@ -8,7 +8,6 @@ def get_user(id):
     return user
 
 #def get_post(id):
-#cambio
 #    post = Post.query.get_or_404(id)
 #    return post
 #
