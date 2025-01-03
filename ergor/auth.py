@@ -133,6 +133,8 @@ def upload(id):
        else:
             # Obtener el archivo del formulario
             video_path = request.files['uploadVideo']
+            # Obtener el valor del combo box
+            metodo = request.form.get('metodo')
             
             if video_path.filename == '':
                 error = 'No se ha seleccionado un archivo'
@@ -151,7 +153,17 @@ def upload(id):
                 if error is None:
                     db.session.commit()
                     flash('Video subido con éxito')
-                    return redirect(url_for('evaluate.results', id = user.user_id))
+                    # Redirigir a la función correspondiente según el método de evaluación
+                    if metodo == 'ROSA':
+                        return redirect(url_for('evaluate.rosa', id=user.user_id))
+                    elif metodo == 'REBA':
+                        return redirect(url_for('evaluate.reba', id=user.user_id))
+                    elif metodo == 'OWAS':
+                        return redirect(url_for('evaluate.owas', id=user.user_id))
+                    elif metodo == 'NIOSH':
+                        return redirect(url_for('evaluate.niosh', id=user.user_id))
+                    else:
+                        flash('Método de evaluación no válido')
                 else:
                     flash(error)
             else:
