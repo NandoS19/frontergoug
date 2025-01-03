@@ -1,20 +1,28 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col-lg-12">
-            <form action="{{ url_for('auth.upload', id=g.user.user_id) }}" class="row mt-5" method="post" enctype="multipart/form-data">
-                <h1>{% block title %} Subir Video {% endblock %}</h1>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            <div class="text-center mb-4">
+                <h1 class="display-4">
+                    {% block title %} Subir Video {% endblock %}
+                </h1>
+                <p class="lead text-muted">Cargue su video y seleccione el método de análisis para evaluarlo.</p>
+            </div>
+            
+            <form action="{{ url_for('auth.upload', id=g.user.user_id) }}" method="post" enctype="multipart/form-data" class="p-4 border rounded shadow-sm bg-light" >
+                
                 <!-- Botón para subir video -->
                 <div class="form-group mb-4">
-                    <label for="uploadVideo">Cargar Video:</label>
-                    <br><br>
-                    <input type="file" class="form-control-file" id="uploadVideo" name="uploadVideo" accept="video/*" required>
+                    <label for="uploadVideo" class="form-label fw-bold">Cargar Video:</label>
+                    <input type="file" class="form-control" id="uploadVideo" name="uploadVideo" accept="video/*" required>
+                    <small class="form-text text-muted">El video debe estar en formato MP4 o similar.</small>
                 </div>
                 <!-- Combo box para seleccionar el método -->
                 <div class="form-group mb-4">
-                    <label for="metodo">Método:</label>
+                    <label for="metodo"class="form-label fw-bold">Seleccionar Método:</label>
                     <select class="form-control" id="metodo" name="metodo">
                         <option value="ROSA">ROSA</option>
                         <option value="NIOSH">NIOSH</option>
@@ -22,8 +30,11 @@
                         <option value="OWAS">OWAS</option>
                     </select>
                 </div>
+
                 <!-- Botón para procesar el video -->
-                <button type="submit" class="btn btn-outline-success">Evaluar Video</button>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-success btn-lg">Evaluar Video</button>
+                </div>
             </form>
             <!-- Espacio para visualizar el video -->
             <!-- <div class="video-container mb-4">
