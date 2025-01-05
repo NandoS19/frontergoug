@@ -82,3 +82,4 @@ def niosh(id):
     # Lógica para procesar el video con el método NIOSH
     return f'Lógica para procesar el video con el método NIOSH'
     #return render_template('evaluate/niosh.html', id=id)
+    #hola
