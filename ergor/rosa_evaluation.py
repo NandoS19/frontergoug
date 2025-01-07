@@ -1,6 +1,4 @@
-from ergor import db
-from models import User,RosaScore
-from rosa_evaluation import evaluate_rosa
+
 
 def evaluate_rosa(angles):
     """
@@ -30,7 +28,7 @@ def evaluate_rosa(angles):
         monitor_score += 3  # Riesgo alto
 
     # Evaluación del teclado/ratón (keyboard_score)
-    if 70 <= angles["elbow"] <= 100 and -10 <= angles["wrist"] <= 10:
+    if 70 <= angles["elbow"] <= 100:
         keyboard_score += 1  # Postura adecuada
     elif 60 <= angles["elbow"] < 70 or 100 < angles["elbow"] <= 120:
         keyboard_score += 2  # Ajuste necesario
@@ -38,24 +36,10 @@ def evaluate_rosa(angles):
         keyboard_score += 3  # Revisión urgente
 
     # Evaluación del teléfono (phone_score)
-    # Este puntaje podría ser un parámetro fijo o evaluado según tiempo de uso
-    phone_score = 1  # Ejemplo: uso moderado (ajustar según datos reales)
+    phone_score = 1  # Puntaje fijo para este ejemplo
 
     # Cálculo del puntaje total
     total_score = chair_score + monitor_score + keyboard_score + phone_score
-    
-    # Guardar en la base de datos
-    rosa_score = RosaScore(
-        user_id=user_id,
-        chair_score=chair_score,
-        monitor_score=monitor_score,
-        phone_score=phone_score,
-        keyboard_score=keyboard_score,
-        total_score=total_score,
-        evaluation_date=datetime.now()
-    )
-    db.session.add(rosa_score)
-    db.session.commit()
 
     return {
         "chair_score": chair_score,
