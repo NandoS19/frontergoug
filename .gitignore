@@ -24,3 +24,5 @@ ergor/__pycache__/auth.cpython-313.pyc
 ergor/__pycache__/evaluate.cpython-313.pyc
 ergor/__pycache__/home.cpython-313.pyc
 *.pyc
+venv
+./ergor/__pycache__/*

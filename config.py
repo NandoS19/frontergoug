@@ -1,10 +1,14 @@
 
 #Variables que apuntan a la base de datos
 
-POSTGRES = "postgresql+psycopg://postgres:18032001@localhost:5432/ergo_db2"
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+POSTGRES = os.getenv('URL_DB_POSTGRES')
 
 class Config:
     DEBUG = True
-    SECRET_KEY = 'secret_key'
+    SECRET_KEY = os.getenv('SECRET_KEY')
     
     SQLALCHEMY_DATABASE_URI = POSTGRES
