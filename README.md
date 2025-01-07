@@ -28,6 +28,7 @@ Crea un entorno virtual y activa:
 
 python -m venv venv
 source venv/bin/activate  # Para Unix/macOS
+
 venv\Scripts\activate     # Para Windows
 
 Instala las dependencias:
@@ -49,11 +50,17 @@ Contribuciones
 Si deseas contribuir al proyecto, por favor sigue estos pasos:
 
 Fork el Repositorio
+
 Crea una Rama para tu Feature: git checkout -b feature/nueva-funcionalidad
+
 Realiza tus Cambios y Commits
+
 Push a tu Rama: git push origin feature/nueva-funcionalidad
+
 Crea un Pull Request
+
 Licencia
+
 Este proyecto está licenciado bajo la Licencia MIT. Consulta el archivo LICENSE para más detalles.
 
 Contacto
