@@ -14,40 +14,21 @@ def calculate_angle(point1, point2, point3):
     cosine_angle = np.dot(ab, bc) / (np.linalg.norm(ab) * np.linalg.norm(bc))
     return round(np.degrees(np.arccos(np.clip(cosine_angle, -1.0, 1.0))), 2)
 
-def classify_owas(angles):
+def process_video_owas(filepath):
     """
-    Clasifica las posturas usando el método OWAS basado en ángulos calculados.
-    :param angles: Diccionario con los ángulos corporales.
-    :return: Categoría de riesgo OWAS.
-    """
-    hip_angle = angles.get("hip", 0)
-    trunk_angle = angles.get("trunk", 0)
-    arm_angle = angles.get("arm", 0)
-
-    # Clasificación según los ángulos calculados
-    if trunk_angle < 20 and hip_angle < 30 and arm_angle < 45:
-        return "Riesgo 1: Postura aceptable"
-    elif 20 <= trunk_angle <= 60 or hip_angle >= 30 or arm_angle >= 45:
-        return "Riesgo 2: Necesita revisión"
-    elif trunk_angle > 60 or hip_angle > 60 or arm_angle > 90:
-        return "Riesgo 3: Corrección requerida pronto"
-    else:
-        return "Riesgo 4: Corrección urgente"
-
-def process_video(filepath):
-    """
-    Procesa un video para calcular ángulos corporales y clasificar según OWAS.
+    Procesa un video para calcular ángulos corporales y determinar el nivel de riesgo OWAS.
     :param filepath: Ruta completa del archivo de video.
-    :return: Diccionario con evaluaciones OWAS por cuadro.
+    :return: Diccionario con ángulos promedio y puntajes OWAS.
     """
     mp_pose = mp.solutions.pose
     pose = mp_pose.Pose()
     cap = cv2.VideoCapture(filepath)
-
+    
     if not cap.isOpened():
         raise ValueError("No se puede abrir el archivo de video")
-
-    owas_results = []
+    
+    angles = {"back": [], "arms": [], "legs": []}
+    
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
@@ -60,38 +41,29 @@ def process_video(filepath):
         if results.pose_landmarks:
             # Extraer puntos clave del cuerpo
             landmarks = results.pose_landmarks.landmark
+            
+            shoulder = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,
+                        landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
+            elbow = [landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].x,
+                     landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y]
+            wrist = [landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].x,
+                     landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y]
+            hip = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].x,
+                   landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y]
+            knee = [landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].x,
+                    landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].y]
+            ankle = [landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].x,
+                     landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].y]
 
-            left_shoulder = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,
-                             landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
-            left_hip = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].x,
-                        landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y]
-            left_knee = [landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].x,
-                         landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].y]
-            left_wrist = [landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].x,
-                          landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y]
-            left_elbow = [landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].x,
-                          landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y]
-
-            # Calcular ángulos
-            hip_angle = calculate_angle(left_knee, left_hip, left_shoulder)
-            trunk_angle = calculate_angle([0, 1], left_hip, left_shoulder)  # Aproximación del tronco vertical
-            arm_angle = calculate_angle(left_shoulder, left_elbow, left_wrist)
-
-            # Clasificar postura con OWAS
-            angles = {"hip": hip_angle, "trunk": trunk_angle, "arm": arm_angle}
-            owas_category = classify_owas(angles)
-            owas_results.append(owas_category)
+            # Calcular ángulos OWAS
+            angles["back"].append(calculate_angle(knee, hip, shoulder))  # Ángulo de espalda
+            angles["arms"].append(calculate_angle(shoulder, elbow, wrist))  # Ángulo de brazos
+            angles["legs"].append(calculate_angle(hip, knee, ankle))  # Ángulo de piernas
 
     cap.release()
     pose.close()
 
-    return owas_results
-
-# Ejemplo de uso
-video_path = "ruta/del/video.mp4"
-resultados_owas = process_video(video_path)
-
-# Mostrar resultados
-print("Clasificación OWAS por cuadro:")
-for idx, resultado in enumerate(resultados_owas):
-    print(f"Cuadro {idx + 1}: {resultado}")
+    # Promediar los ángulos
+    averaged_angles = {key: round(np.mean(values), 2) for key, values in angles.items() if values}
+    
+    return averaged_angles
