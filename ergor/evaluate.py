@@ -67,6 +67,15 @@ def rosa(id):
     except Exception as e:
         flash(f"Error al calcular los puntajes ROSA: {str(e)}")
         return redirect(url_for('auth.upload', id=user.user_id))
+# Ruta para generar el plan de mejora del método ROSA
+@bp.route('/rosa/<int:id>/plan', methods=['GET'])
+def rosa_plan(id):
+    result = generate_plan(user_id=id, method="ROSA")
+    if "error" in result:
+        flash(result["error"])
+        return redirect(url_for('evaluate.rosa', id=id))
+
+    return render_template('admin/plan.html', user_id=id, method="ROSA", plan=result["diagnostic_plan"])
 
 @bp.route('/reba/<int:id>', methods=['GET'])
 def reba(id):
