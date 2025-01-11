@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash,g, session, jsonify
 from .auth import login_required
 from ergor import db
-from ergor.models import User, RosaScore
+from ergor.models import User, RosaScore, OwasScore
 import os
 
 bp = Blueprint('evaluate', __name__, url_prefix='/evaluate') 
@@ -74,10 +74,44 @@ def reba(id):
 @bp.route('/owas/<int:id>', methods=['GET'])
 def owas(id):
     # Lógica para procesar el video con el método OWAS
+ 
+    user = User.query.get_or_404(id)
     
+    if not user.video_path:
+        flash('El usuario no tiene un video subido')
+        return redirect(url_for('auth.upload', id=user.user_id))
     
-    return f'Lógica para procesar el video con el método OWAS'
-    #return render_template('evaluate/owas.html', id=id)
+    filepath = os.path.join('ergor', 'static', user.video_path)
+    
+    # Importar los módulos para procesamiento y evaluación
+    from ergor.process_videoOWAS import process_video_owas
+    from ergor.owas_evaluation import evaluate_owas
+    
+    # Procesar el video para calcular ángulos
+    try:
+        scores = process_video_owas(filepath)
+    except Exception as e:
+        flash(f"Error al procesar el video: {str(e)}")
+        return redirect(url_for('auth.upload', id=user.user_id))
+    
+    # Guardar los resultados en la base de datos
+    try:
+        owas_score = OwasScore(
+            user_id=user.user_id,
+            back_score=scores["back_score"],
+            arms_score=scores["arms_score"],
+            legs_score=scores["legs_score"],
+            total_score=scores["total_score"],
+            risk_level=scores["risk_level"]
+        )
+        db.session.add(owas_score)
+        db.session.commit()
+        
+        flash("Evaluación OWAS completada con éxito")
+        return render_template('admin/owas.html', user=user, scores=scores)
+    except Exception as e:
+        flash(f"Error al calcular los puntajes OWAS: {str(e)}")
+        return redirect(url_for('auth.upload', id=user.user_id))
 
 @bp.route('/niosh/<int:id>', methods=['GET'])
 def niosh(id):

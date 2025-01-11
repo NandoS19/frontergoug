@@ -42,3 +42,4 @@ def evaluate_owas(angles):
         "total_score": total_score,
         "risk_level": "Bajo" if total_score <= 3 else "Moderado" if total_score <= 6 else "Alto"
     }
+    
