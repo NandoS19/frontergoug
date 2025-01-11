@@ -74,6 +74,8 @@ def reba(id):
 @bp.route('/owas/<int:id>', methods=['GET'])
 def owas(id):
     # Lógica para procesar el video con el método OWAS
+    
+    
     return f'Lógica para procesar el video con el método OWAS'
     #return render_template('evaluate/owas.html', id=id)
 

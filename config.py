@@ -1,7 +1,7 @@
 
 #Variables que apuntan a la base de datos
 
-POSTGRES = "postgresql+psycopg://postgres:18032001@localhost:5432/ergo_db2"
+POSTGRES = "postgresql+psycopg://postgres:davidp23@localhost:5432/ergo_db"
 
 class Config:
     DEBUG = True

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Resultados de la Evaluación OWAS</h1>
+<p>Usuario: {{ user.username }}</p>
+<ul>
+    <li>Puntaje de espalda: {{ scores.back_score }}</li>
+    <li>Puntaje de brazos: {{ scores.arms_score }}</li>
+    <li>Puntaje de piernas: {{ scores.legs_score }}</li>
+    <li>Puntaje total: {{ scores.total_score }}</li>
+    <li>Nivel de riesgo: {{ scores.risk_level }}</li>
+</ul>
+<a href="{{ url_for('auth.upload', id=user.user_id) }}">Volver a subir otro video</a>
+{% endblock %}
