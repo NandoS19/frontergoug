@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="display-4 text-center">Resultados de la Evaluación NIOSH</h1>
+    <p class="text-center text-muted">Usuario: <strong>{{ user.username }}</strong></p>
+
+    <div class="card mt-4 shadow">
+        <div class="card-body">
+            <h3 class="card-title">Detalles de la Evaluación</h3>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">RWL (Peso Límite Recomendado): <strong>{{ scores.RWL }} kg</strong></li>
+                <li class="list-group-item">Índice de Levantamiento (LI): <strong>{{ scores.LI }}</strong></li>
+                <li class="list-group-item">Nivel de Riesgo: <strong>{{ scores.risk_level }}</strong></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{{ url_for('evaluate.niosh_plan', id=user.user_id) }}" class="btn btn-primary">Generar Plan de Mejora</a>
+        <a href="{{ url_for('auth.upload', id=user.user_id) }}" class="btn btn-secondary">Volver</a>
+    </div>
+</div>
+{% endblock %}

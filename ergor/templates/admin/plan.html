@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="display-4 text-center">Plan de Mejora y Diagnóstico</h1>
+    <p class="text-center text-muted">Método: <strong>{{ method }}</strong></p>
+    <p class="text-center text-muted">Usuario ID: <strong>{{ user_id }}</strong></p>
+
+    <div class="card mt-4 shadow">
+        <div class="card-body">
+            <h3 class="card-title">Plan de Mejora y Diagnóstico</h3>
+            <pre id="plan-content" class="bg-light p-3 border rounded">{{ plan }}</pre>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <button id="download-pdf" class="btn btn-primary">Descargar como PDF</button>
+        <a href="{{ url_for('evaluate.evaluate_page') }}" class="btn btn-secondary">Volver</a>
+    </div>
+</div>
+
+<!-- Incluir la biblioteca jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+
+<script>
+    document.getElementById("download-pdf").addEventListener("click", function () {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // Obtener el contenido del plan
+        const content = document.getElementById("plan-content").textContent;
+
+        // Agregar título y contenido al PDF
+        doc.setFontSize(16);
+        doc.text("Plan de Mejora y Diagnóstico", 10, 10);
+        doc.setFontSize(12);
+        doc.text(`Método: {{ method }}`, 10, 20);
+        doc.text(`Usuario ID: {{ user_id }}`, 10, 30);
+        doc.text(content, 10, 40);
+
+        // Descargar el archivo PDF
+        doc.save("plan_de_mejora.pdf");
+    });
+</script>
+{% endblock %}
