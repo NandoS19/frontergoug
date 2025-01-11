@@ -1,8 +1,11 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash,g, session, jsonify
 from .auth import login_required
 from ergor import db
-from ergor.models import User, RosaScore, OwasScore
+from ergor.models import User, RosaScore, OwasScore, NioshScore
 import os
+
+# Importar la función para generar planes de mejora
+from ergor.generate_plan import generate_plan
 
 bp = Blueprint('evaluate', __name__, url_prefix='/evaluate') 
 
@@ -115,7 +118,64 @@ def owas(id):
 
 @bp.route('/niosh/<int:id>', methods=['GET'])
 def niosh(id):
-    # Lógica para procesar el video con el método NIOSH
-    return f'Lógica para procesar el video con el método NIOSH'
-    #return render_template('evaluate/niosh.html', id=id)
-    #hola
+    from ergor.process_videoNIOSH import process_video
+    from ergor.niosh_evaluation import evaluate_niosh
+
+    user = User.query.get_or_404(id)
+
+    if not user.video_path:
+        flash('El usuario no tiene un video subido')
+        return redirect(url_for('auth.upload', id=user.user_id))
+
+    filepath = os.path.join('ergor', 'static', user.video_path)
+
+    try:
+        # Procesar el video para calcular factores
+        factors = process_video(filepath)
+    except Exception as e:
+        flash(f"Error al procesar el video: {str(e)}")
+        return redirect(url_for('auth.upload', id=user.user_id))
+
+    try:
+        # Calcular RWL y LI
+        load_weight = 10  # Ejemplo: peso de la carga (kg)
+        frequency = 15  # Ejemplo: frecuencia de levantamiento
+        scores = evaluate_niosh(
+            load_weight,
+            factors["horizontal_distance"],
+            factors["vertical_distance"],
+            factors["asymmetry_angle"],
+            frequency
+        )
+
+        # Guardar en la base de datos
+        niosh_score = NioshScore(
+            user_id=user.user_id,
+            load_weight=load_weight,
+            horizontal_distance=factors["horizontal_distance"],
+            vertical_distance=factors["vertical_distance"],
+            asymmetry_angle=factors["asymmetry_angle"],
+            frequency=frequency,
+            rwl=scores["RWL"]
+        )
+        db.session.add(niosh_score)
+        db.session.commit()
+
+        flash("Evaluación NIOSH completada con éxito")
+        return render_template(
+            'admin/niosh.html',
+            user=user,
+            scores=scores
+        )
+    except Exception as e:
+        flash(f"Error al calcular los puntajes NIOSH: {str(e)}")
+        return redirect(url_for('auth.upload', id=user.user_id))
+# Ruta para generar el plan de mejora del método NIOSH
+@bp.route('/niosh/<int:id>/plan', methods=['GET'])
+def niosh_plan(id):
+    result = generate_plan(user_id=id, method="NIOSH")
+    if "error" in result:
+        flash(result["error"])
+        return redirect(url_for('evaluate.niosh', id=id))
+
+    return render_template('admin/plan.html', user_id=id, method="NIOSH", plan=result["diagnostic_plan"])
