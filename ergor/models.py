@@ -121,25 +121,32 @@ class RosaScore(db.Model):
         return f'<RosaScore {self.score_id}>'
 
 # Tabla de puntajes OWAS
-class OwasScore(db.Model):
-    __tablename__ = 'owas_scores'
-    
-    score_id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
-    posture_code = db.Column(db.String(10), nullable=False)
-    load_handled = db.Column(db.Numeric(5, 2), db.CheckConstraint('load_handled >= 0'), nullable=False)
-    action_level = db.Column(db.Integer, db.CheckConstraint('action_level BETWEEN 1 AND 4'), nullable=False)
-    evaluation_date = db.Column(db.DateTime, default=func.now())
-    level_id = db.Column(db.Integer, db.ForeignKey('risk_levels.level_id'), nullable=True)
+from datetime import datetime
+from flask_sqlalchemy import SQLAlchemy
 
-    def __init__(self, user_id, posture_code, load_handled, action_level):
-        self.user_id = user_id
-        self.posture_code = posture_code
-        self.load_handled = load_handled
-        self.action_level = action_level
-        
+db = SQLAlchemy()
+
+class OwasScore(db.Model):
+    """
+    Modelo para almacenar los resultados de evaluación OWAS.
+    """
+    __tablename__ = 'owas_scores'
+
+    id = db.Column(db.Integer, primary_key=True)  # ID único para cada evaluación
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # Relación con el usuario
+    back_score = db.Column(db.Integer, nullable=False)  # Puntaje de la espalda
+    arms_score = db.Column(db.Integer, nullable=False)  # Puntaje de los brazos
+    legs_score = db.Column(db.Integer, nullable=False)  # Puntaje de las piernas
+    total_score = db.Column(db.Integer, nullable=False)  # Puntaje total
+    risk_level = db.Column(db.String(50), nullable=False)  # Nivel de riesgo (Bajo, Moderado, Alto)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)  # Fecha de creación de la evaluación
+
+    # Relación inversa para acceder al usuario
+    user = db.relationship('User', back_populates='owas_scores')
+
     def __repr__(self):
-        return f'<OwasScore {self.score_id}>'
+        return f"<OwasScore id={self.id} user_id={self.user_id} total_score={self.total_score} risk_level={self.risk_level}>"
+
 
 
 # Tabla de puntajes NIOSH
