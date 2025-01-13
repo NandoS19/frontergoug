@@ -121,11 +121,6 @@ class RosaScore(db.Model):
         return f'<RosaScore {self.score_id}>'
 
 # Tabla de puntajes OWAS
-from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
-
-db = SQLAlchemy()
-
 class OwasScore(db.Model):
     
     __tablename__ = 'owas_scores'
