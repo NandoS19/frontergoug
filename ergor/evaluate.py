@@ -101,22 +101,25 @@ def owas(id):
     
     # Procesar el video para calcular ángulos
     try:
-        scores = process_video_owas(filepath)
+        angles = process_video_owas(filepath)
     except Exception as e:
         flash(f"Error al procesar el video: {str(e)}")
         return redirect(url_for('auth.upload', id=user.user_id))
     
     # Guardar los resultados en la base de datos
     try:
-        owas_score = OwasScore(
+        
+        scores = evaluate_owas(angles)
+        
+        owas_scores = OwasScore(
             user_id=user.user_id,
             back_score=scores["back_score"],
             arms_score=scores["arms_score"],
             legs_score=scores["legs_score"],
             total_score=scores["total_score"],
-            risk_level=scores["risk_level"]
         )
-        db.session.add(owas_score)
+        
+        db.session.add(owas_scores)
         db.session.commit()
         
         flash("Evaluación OWAS completada con éxito")

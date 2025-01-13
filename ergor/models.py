@@ -127,26 +127,28 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 class OwasScore(db.Model):
-    """
-    Modelo para almacenar los resultados de evaluación OWAS.
-    """
+    
     __tablename__ = 'owas_scores'
 
-    id = db.Column(db.Integer, primary_key=True)  # ID único para cada evaluación
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # Relación con el usuario
-    back_score = db.Column(db.Integer, nullable=False)  # Puntaje de la espalda
-    arms_score = db.Column(db.Integer, nullable=False)  # Puntaje de los brazos
-    legs_score = db.Column(db.Integer, nullable=False)  # Puntaje de las piernas
-    total_score = db.Column(db.Integer, nullable=False)  # Puntaje total
-    risk_level = db.Column(db.String(50), nullable=False)  # Nivel de riesgo (Bajo, Moderado, Alto)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)  # Fecha de creación de la evaluación
+    score_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    back_score = db.Column(db.Integer, db.CheckConstraint('back_score >= 0'), nullable=False)  # Puntaje de la espalda
+    arms_score = db.Column(db.Integer, db.CheckConstraint('arms_score >= 0'), nullable=False)  # Puntaje de los brazos
+    legs_score = db.Column(db.Integer, db.CheckConstraint('legs_score >= 0'), nullable=False)  # Puntaje de las piernas
+    total_score = db.Column(db.Numeric(5, 2), db.CheckConstraint('total_score >= 0'), nullable=False)
+    evaluation_date = db.Column(db.DateTime, default=datetime.utcnow)
+    level_id = db.Column(db.Integer, db.ForeignKey('risk_levels.level_id'), nullable=True)
 
-    # Relación inversa para acceder al usuario
-    user = db.relationship('User', back_populates='owas_scores')
+
+    def __init__(self, user_id, back_score, arms_score, legs_score, total_score):
+        self.user_id = user_id
+        self.back_score = back_score
+        self.arms_score = arms_score
+        self.legs_score = legs_score
+        self.total_score = total_score
 
     def __repr__(self):
-        return f"<OwasScore id={self.id} user_id={self.user_id} total_score={self.total_score} risk_level={self.risk_level}>"
-
+        return f'<OwasScore {self.score_id}>'
 
 
 # Tabla de puntajes NIOSH
