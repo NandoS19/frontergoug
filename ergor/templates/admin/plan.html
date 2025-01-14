@@ -10,13 +10,29 @@
     <p class="text-center text-muted">Método: <strong>{{ method }}</strong></p>
     <p class="text-center text-muted">Usuario ID: <strong>{{ user_id }}</strong></p>
 
+    <!-- Resultados de cada API -->
     <div class="card mt-4 shadow">
         <div class="card-body">
-            <h3 class="card-title">Plan de Mejora y Diagnóstico</h3>
-            <pre id="plan-content" class="bg-light p-3 border rounded">{{ plan }}</pre>
+            <h3 class="card-title">Resultado - Método 1 </h3>
+            <pre id="plan-google" class="bg-light p-3 border rounded">{{ plan.google }}</pre>
         </div>
     </div>
 
+    <div class="card mt-4 shadow">
+        <div class="card-body">
+            <h3 class="card-title">Resultado - Método 2 </h3>
+            <pre id="plan-llama" class="bg-light p-3 border rounded">{{ plan.llama }}</pre>
+        </div>
+    </div>
+
+    <div class="card mt-4 shadow">
+        <div class="card-body"> 
+            <h3 class="card-title">Resultado - Método 3 </h3>
+            <pre id="plan-openai" class="bg-light p-3 border rounded">{{ plan.openai }}</pre>
+        </div>
+    </div>
+
+    <!-- Botones de acción -->
     <div class="text-center mt-4">
         <button id="download-pdf" class="btn btn-primary">Descargar como PDF</button>
         <a href="{{ url_for('evaluate.evaluate_page') }}" class="btn btn-secondary">Volver</a>
@@ -31,16 +47,36 @@
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
 
-        // Obtener el contenido del plan
-        const content = document.getElementById("plan-content").textContent;
-
-        // Agregar título y contenido al PDF
+        // Título general
         doc.setFontSize(16);
         doc.text("Plan de Mejora y Diagnóstico", 10, 10);
+
+        // Detalles generales
         doc.setFontSize(12);
         doc.text(`Método: {{ method }}`, 10, 20);
         doc.text(`Usuario ID: {{ user_id }}`, 10, 30);
-        doc.text(content, 10, 40);
+
+        // Contenido de cada resultado
+        const googleContent = document.getElementById("plan-google").textContent;
+        const llamaContent = document.getElementById("plan-llama").textContent;
+        const openaiContent = document.getElementById("plan-openai").textContent;
+
+        // Espaciado para cada resultado
+        let yOffset = 40;
+
+        doc.text("Resultado - Método 1 (Google Generative AI):", 10, yOffset);
+        yOffset += 10;
+        doc.text(googleContent, 10, yOffset);
+
+        yOffset += 50; // Espacio entre resultados
+        doc.text("Resultado - Método 2 (Llama API):", 10, yOffset);
+        yOffset += 10;
+        doc.text(llamaContent, 10, yOffset);
+
+        yOffset += 50; // Espacio entre resultados
+        doc.text("Resultado - Método 3 (OpenAI):", 10, yOffset);
+        yOffset += 10;
+        doc.text(openaiContent, 10, yOffset);
 
         // Descargar el archivo PDF
         doc.save("plan_de_mejora.pdf");
