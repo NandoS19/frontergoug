@@ -1,7 +1,7 @@
 import google.generativeai as genai
 from llamaapi import LlamaAPI
 import openai
-from ergor.models import User, RosaScore, NioshScore, OwasScore
+from ergor.models import User, RosaScore, NioshScore, OwasScore, RebaScore
 from ergor import db
 
 # Configurar las APIs
@@ -13,7 +13,7 @@ def generate_plan(user_id, method):
     """
     Genera un plan de mejora y diagnóstico usando tres APIs (Google Generative AI, Llama API, OpenAI).
     :param user_id: ID del usuario.
-    :param method: Método de evaluación (ROSA, NIOSH, OWAS).
+    :param method: Método de evaluación (ROSA, NIOSH, OWAS, REBA).
     :return: Diccionario con el diagnóstico y plan de mejora de cada API.
     """
     user = User.query.get(user_id)
@@ -67,6 +67,19 @@ def generate_plan(user_id, method):
             f"- Puntaje total: {owas_score.total_score}\n\n"
             f"Con base en estos resultados, genera un diagnóstico y un plan de mejora ergonómico detallado."
         )
+    elif method == "REBA":
+        reba_score = RebaScore.query.filter_by(user_id=user_id).order_by(RebaScore.evaluation_date.desc()).first()
+        if not reba_score:
+            return {"error": "No se encontraron resultados para el método REBA"}
+
+        prompt = (
+            f"Usuario: {user.username}\n"
+            f"Puntajes REBA:\n"
+            f"- Grupo A: {reba_score.group_a_score}\n"
+            f"- Grupo B: {reba_score.group_b_score}\n"
+            f"- Puntaje total: {reba_score.total_score}\n\n"
+            f"Con base en estos resultados, genera un diagnóstico y un plan de mejora ergonómico detallado."
+        )
     else:
         return {"error": "Método no soportado"}
 
@@ -84,7 +97,7 @@ def generate_plan(user_id, method):
     # Llama API
     try:
         llama_request = {
-            "model": "llama3.2-3b",
+            "model": "llama3.1-70b",
             "messages": [{"role": "user", "content": prompt}]
         }
         llama_response = llama.run(llama_request)

@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash,g, session, jsonify
 from .auth import login_required
 from ergor import db
-from ergor.models import User, RosaScore, OwasScore, NioshScore
+from ergor.models import User, RosaScore, OwasScore, NioshScore, RebaScore
 import os
 
 # Importar la función para generar planes de mejora
