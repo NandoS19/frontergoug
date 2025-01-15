@@ -3,287 +3,192 @@ import mediapipe as mp
 import numpy as np
 import math
 
-# Inicializamos Mediapipe
+# Inicialización de Mediapipe para detección de puntos clave
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose()
-mp_drawing = mp.solutions.drawing_utils
 
-def calculate_angle(a, b, c):
-    """
-    Calcula el ángulo entre tres puntos
-    a, b, c: coordenadas (x, y) de los puntos
-    """
-    a = np.array(a)  # Punto inicial
-    b = np.array(b)  # Punto central
-    c = np.array(c)  # Punto final
+# Función para obtener el código postural según el ángulo
+def obtener_codigo_postural(angulo, parte_del_cuerpo):
+    if parte_del_cuerpo == "cuello":
+        if angulo < 30:
+            return 1  # Ideal
+        elif angulo < 60:
+            return 2  # Aceptable
+        else:
+            return 3  # Peligroso
+    elif parte_del_cuerpo == "espalda":
+        if angulo < 45:
+            return 1  # Ideal
+        elif angulo < 90:
+            return 2  # Aceptable
+        else:
+            return 3  # Peligroso
+    elif parte_del_cuerpo == "piernas":
+        if angulo < 40:
+            return 1  # Ideal
+        elif angulo < 80:
+            return 2  # Aceptable
+        else:
+            return 3  # Peligroso
+    elif parte_del_cuerpo == "brazos":
+        if angulo < 60:
+            return 1  # Ideal
+        elif angulo < 120:
+            return 2  # Aceptable
+        else:
+            return 3  # Peligroso
+    elif parte_del_cuerpo == "antebrazos":
+        if angulo < 45:
+            return 1  # Ideal
+        elif angulo < 90:
+            return 2  # Aceptable
+        else:
+            return 3  # Peligroso
+    elif parte_del_cuerpo == "muñeca":
+        if angulo < 30:
+            return 1  # Ideal
+        elif angulo < 60:
+            return 2  # Aceptable
+        else:
+            return 3  # Peligroso
+    return 3  # Valor por defecto si la parte del cuerpo no coincide
 
-    radians = np.arctan2(c[1] - b[1], c[0] - b[0]) - np.arctan2(a[1] - b[1], a[0] - b[0])
-    angle = np.abs(radians * 180.0 / np.pi)
+    if angulo is None:
+        return 1
 
-    if angle > 180.0:
-        angle = 360 - angle
+# Función para calcular el ángulo entre tres puntos
+def calculate_angle(landmarks, part):
+    if part == "trunk":
+        # Calculando el ángulo para el tronco (hombros, cadera)
+        p1 = np.array([landmarks[11].x, landmarks[11].y])  # Hombro izquierdo
+        p2 = np.array([landmarks[23].x, landmarks[23].y])  # Cadera izquierda
+        p3 = np.array([landmarks[24].x, landmarks[24].y])  # Cadera derecha
+        return np.degrees(np.arctan2(p3[1] - p2[1], p3[0] - p2[0]) - np.arctan2(p1[1] - p2[1], p1[0] - p2[0]))
+    elif part == "neck":
+        # Calculando el ángulo del cuello (ojos, nariz)
+        p1 = np.array([landmarks[0].x, landmarks[0].y])  # Ojo izquierdo
+        p2 = np.array([landmarks[1].x, landmarks[1].y])  # Nariz
+        p3 = np.array([landmarks[2].x, landmarks[2].y])  # Ojo derecho
+        return np.degrees(np.arctan2(p3[1] - p2[1], p3[0] - p2[0]) - np.arctan2(p1[1] - p2[1], p1[0] - p2[0]))
+    elif part == "leg":
+        # Calculando el ángulo de las piernas (cadera, rodilla, tobillo)
+        p1 = np.array([landmarks[23].x, landmarks[23].y])  # Cadera izquierda
+        p2 = np.array([landmarks[25].x, landmarks[25].y])  # Rodilla izquierda
+        p3 = np.array([landmarks[27].x, landmarks[27].y])  # Tobillo izquierdo
+        return np.degrees(np.arctan2(p3[1] - p2[1], p3[0] - p2[0]) - np.arctan2(p1[1] - p2[1], p1[0] - p2[0]))
+    elif part == "upper_arm":
+        # Calculando el ángulo de los brazos (hombro, codo, muñeca)
+        p1 = np.array([landmarks[11].x, landmarks[11].y])  # Hombro izquierdo
+        p2 = np.array([landmarks[13].x, landmarks[13].y])  # Codo izquierdo
+        p3 = np.array([landmarks[15].x, landmarks[15].y])  # Muñeca izquierda
+        return np.degrees(np.arctan2(p3[1] - p2[1], p3[0] - p2[0]) - np.arctan2(p1[1] - p2[1], p1[0] - p2[0]))
+    elif part == "lower_arm":
+        # Calculando el ángulo del antebrazo (codo, muñeca)
+        p1 = np.array([landmarks[13].x, landmarks[13].y])  # Codo izquierdo
+        p2 = np.array([landmarks[15].x, landmarks[15].y])  # Muñeca izquierda
+        return np.degrees(np.arctan2(p2[1] - p1[1], p2[0] - p1[0]))
+    elif part == "wrist":
+        # Calculando el ángulo de la muñeca (muñeca, dedos)
+        p1 = np.array([landmarks[15].x, landmarks[15].y])  # Muñeca izquierda
+        p2 = np.array([landmarks[17].x, landmarks[17].y])  # Dedos
+        return np.degrees(np.arctan2(p2[1] - p1[1], p2[0] - p1[0]))
 
-    return angle
-
+# Función para procesar el video y obtener los códigos posturales más altos
 def process_video(video_path):
-    cap = cv2.VideoCapture(video_path)  # Reemplaza por la ruta de tu video
+    cap = cv2.VideoCapture(video_path)
 
+    # Diccionario para almacenar el código postural más alto de cada parte del cuerpo
+    highest_postural_codes = {
+        "espalda": 0,
+        "cuello": 0,
+        "piernas": 0,
+        "brazos": 0,
+        "antebrazos": 0,
+        "muñeca": 0
+}
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
             break
 
-        # Convertir la imagen de BGR a RGB
+        # Convertir a RGB para Mediapipe
         image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         result = pose.process(image_rgb)
 
         if result.pose_landmarks:
             landmarks = result.pose_landmarks.landmark
 
-            # Procesar y calcular para el grupo A y B
-            process_group_a(landmarks, frame)
-            process_group_b(landmarks, frame)
+            # Procesar los ángulos para las partes del cuerpo
+            trunk_angle = calculate_angle(landmarks, "trunk")
+            neck_angle = calculate_angle(landmarks, "neck")
+            leg_angle = calculate_angle(landmarks, "leg")
+            upper_arm_angle = calculate_angle(landmarks, "upper_arm")
+            lower_arm_angle = calculate_angle(landmarks, "lower_arm")
+            wrist_angle = calculate_angle(landmarks, "wrist")
+
+            # Obtener los códigos posturales
+            trunk_code = obtener_codigo_postural(trunk_angle, "espalda")
+            neck_code = obtener_codigo_postural(neck_angle, "cuello")
+            leg_code = obtener_codigo_postural(leg_angle, "piernas")
+            arm_code = obtener_codigo_postural(upper_arm_angle, "brazos")
+            forearm_code = obtener_codigo_postural(lower_arm_angle, "antebrazos")
+            wrist_code = obtener_codigo_postural(wrist_angle, "muñeca")
+
+            # Actualizar el código postural más alto
+            highest_postural_codes["cuello"] = max(highest_postural_codes["cuello"], neck_code or 1)
+            highest_postural_codes["espalda"] = max(highest_postural_codes["espalda"], trunk_code or 1)
+            highest_postural_codes["piernas"] = max(highest_postural_codes["piernas"], leg_code or 1)
+            highest_postural_codes["brazos"] = max(highest_postural_codes["brazos"], arm_code or 1)
+            highest_postural_codes["antebrazos"] = max(highest_postural_codes["antebrazos"], forearm_code or 1)
+            highest_postural_codes["muñeca"] = max(highest_postural_codes["muñeca"], wrist_code or 1)
 
         # Mostrar el video procesado
-        cv2.imshow('Video Procesado', frame)
+        cv2.imshow('Processed Video', frame)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
     cap.release()
     cv2.destroyAllWindows()
 
-#GRUPO A
-def assign_postural_code_trunk(trunk_angle, is_rotated_or_laterally_inclined):
-    """
-    Asigna el código postural al tronco según el ángulo calculado
-    """
-    code = 0
-    if trunk_angle <= 20:
-        code = 1  # Erguido
-    elif 20 < trunk_angle <= 60:
-        code = 3  # Flexión moderada
-    elif trunk_angle > 60:
-        code = 4  # Flexión severa
-    elif trunk_angle < 0:
-        code = 2  # Extensión
+    for key in highest_postural_codes:
+        if not highest_postural_codes[key] or highest_postural_codes[key] is None:
+            highest_postural_codes[key] = 1  # Asignar 1 como valor predeterminado
 
-    # Sumar +1 si hay rotación o inclinación lateral
-    if is_rotated_or_laterally_inclined:
-        code += 1
-
-    return code
-
-def assign_postural_code_neck(neck_angle, is_rotated_or_laterally_inclined):
-    """
-    Asigna el código postural al cuello según el ángulo calculado
-    """
-    code = 0
-    if 0 <= neck_angle <= 20:
-        code = 1  # Flexión leve
-    elif neck_angle > 20:
-        code = 2  # Flexión severa
-
-    # Sumar +1 si hay rotación o inclinación lateral
-    if is_rotated_or_laterally_inclined:
-        code += 1
-
-    return code
-
-def assign_postural_code_legs(knee_angle):
-    """
-    Asigna el código postural a las piernas según el ángulo calculado
-    """
-    code = 0
-    if 30 <= knee_angle <= 60:
-        code = 1  # Flexión leve
-    elif knee_angle > 60:
-        code = 2  # Flexión severa
-
-    return code
-
-#GRUPO N
-def assign_postural_code_arm(elbow_angle, is_rotated, is_shoulders_elevated, is_arm_support):
-    """
-    Asigna el código postural para el brazo según el ángulo calculado y las condiciones adicionales.
-    """
-    # Asignación inicial según el ángulo
-    if -20 <= elbow_angle <= 20:
-        code = 1  # De 20° extensión a 20° flexión
-    elif (elbow_angle > 20 and elbow_angle <= 45) or (elbow_angle < -20 and elbow_angle >= -45):
-        code = 2  # Extensión > 20° o flexión > 20° y <= 45°
-    elif (elbow_angle > 45 and elbow_angle <= 90) or (elbow_angle < -45 and elbow_angle >= -90):
-        code = 3  # Flexión > 45° y <= 90°
-    else:
-        code = 4  # Flexión > 90°
-
-    # Condiciones adicionales
+    # Después de procesar el video, calcular las puntuaciones globales
+    puntuacion_grupo_A = calcular_puntuacion_global_A(
+        highest_postural_codes["espalda"],
+        highest_postural_codes["cuello"],
+        highest_postural_codes["piernas"]
+    )
     
-    if is_shoulders_elevated:
-        code += 1  # Sumar 1 si los hombros están elevados
-    if is_arm_support:
-        code -= 1  # Restar 1 si hay un punto de apoyo en los brazos
+    puntuacion_grupo_B = calcular_puntuacion_global_grupo_B(
+        highest_postural_codes["brazos"],
+        highest_postural_codes["antebrazos"],
+        highest_postural_codes["muñeca"]
+    )
 
-    return code
+    # Calcular la puntuación final
+    puntuacion_final = calcular_puntuacion_final(puntuacion_grupo_A, puntuacion_grupo_B)
 
-def assign_postural_code_forearm(forearm_angle):
-    """
-    Asigna el código postural al antebrazo según el ángulo de flexión.
-    """
-    code = 0
-    if 60 <= forearm_angle <= 100:
-        code = 1  # Flexión moderada
-    elif forearm_angle < 60 or forearm_angle > 100:
-        code = 2  # Flexión severa o ligera
-    return code
+    # Determinar el nivel de riesgo
+    riesgo = determinar_nivel_riesgo(puntuacion_final)
 
-def assign_postural_code_wrist(wrist_angle):
-    """
-    Asigna el código postural a la muñeca según el ángulo de flexión o extensión.
-    """
-    code = 0
-    if 0 < wrist_angle < 15:
-        code = 1  # Flexión/Extensión moderada
-    elif wrist_angle >= 15:
-        code = 2  # Flexión/Extensión severa
-    return code
+    # Mostrar los resultados finales
+    print("Resultados Finales:")
+    print(f"Puntuación Grupo A: {puntuacion_grupo_A}")
+    print(f"Puntuación Grupo B: {puntuacion_grupo_B}")
+    print(f"Puntuación Final: {puntuacion_final}")
+    print(f"Nivel de Riesgo: {riesgo['Nivel']}")
+    print(f"Riesgo: {riesgo['Riesgo']}")
+    print(f"Recomendación: {riesgo['Actuación']}")
 
-def check_rotation_or_lateral_inclination(landmarks):
-    """
-    Determina si hay rotación o inclinación lateral del tronco
-    """
-    left_shoulder = np.array([landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x, landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y])
-    right_shoulder = np.array([landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x, landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y])
-    left_hip = np.array([landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].x, landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y])
-    right_hip = np.array([landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].x, landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y])
+    return highest_postural_codes
 
-    # Cálculo de diferencias horizontales y verticales
-    shoulder_diff = np.abs(left_shoulder[1] - right_shoulder[1])
-    hip_diff = np.abs(left_hip[1] - right_hip[1])
-
-    # Si las diferencias exceden un umbral, hay rotación o inclinación lateral
-    threshold = 1
-    return shoulder_diff > threshold or hip_diff > threshold
-
-def check_head_rotation_or_lateral_inclination(landmarks):
-    """
-    Determina si hay rotación o inclinación lateral de la cabeza
-    """
-    left_ear = np.array([landmarks[mp_pose.PoseLandmark.LEFT_EAR.value].x, landmarks[mp_pose.PoseLandmark.LEFT_EAR.value].y])
-    right_ear = np.array([landmarks[mp_pose.PoseLandmark.RIGHT_EAR.value].x, landmarks[mp_pose.PoseLandmark.RIGHT_EAR.value].y])
-
-    # Cálculo de diferencias verticales
-    ear_diff = np.abs(left_ear[1] - right_ear[1])
-
-    # Si la diferencia excede un umbral, hay rotación o inclinación lateral
-    threshold = 1
-    return ear_diff > threshold
-
-#GRUPO A
-def process_group_a(landmarks, image):
-    """
-    Procesa los ángulos del Grupo A: Tronco, cuello y piernas
-    """
-    # Coordenadas relevantes
-    shoulder = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x, landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
-    hip = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].x, landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y]
-    knee = [landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].x, landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].y]
-    ankle = [landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].x, landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].y]
-    head = [landmarks[mp_pose.PoseLandmark.NOSE.value].x, landmarks[mp_pose.PoseLandmark.NOSE.value].y]
-
-    # Cálculo de ángulos
-    trunk_angle = calculate_angle(shoulder, hip, knee)
-    neck_angle = calculate_angle(shoulder, head, hip)
-    knee_angle = calculate_angle(hip, knee, ankle)
-
-    # Verificar rotación o inclinación lateral
-    is_trunk_rotated_or_laterally_inclined = check_rotation_or_lateral_inclination(landmarks)
-    is_neck_rotated_or_laterally_inclined = check_head_rotation_or_lateral_inclination(landmarks)
-
-    # Asignación de códigos posturales
-    trunk_code = assign_postural_code_trunk(trunk_angle, is_trunk_rotated_or_laterally_inclined)
-    neck_code = assign_postural_code_neck(neck_angle, is_neck_rotated_or_laterally_inclined)
-    knee_code = assign_postural_code_legs(knee_angle)
-
-    # Calculamos la puntuación global
-    puntuacion_global = calcular_puntuacion_global_A(trunk_code, neck_code, knee_code)
-
-    # Dibujamos los ángulos, códigos y la puntuación en la imagen
-    cv2.putText(image, f'Trunk: {int(trunk_angle)} (Code: {trunk_code})', tuple(np.multiply(hip, [image.shape[1], image.shape[0]]).astype(int)),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
-    cv2.putText(image, f'Neck: {int(neck_angle)} (Code: {neck_code})', tuple(np.multiply(head, [image.shape[1], image.shape[0]]).astype(int)),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
-    cv2.putText(image, f'Knee: {int(knee_angle)} (Code: {knee_code})', tuple(np.multiply(knee, [image.shape[1], image.shape[0]]).astype(int)),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
-    cv2.putText(image, f'Global Score: {puntuacion_global}', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
-
-
-#GRUPO B
-
-def check_shoulder_raised(landmarks):
-    """
-    Verifica si los hombros están elevados comparando las alturas de los hombros.
-    """
-    left_shoulder = np.array([landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x, landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y])
-    right_shoulder = np.array([landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x, landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y])
-    
-    # Umbral para considerar que un hombro está elevado
-    threshold = 0.05
-    return abs(left_shoulder[1] - right_shoulder[1]) > threshold
-
-def check_support_in_arm(landmarks):
-    """
-    Determina si hay un punto de apoyo en el brazo (por ejemplo, al estar en el suelo o apoyado en una superficie).
-    """
-    left_wrist = np.array([landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].x, landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y])
-    right_wrist = np.array([landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].x, landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y])
-
-    # Cualquier condición de contacto con el suelo (verificando si la muñeca está cerca de la superficie)
-    threshold = 1
-    return left_wrist[1] > threshold or right_wrist[1] > threshold
-
-
-def process_group_b(landmarks, image):
-    """
-    Procesa los ángulos del Grupo B: Brazo, antebrazo, muñeca.
-    """
-    # Coordenadas relevantes
-    shoulder = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x, landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
-    elbow = [landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].x, landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y]
-    wrist = [landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].x, landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y]
-
-    # Cálculo de ángulos
-    elbow_angle = calculate_angle(shoulder, elbow, wrist)
-
-    # Verificar si el hombro está elevado
-    shoulder_raised = check_shoulder_raised(landmarks)
-
-    # Verificar si hay un punto de apoyo en el brazo
-    has_support = check_support_in_arm(landmarks)
-
-    # Asignar el código postural del brazo
-    arm_code = assign_postural_code_arm(elbow_angle, shoulder_raised, has_support)
-
-    # Ahora, procesamos el antebrazo
-    forearm_angle = calculate_angle(elbow, wrist, [landmarks[mp_pose.PoseLandmark.LEFT_HAND.value].x, landmarks[mp_pose.PoseLandmark.LEFT_HAND.value].y])
-    forearm_code = assign_postural_code_forearm(forearm_angle)
-
-    # Ahora procesamos la muñeca
-    wrist_angle = calculate_angle(elbow, wrist, [landmarks[mp_pose.PoseLandmark.LEFT_HAND.value].x, landmarks[mp_pose.PoseLandmark.LEFT_HAND.value].y])
-    wrist_code = assign_postural_code_wrist(wrist_angle)
-
-    # Dibujamos los ángulos y códigos en la imagen
-    cv2.putText(image, f'Elbow: {int(elbow_angle)} (Code: {arm_code})', tuple(np.multiply(elbow, [image.shape[1], image.shape[0]]).astype(int)),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
-    cv2.putText(image, f'Forearm: {int(forearm_angle)} (Code: {forearm_code})', tuple(np.multiply(elbow, [image.shape[1], image.shape[0]]).astype(int)),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
-    cv2.putText(image, f'Wrist: {int(wrist_angle)} (Code: {wrist_code})', tuple(np.multiply(wrist, [image.shape[1], image.shape[0]]).astype(int)),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
-
-
-
-#**OBTENER PUNTUACION GLOBAL DEL GRUPO A**
 def calcular_puntuacion_global_A(trunk_code, neck_code, knee_code):
     """
     Calcula la puntuación global del Grupo A utilizando la matriz de calificación REBA.
     """
-    # Matriz de calificación REBA
+    # Matriz de calificación REBA para el Grupo A (2 dimensiones: espalda, cuello y piernas)
     matriz_calificacion_a = [
         [1, 2, 3, 4, 1, 2, 3, 4, 3, 3, 5, 6],
         [2, 3, 4, 5, 3, 4, 5, 6, 4, 5, 6, 7],
@@ -297,23 +202,26 @@ def calcular_puntuacion_global_A(trunk_code, neck_code, knee_code):
     neck_index = neck_code - 1
     knee_index = knee_code - 1
 
-    # Obtenemos el valor en la intersección de la matriz
+    # Obtenemos el valor en la intersección de la matriz usando los 3 índices
     puntuacion_grupo_A = matriz_calificacion_a[trunk_index][neck_index + knee_index]
-    
+
     return puntuacion_grupo_A
 
-#**OBTENER PUNTUACION GLOBAL DEL GRUPO B**
+
+#*OBTENER PUNTUACION GLOBAL DEL GRUPO B*
 def calcular_puntuacion_global_grupo_B(arm_code, forearm_code, wrist_code):
     """
     Calcula la puntuación global del Grupo B utilizando la matriz de calificación para brazo,
     antebrazo y muñeca.
     """
-    # Matriz de calificación REBA para el Grupo B (debe ajustarse según las especificaciones)
+    # Matriz de calificación REBA para el Grupo B (2 dimensiones: brazo, antebrazo y muñeca)
     matriz_calificacion_b = [
-        [1, 2, 3, 4],
-        [2, 3, 4, 5],
-        [3, 4, 5, 6],
-        [4, 5, 6, 7],
+    [1, 2, 2, 1, 2, 3],
+    [1, 2, 3, 2, 3, 4],
+    [3, 4, 5, 4, 5, 5],
+    [4, 5, 5, 5, 6, 7],
+    [6, 7, 8, 7, 8, 8],
+    [7, 8, 8, 8, 9, 9]
     ]
 
     # Convertimos los códigos de postura en índices válidos (restando 1 porque las matrices empiezan desde 1)
@@ -321,10 +229,11 @@ def calcular_puntuacion_global_grupo_B(arm_code, forearm_code, wrist_code):
     forearm_index = forearm_code - 1
     wrist_index = wrist_code - 1
 
-    # Sumar los valores de las matrices para obtener la puntuación global
+    # Obtenemos el valor en la intersección de la matriz utilizando los índices correspondientes
     puntuacion_grupo_B = matriz_calificacion_b[arm_index][forearm_index + wrist_index]
 
     return puntuacion_grupo_B
+
 
 def calcular_puntuacion_final(puntuacion_grupo_A, puntuacion_grupo_B):
     """
@@ -353,7 +262,9 @@ def calcular_puntuacion_final(puntuacion_grupo_A, puntuacion_grupo_B):
 
     # Obtenemos la puntuación final en la intersección de la matriz
     puntuacion_final = matriz_calificacion_c[puntuacion_a_index][puntuacion_b_index]
+
     return puntuacion_final
+
 
 def determinar_nivel_riesgo(puntuacion_final):
     """
@@ -371,4 +282,3 @@ def determinar_nivel_riesgo(puntuacion_final):
         return {"Nivel": "Muy alto", "Riesgo": 4, "Actuación": "Es necesaria la actuación de inmediato."}
     else:
         return {"Nivel": "Desconocido", "Riesgo": -1, "Actuación": "No se puede determinar el riesgo."}
-

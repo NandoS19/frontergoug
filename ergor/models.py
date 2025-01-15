@@ -80,10 +80,13 @@ class RebaScore(db.Model):
     arm_score = db.Column(db.Integer, db.CheckConstraint('arm_score >= 0'), nullable=False)
     forearm_score = db.Column(db.Integer, db.CheckConstraint('forearm_score >= 0'), nullable=False)
     wrist_score = db.Column(db.Integer, db.CheckConstraint('wrist_score >= 0'), nullable=False)
+    group_a_score = db.Column(db.Integer, db.CheckConstraint('group_a_score >= 0'), nullable=False)
+    group_b_score = db.Column(db.Integer, db.CheckConstraint('group_b_score >= 0'), nullable=False)
+    total_score = db.Column(db.Integer, db.CheckConstraint('total_score >= 0'), nullable=False)
     evaluation_date = db.Column(db.DateTime, default=func.now())
     level_id = db.Column(db.Integer, db.ForeignKey('risk_levels.level_id'), nullable=True)
     
-    def __init__(self, user_id, trunk_score, neck_score, leg_score, arm_score, forearm_score, wrist_score):
+    def __init__(self, user_id, trunk_score, neck_score, leg_score, arm_score, forearm_score, wrist_score, group_a_score, group_b_score, total_score):
         self.user_id = user_id
         self.trunk_score = trunk_score
         self.neck_score = neck_score
@@ -91,9 +94,13 @@ class RebaScore(db.Model):
         self.arm_score = arm_score
         self.forearm_score = forearm_score
         self.wrist_score = wrist_score
+        self.group_a_score = group_a_score
+        self.group_b_score = group_b_score
+        self.total_score = total_score
     
     def __repr__(self):
         return f'<RebaScore {self.score_id}>'
+
 
 # Tabla de puntajes ROSA
 class RosaScore(db.Model):

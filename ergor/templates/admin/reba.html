@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Resultados de la Evaluación REBA</h1>
+<p>Usuario: {{ user.username }}</p>
+
+<h2>Grupo A - Posturas de espalda, cuello y piernas</h2>
+<ul>
+    <li><strong>Código de postura de tronco:</strong> {{ group_a_codes.trunk_score }}</li>
+    <li><strong>Código de postura de cuello:</strong> {{ group_a_codes.neck_score }}</li>
+    <li><strong>Código de postura de piernas:</strong> {{ group_a_codes.leg_score }}</li>
+</ul>
+<p><strong>Puntaje del Grupo A:</strong> {{ puntuacion_grupo_A }}</p>
+
+<h2>Grupo B - Posturas de brazos, antebrazos y muñeca</h2>
+<ul>
+    <li><strong>Código de postura de brazos:</strong> {{ group_b_codes.arm_score }}</li>
+    <li><strong>Código de postura de antebrazo:</strong> {{ group_b_codes.forearm_score }}</li>
+    <li><strong>Código de postura de muñeca:</strong> {{ group_b_codes.wrist_score }}</li>
+</ul>
+<p><strong>Puntaje del Grupo B:</strong> {{ puntuacion_grupo_B }}</p>
+
+<h2>Puntaje Total</h2>
+<p><strong>Puntaje Total:</strong> {{ puntuacion_final }}</p>
+<p><strong>Nivel de Riesgo:</strong> {{ risk_level }}</p>
+
+
+<div class="text-center mt-4">
+    <a href="{{ url_for('evaluate.reba_plan', id=user.user_id) }}" class="btn btn-primary">Generar Plan de Mejora</a>
+    <a href="{{ url_for('auth.upload', id=user.user_id) }}" class="btn btn-secondary">Volver a subir otro video</a>
+</div>
+{% endblock %}

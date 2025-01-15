@@ -9,6 +9,7 @@ genai.configure(api_key="AIzaSyAo46Co2yniw1aQDFWbcZsfsVipbv0v_zM")  # API de Goo
 llama = LlamaAPI("LA-05ca3abe055d4847aebd6b034374da2ff5a07974966e418e9d7f72b18635c32b")  # Llama API
 #llave de api openai falta aqui, por motivo de seguridad de Githup no dejo subir 
 
+
 def generate_plan(user_id, method):
     """
     Genera un plan de mejora y diagnóstico usando tres APIs (Google Generative AI, Llama API, OpenAI).
@@ -78,7 +79,7 @@ def generate_plan(user_id, method):
             f"- Grupo A: {reba_score.group_a_score}\n"
             f"- Grupo B: {reba_score.group_b_score}\n"
             f"- Puntaje total: {reba_score.total_score}\n\n"
-            f"Con base en estos resultados, genera un diagnóstico y un plan de mejora ergonómico detallado."
+            f"Con base en estos resultados, genera un diagnóstico y un plan de mejora ergonómico detallado para estibadores."
         )
     else:
         return {"error": "Método no soportado"}
@@ -97,7 +98,7 @@ def generate_plan(user_id, method):
     # Llama API
     try:
         llama_request = {
-            "model": "llama3.1-70b",
+            "model": "llama3.1-405b",
             "messages": [{"role": "user", "content": prompt}]
         }
         llama_response = llama.run(llama_request)

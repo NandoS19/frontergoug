@@ -22,6 +22,7 @@ def results(id):
     return render_template('admin/results.html', user=user)
 
 @bp.route('/rosa/<int:id>', methods=['GET'])
+@login_required
 def rosa(id):
     # Lógica para procesar el video con el método ROSA
     
@@ -69,6 +70,7 @@ def rosa(id):
         return redirect(url_for('auth.upload', id=user.user_id))
 # Ruta para generar el plan de mejora del método ROSA
 @bp.route('/rosa/<int:id>/plan', methods=['GET'])
+@login_required
 def rosa_plan(id):
     result = generate_plan(user_id=id, method="ROSA")
     if "error" in result:
@@ -78,12 +80,120 @@ def rosa_plan(id):
     return render_template('admin/plan.html', user_id=id, method="ROSA", plan=result["diagnostic_plan"])
 
 @bp.route('/reba/<int:id>', methods=['GET'])
+@login_required
 def reba(id):
-    # Lógica para procesar el video con el método REBA
-    return f'Lógica para procesar el video con el método REBA'
-    #return render_template('evaluate/reba.html', id=id)
+    user = User.query.get_or_404(id)
+    
+    if not user.video_path:
+        flash('El usuario no tiene un video subido.')
+        return redirect(url_for('auth.upload', id=user.user_id))
+    
+    filepath = os.path.join('ergor', 'static', user.video_path)
+    
+    # Importar las funciones necesarias para procesar el video
+    from ergor.process_videoREBA import process_video
+    from ergor.process_videoREBA import calcular_puntuacion_global_A
+    from ergor.process_videoREBA import calcular_puntuacion_global_grupo_B
+    from ergor.process_videoREBA import calcular_puntuacion_final
+
+    try:
+        # Procesamos el video y obtenemos los datos de los códigos posturales más altos
+        print("Procesando video:", filepath)
+        highest_postural_codes = process_video(filepath)
+        print("Códigos posturales obtenidos:", highest_postural_codes)
+
+        # Validar que todos los valores sean válidos
+        if not highest_postural_codes or any(value is None for value in highest_postural_codes.values()):
+            raise ValueError("Códigos posturales no válidos o incompletos.")
+        
+        # Renombrar claves para coincidir con las columnas de la tabla
+        formatted_codes = {
+            "trunk_score": highest_postural_codes["espalda"],
+            "neck_score": highest_postural_codes["cuello"],
+            "leg_score": highest_postural_codes["piernas"],
+            "arm_score": highest_postural_codes["brazos"],
+            "forearm_score": highest_postural_codes["antebrazos"],
+            "wrist_score": highest_postural_codes["muñeca"]
+        }
+        print("Códigos formateados:", formatted_codes)
+        
+        # Calcular las puntuaciones globales del Grupo A y Grupo B
+        puntuacion_grupo_A = calcular_puntuacion_global_A(
+            formatted_codes["trunk_score"], 
+            formatted_codes["neck_score"], 
+            formatted_codes["leg_score"]
+        )
+        
+        puntuacion_grupo_B = calcular_puntuacion_global_grupo_B(
+            formatted_codes["arm_score"], 
+            formatted_codes["forearm_score"], 
+            formatted_codes["wrist_score"]
+        )
+        
+        puntuacion_final = calcular_puntuacion_final(puntuacion_grupo_A, puntuacion_grupo_B)
+        
+        # Determinar el nivel de riesgo basado en la puntuación final
+        if puntuacion_final <= 3:
+            risk_level = "Bajo"
+        elif puntuacion_final <= 6:
+            risk_level = "Moderado"
+        else:
+            risk_level = "Alto"
+        
+        # Guardamos los códigos posturales y las puntuaciones en la base de datos
+        from ergor.models import RebaScore
+        reba_score = RebaScore(
+            user_id=user.user_id,
+            trunk_score=formatted_codes["trunk_score"],
+            neck_score=formatted_codes["neck_score"],
+            leg_score=formatted_codes["leg_score"],
+            arm_score=formatted_codes["arm_score"],
+            forearm_score=formatted_codes["forearm_score"],
+            wrist_score=formatted_codes["wrist_score"],
+            group_a_score=puntuacion_grupo_A,
+            group_b_score=puntuacion_grupo_B,
+            total_score=puntuacion_final
+        )
+        db.session.add(reba_score)
+        db.session.commit()
+        
+        # Mensaje de éxito
+        flash("Evaluación REBA completada con éxito.")
+        
+        # Renderizar la página de resultados
+        return render_template('admin/reba.html', 
+                                user=user, 
+                                group_a_codes=formatted_codes,
+                                group_b_codes=formatted_codes,
+                                puntuacion_grupo_A=puntuacion_grupo_A,
+                                puntuacion_grupo_B=puntuacion_grupo_B,
+                                puntuacion_final=puntuacion_final,
+                                risk_level=risk_level)
+
+    except Exception as e:
+        # Capturamos cualquier excepción y mostramos un mensaje de error
+        flash(f'Ocurrió un error al procesar el video: {str(e)}')
+        print(f"Error procesando video: {str(e)}")
+        
+        # Redirigir a la página de carga de video
+        return redirect(url_for('auth.upload', id=user.user_id))
+
+@bp.route('/reba/<int:id>/plan', methods=['GET'])
+@login_required
+def reba_plan(id):
+    # Genera el plan usando el método REBA
+    result = generate_plan(user_id=id, method="REBA")
+    
+    # Verifica si hubo un error en la generación del plan
+    if "error" in result:
+        flash(result["error"])
+        return redirect(url_for('evaluate.reba', id=id))  # Redirige a la página de evaluación REBA
+
+    # Renderiza el plan en la plantilla correspondiente
+    return render_template('admin/plan.html', user_id=id, method="REBA", plan=result["diagnostic_plan"])
 
 @bp.route('/owas/<int:id>', methods=['GET'])
+@login_required
 def owas(id):
     # Lógica para procesar el video con el método OWAS
  
@@ -129,6 +239,7 @@ def owas(id):
         return redirect(url_for('auth.upload', id=user.user_id))
 # Ruta para generar el plan de mejora del método OWAS
 @bp.route('/owas/<int:id>/plan', methods=['GET'])
+@login_required
 def owas_plan(id):
     result = generate_plan(user_id=id, method="OWAS")
     if "error" in result:
@@ -138,6 +249,7 @@ def owas_plan(id):
     return render_template('admin/plan.html', user_id=id, method="OWAS", plan=result["diagnostic_plan"])
 
 @bp.route('/niosh/<int:id>', methods=['GET'])
+@login_required
 def niosh(id):
     from ergor.process_videoNIOSH import process_video
     from ergor.niosh_evaluation import evaluate_niosh
@@ -159,8 +271,8 @@ def niosh(id):
 
     try:
         # Calcular RWL y LI
-        load_weight = 10  # Ejemplo: peso de la carga (kg)
-        frequency = 15  # Ejemplo: frecuencia de levantamiento
+        load_weight = 35  #peso de la carga (kg) en sacos de semento predetermindado
+        frequency = 2  #frecuencia de levantamiento 
         scores = evaluate_niosh(
             load_weight,
             factors["horizontal_distance"],
@@ -193,6 +305,7 @@ def niosh(id):
         return redirect(url_for('auth.upload', id=user.user_id))
 # Ruta para generar el plan de mejora del método NIOSH
 @bp.route('/niosh/<int:id>/plan', methods=['GET'])
+@login_required
 def niosh_plan(id):
     result = generate_plan(user_id=id, method="NIOSH")
     if "error" in result:
