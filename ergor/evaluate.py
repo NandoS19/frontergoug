@@ -271,7 +271,7 @@ def niosh(id):
 
     try:
         # Calcular RWL y LI
-        load_weight = 35  #peso de la carga (kg) en sacos de semento predetermindado
+        load_weight = 50  #peso de la carga (kg) en sacos de semento predetermindado
         frequency = 2  #frecuencia de levantamiento 
         scores = evaluate_niosh(
             load_weight,
