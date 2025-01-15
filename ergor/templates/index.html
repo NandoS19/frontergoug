@@ -1,91 +1,112 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <!-- Sección de bienvenida -->
-    <section class="container mt-5" {{ value }}>
-        <div class="row align-items-center">
-            <div class="col-md-6 py-5" style="margin-top: 50px;">
-                <h1 class="display-4 fst-italic text-primary">{% block title %} Bienvenido a ERGO-UG {% endblock %}</h1>
-                <p class="lead text-muted">Aquí podrás evaluar distintos metodos ergonomicos para mejorar tu calidad de vida.
-                    Nuestra plataforma es fácil de usar y te permite poner a prueba la precision de las inteligencias artificiales
-                    generativas para evaluar riesgos ergonomicos.
-                </p>
-                <p>
-                    Para empezar, simplemente haz clic en el botón "Evaluar" y comienza el proceso paso a paso. Puedes
-                    incluir videos para que nuestra aplicacion web, puede realizar un analisis en conjunto a las inteligencias
-                    artificiales generativas, obtener un diagnostico y plan de mejora, ademas de poder valorar los resultados
-                    obtenidos.</p>
-                <p>
-                    ¡Únete a nuestra comunidad hoy y comienza a disfrutar de los beneficios de ERGO-UG!
-                </p>
-                {% if g.user %}
-                    <a href="{{ url_for('auth.upload', id=g.user.user_id) }}" class="btn btn-primary btn-lg mt-3 shadow-sm" style="border-radius: 30px;">
-                        Evaluar
-                    </a>
-                {% else %}
-                <p class="text-warning mt-3" style="font-size: 1.5rem; font-weight: bold; color: #FF5733; text-align: center;">
-                    ¡Por favor, inicia sesión para comenzar a evaluar!
-                </p>
-                        <a href="{{ url_for('auth.login') }}" class="btn btn-secondary btn-lg mt-3 shadow-sm" style="border-radius: 30px; padding: 15px 40px; font-size: 1.25rem;">
-                    Iniciar Sesión
-                </a>
-                {% endif %}
+<!-- Sección de bienvenida -->
+<section class="container mt-5" {{ value }}>
+    <div class="row align-items-center">
+        <div class="col-md-6 py-5" style="margin-top: 50px;">
+            <h1 class="display-4 fst-italic text-primary">
+                {% block title %}Bienvenido a ERGO-UG{% endblock %}
+            </h1>
+            <p class="lead text-muted">
+                Aquí podrás evaluar distintos métodos ergonómicos para mejorar tu calidad de vida. Nuestra plataforma es
+                fácil de usar y te permite poner a prueba la precisión de las inteligencias artificiales generativas para
+                evaluar riesgos ergonómicos.
+            </p>
+            <p>
+                Para empezar, simplemente haz clic en el botón "Evaluar" y comienza el proceso paso a paso. Puedes incluir
+                videos para que nuestra aplicación web realice un análisis en conjunto con inteligencias artificiales
+                generativas, obtener un diagnóstico y un plan de mejora, además de valorar los resultados obtenidos.
+            </p>
+            <p>¡Únete a nuestra comunidad hoy y comienza a disfrutar de los beneficios de ERGO-UG!</p>
+            {% if g.user %}
+            <a href="{{ url_for('auth.upload', id=g.user.user_id) }}" class="btn btn-primary btn-lg mt-3 shadow-sm" style="border-radius: 30px;">
+                Evaluar
+            </a>
+            {% else %}
+            <p class="text-warning mt-3" style="font-size: 1.5rem; font-weight: bold; color: #FF5733; text-align: center;">
+                ¡Por favor, inicia sesión para comenzar a evaluar!
+            </p>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-secondary btn-lg mt-3 shadow-sm" style="border-radius: 30px; padding: 15px 40px; font-size: 1.25rem;">
+                Iniciar Sesión
+            </a>
+            {% endif %}
+        </div>
+        <div class="col-md-5" style="margin-top: 50px; margin-left: 30px;">
+            <img src="{{ url_for('static', filename='img/ergoug.jpg') }}" alt="Imagen de bienvenida" class="img-fluid"
+                style="width: 100%; height: auto; object-fit: cover; border-radius: 15px;">
+        </div>
+    </div>
+</section>
 
-            </div>
-            <div class="col-md-5" style="margin-top: 50px; margin-left: 30px;">
-                <img src="{{ url_for('static', filename='img/ergoug.jpg') }}" alt="Imagen de bienvenida" class="img-fluid" style="width: 100%; height: auto; object-fit: cover; border-radius: 15px;">
+<!-- Sección de métodos de evaluación -->
+<section class="container mt-5">
+    <h2 class="text-center text-primary mb-4">Nuestros Métodos de Evaluación</h2>
+    <div class="row">
+        <!-- Método OWAS -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h3 class="card-title text-primary">Método OWAS</h3>
+                    <p class="card-text">
+                        El Método OWAS analiza posturas de trabajo para identificar riesgos ergonómicos y clasifica las
+                        acciones necesarias para su corrección.
+                    </p>
+                </div>
+                <img src="{{ url_for('static', filename='img/owasmetodo.jpg') }}" alt="Método OWAS" class="card-img-bottom"
+                    style="border-bottom-left-radius: 0.75rem; border-bottom-right-radius: 0.75rem;">
             </div>
         </div>
-    </section>
-
-    <!-- <div class="text-center">
-        <div class="py-5">
-            <h2 class="display-4 fst-italic">¿Buscas algo en particular?</h2>
-            <div class="col-lg-6 mx-auto">
-                <p class="fs-5 mb-4">Utiliza nuestro buscador para encontrar blogs específicos o temas que te interesen.
-                    Simplemente ingresa una
-                    palabra clave o frase y haz clic en "buscar". ¡Te sorprenderá lo fácil que es encontrar el contenido
-                    que
-                    buscas!
-                </p>
-
-                <div class="col container">
-                    <form class="d-flex" method="post">
-                        <input class="form-control me-2" type="search" name="search" placeholder="Buscar" aria-label="Search">
-                        <button type="submit" class="btn btn-primary btn-lg">Buscar</button>
-                    </form>
+        
+        <!-- Método ROSA -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h3 class="card-title text-primary">Método ROSA</h3>
+                    <p class="card-text">
+                        Diseñado para evaluar estaciones de trabajo en oficinas, el Método ROSA es ideal para identificar
+                        mejoras en el mobiliario y la postura.
+                    </p>
                 </div>
+                <img src="{{ url_for('static', filename='img/rosametodo.png') }}" alt="Método ROSA" class="card-img-bottom"
+                    style="border-bottom-left-radius: 0.75rem; border-bottom-right-radius: 0.75rem;">
             </div>
         </div>
     </div>
 
-    <main class="container py-5">
-        <div class="row">
-            {% for post in posts | reverse %} 
-            <div class="col-md-6">
-                <div
-                    class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-                    <div class="col p-4 d-flex flex-column position-static">
-                        <h3 class="mb-0">{{ post.title }}</h3>
-                        <p class="card-text mb-auto">{{ post.info }}</p>
-                        <a href="{{ url_for('home.blog', url = post.url) }}" class="stretched-link">Leer más</a>
-                        <p class="card-text mt-3">
-                            {% if get_user(post.author).photo is none %}
-                            <img src="{{ url_for('static', filename = 'img/user-dark.png') }}" alt="mdo" width="30" class="rounded-circle">
-                            {% else %}
-                            <img src="{{ url_for('static', filename = get_user(post.author).photo) }}" alt="mdo" width="30" class="rounded-circle">
-                            {% endif %}
-                            <span class="mb-1 text-muted">
-                                <b>
-                                    {{get_user(post.author).username}} 
-                                </b>
-                                - {{ post.created.strftime('%d de %B %Y') }}
-                            </span>
-                        </p>
-                    </div>
+    <!-- Separador con borde grueso -->
+    <div class="col-12 mb-4" style="border-top: 4px solid #007bff; margin-top: 30px; margin-bottom: 30px;"></div>
+
+    <div class="row">
+        <!-- Método NIOSH -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h3 class="card-title text-primary">Método NIOSH</h3>
+                    <p class="card-text">
+                        Evalúa la carga máxima recomendada para manipulación manual y ayuda a prevenir lesiones por
+                        sobreesfuerzo físico.
+                    </p>
                 </div>
+                <img src="{{ url_for('static', filename='img/nioshmetodo.jpeg') }}" alt="Método NIOSH" class="card-img-bottom"
+                    style="border-bottom-left-radius: 0.75rem; border-bottom-right-radius: 0.75rem;">
             </div>
-            {% endfor %}
         </div>
-    </main> -->
+
+        <!-- Método REBA -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h3 class="card-title text-primary">Método REBA</h3>
+                    <p class="card-text">
+                        El Método REBA evalúa posturas en actividades dinámicas y ayuda a reducir riesgos ergonómicos en
+                        trabajos físicos intensos.
+                    </p>
+                </div>
+                <img src="{{ url_for('static', filename='img/rebametodo.jpg') }}" alt="Método REBA" class="card-img-bottom"
+                    style="border-bottom-left-radius: 0.75rem; border-bottom-right-radius: 0.75rem;">
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}
