@@ -164,17 +164,21 @@ class NioshScore(db.Model):
     vertical_distance = db.Column(db.Numeric(5, 2), db.CheckConstraint('vertical_distance > 0'), nullable=False)
     asymmetry_angle = db.Column(db.Numeric(5, 2), db.CheckConstraint('asymmetry_angle >= 0'), nullable=False)
     frequency = db.Column(db.Integer, db.CheckConstraint('frequency > 0'), nullable=False)
+    displacement_distance = db.Column(db.Numeric(5, 2), db.CheckConstraint('displacement_distance > 0'), nullable=False)
+    grip_quality = db.Column(db.String(10), nullable=False)  # "bueno", "regular", "malo"
     rwl = db.Column(db.Numeric(5, 2), db.CheckConstraint('rwl > 0'), nullable=False)
     evaluation_date = db.Column(db.DateTime, default=func.now())
     level_id = db.Column(db.Integer, db.ForeignKey('risk_levels.level_id'), nullable=True)
     
-    def __init__(self, user_id, load_weight, horizontal_distance, vertical_distance, asymmetry_angle, frequency, rwl):
+    def __init__(self, user_id, load_weight, horizontal_distance, vertical_distance, asymmetry_angle, frequency, displacement_distance, grip_quality, rwl):
         self.user_id = user_id
         self.load_weight = load_weight
         self.horizontal_distance = horizontal_distance
         self.vertical_distance = vertical_distance
         self.asymmetry_angle = asymmetry_angle
         self.frequency = frequency
+        self.displacement_distance = displacement_distance
+        self.grip_quality = grip_quality
         self.rwl = rwl
     
     def __repr__(self):
