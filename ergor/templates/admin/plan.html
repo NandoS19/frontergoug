@@ -1,15 +1,12 @@
 {% extends 'base.html' %}
-
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 {% endblock %}
-
 {% block content %}
 <div class="container mt-5">
     <h1 class="display-4 text-center">Plan de Mejora y Diagnóstico</h1>
     <p class="text-center text-muted">Método: <strong>{{ method }}</strong></p>
     <p class="text-center text-muted">Usuario ID: <strong>{{ user_id }}</strong></p>
-
     <!-- Resultados de cada API -->
     <div class="card mt-4 shadow">
         <div class="card-body">
@@ -17,77 +14,99 @@
             <pre id="plan-google" class="bg-light p-3 border rounded">{{ plan.google }}</pre>
         </div>
     </div>
-
     <div class="card mt-4 shadow">
         <div class="card-body">
             <h3 class="card-title">Resultado - Método 2 </h3>
             <pre id="plan-llama" class="bg-light p-3 border rounded">{{ plan.llama }}</pre>
         </div>
     </div>
-
     <div class="card mt-4 shadow">
-        <div class="card-body"> 
+        <div class="card-body">
             <h3 class="card-title">Resultado - Método 3 </h3>
             <pre id="plan-openai" class="bg-light p-3 border rounded">{{ plan.openai }}</pre>
         </div>
     </div>
-
     <!-- Botones de acción -->
     <div class="text-center mt-4">
         <button id="download-pdf" class="btn btn-primary">Descargar como PDF</button>
         <a href="{{ url_for('evaluate.evaluate_page') }}" class="btn btn-secondary">Volver</a>
     </div>
 </div>
-
 <!-- Incluir la biblioteca jsPDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-
 <script>
-    document.getElementById("download-pdf").addEventListener("click", function () {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-    
-        // Título general
-        doc.setFontSize(16);
-        doc.text("Plan de Mejora y Diagnóstico", 10, 10);
-    
-        // Detalles generales
+document.getElementById("download-pdf").addEventListener("click", function () {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Título general
+    doc.setFontSize(16);
+    doc.text("Plan de Mejora y Diagnóstico", 10, 10);
+
+    // Detalles generales
+    doc.setFontSize(12);
+    doc.text(`Método: {{ method }}`, 10, 20);
+    doc.text(`Usuario ID: {{ user_id }}`, 10, 30);
+
+    // Contenido de cada resultado
+    const googleContent = document.getElementById("plan-google").textContent;
+    const llamaContent = document.getElementById("plan-llama").textContent;
+    const openaiContent = document.getElementById("plan-openai").textContent;
+
+    // Función para agregar contenido con salto de página si es necesario
+    function addContentWithPageBreak(doc, title, text, yOffset) {
         doc.setFontSize(12);
-        doc.text(`Método: {{ method }}`, 10, 20);
-        doc.text(`Usuario ID: {{ user_id }}`, 10, 30);
-    
-        // Contenido de cada resultado
-        const googleContent = document.getElementById("plan-google").textContent;
-        const llamaContent = document.getElementById("plan-llama").textContent;
-        const openaiContent = document.getElementById("plan-openai").textContent;
-    
-        // Espaciado para cada resultado
-        let yOffset = 40;
-    
-        // Resultado - Método 1 (Google Generative AI)
-        doc.setFontSize(12);
-        doc.text("Resultado - Método 1 (Google Generative AI):", 10, yOffset);
-        yOffset += 10;  // Espaciado para el contenido
-        doc.text(googleContent, 10, yOffset);
-        yOffset += (googleContent.split('\n').length * 8) + 10;  // Ajusta el espacio según el número de líneas
-    
-        // Resultado - Método 2 (Llama API)
-        doc.setFontSize(12);
-        doc.text("Resultado - Método 2 (Llama API):", 10, yOffset);
-        yOffset += 10;  // Espaciado para el contenido
-        doc.text(llamaContent, 10, yOffset);
-        yOffset += (llamaContent.split('\n').length * 8) + 10;  // Ajusta el espacio según el número de líneas
-    
-        // Resultado - Método 3 (OpenAI)
-        doc.setFontSize(12);
-        doc.text("Resultado - Método 3 (OpenAI):", 10, yOffset);
-        yOffset += 10;  // Espaciado para el contenido
-        doc.text(openaiContent, 10, yOffset);
-        yOffset += (openaiContent.split('\n').length * 8) + 10;  // Ajusta el espacio según el número de líneas
-    
-        // Descargar el archivo PDF
-        doc.save("plan_de_mejora.pdf");
-    });
-    
+        doc.text(title, 10, yOffset);
+        yOffset += 10;
+
+        const lines = doc.splitTextToSize(text, 180); // Ajusta el ancho del texto
+        lines.forEach((line, index) => {
+            if (yOffset > 280) { // Si se alcanza el final de la página
+                doc.addPage();
+                yOffset = 10; // Reiniciar el yOffset para la nueva página
+            }
+            // Verificar si la línea contiene texto en negrita
+            if (line.includes("**")) {
+                const parts = line.split("**");
+                let xOffset = 10;
+                parts.forEach((part, i) => {
+                    if (i % 2 === 1) {
+                        doc.setFont("helvetica", "bold");
+                    } else {
+                        doc.setFont("helvetica", "normal");
+                    }
+                    doc.text(part, xOffset, yOffset);
+                    xOffset += doc.getTextWidth(part);
+                });
+            } else {
+                doc.text(line, 10, yOffset);
+            }
+            yOffset += 10; // Ajusta el espacio entre líneas
+        });
+        return yOffset;
+    }
+
+    let yOffset = 40;
+
+    // Resultado - Método 1 (Google Generative AI)
+    yOffset = addContentWithPageBreak(doc, "Resultado - Método 1:", googleContent, yOffset);
+
+    // Añadir una nueva página para el siguiente método
+    doc.addPage();
+    yOffset = 10;
+
+    // Resultado - Método 2 (Llama API)
+    yOffset = addContentWithPageBreak(doc, "Resultado - Método 2:", llamaContent, yOffset);
+
+    // Añadir una nueva página para el siguiente método
+    doc.addPage();
+    yOffset = 10;
+
+    // Resultado - Método 3 (OpenAI)
+    yOffset = addContentWithPageBreak(doc, "Resultado - Método 3:", openaiContent, yOffset);
+
+    // Descargar el archivo PDF
+    doc.save("plan_de_mejora.pdf");
+});
 </script>
 {% endblock %}

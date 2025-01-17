@@ -271,17 +271,21 @@ def niosh(id):
 
     try:
         # Calcular RWL y LI
-        load_weight = 50  #peso de la carga (kg) en sacos de semento predetermindado
-        frequency = 2  #frecuencia de levantamiento 
+        load_weight = 50  # Peso de la carga (kg)
+        frequency = 2     # Frecuencia de levantamiento
+
+        # Calcular RWL y LI
         scores = evaluate_niosh(
             load_weight,
             factors["horizontal_distance"],
             factors["vertical_distance"],
             factors["asymmetry_angle"],
-            frequency
+            frequency,
+            factors["displacement_distance"],
+            factors["grip_quality"]  # Derivado automáticamente por process_video
         )
 
-        # Guardar en la base de datos
+        # Guardar los resultados en la base de datos
         niosh_score = NioshScore(
             user_id=user.user_id,
             load_weight=load_weight,
@@ -289,17 +293,21 @@ def niosh(id):
             vertical_distance=factors["vertical_distance"],
             asymmetry_angle=factors["asymmetry_angle"],
             frequency=frequency,
+            displacement_distance=factors["displacement_distance"],
+            grip_quality=factors["grip_quality"],  # Incluyendo el valor derivado
             rwl=scores["RWL"]
         )
         db.session.add(niosh_score)
         db.session.commit()
 
+        # Mostrar los resultados en la plantilla
         flash("Evaluación NIOSH completada con éxito")
         return render_template(
             'admin/niosh.html',
             user=user,
             scores=scores
         )
+
     except Exception as e:
         flash(f"Error al calcular los puntajes NIOSH: {str(e)}")
         return redirect(url_for('auth.upload', id=user.user_id))

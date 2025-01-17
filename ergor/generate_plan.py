@@ -51,6 +51,8 @@ def generate_plan(user_id, method):
             f"- Distancia vertical: {niosh_score.vertical_distance} m\n"
             f"- Ángulo de asimetría: {niosh_score.asymmetry_angle} grados\n"
             f"- Frecuencia: {niosh_score.frequency} levantamientos/minuto\n"
+            f"- Desplazamiento vertical: {niosh_score.displacement_distance} m\n"
+            f"- Calidad del agarre: {niosh_score.grip_quality}\n"
             f"- RWL: {niosh_score.rwl} kg\n\n"
             f"Con base en estos resultados, genera un diagnóstico y un plan de mejora ergonómico detallado."
         )
