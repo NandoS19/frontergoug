@@ -46,40 +46,48 @@
     document.getElementById("download-pdf").addEventListener("click", function () {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-
+    
         // Título general
         doc.setFontSize(16);
         doc.text("Plan de Mejora y Diagnóstico", 10, 10);
-
+    
         // Detalles generales
         doc.setFontSize(12);
         doc.text(`Método: {{ method }}`, 10, 20);
         doc.text(`Usuario ID: {{ user_id }}`, 10, 30);
-
+    
         // Contenido de cada resultado
         const googleContent = document.getElementById("plan-google").textContent;
         const llamaContent = document.getElementById("plan-llama").textContent;
         const openaiContent = document.getElementById("plan-openai").textContent;
-
+    
         // Espaciado para cada resultado
         let yOffset = 40;
-
+    
+        // Resultado - Método 1 (Google Generative AI)
+        doc.setFontSize(12);
         doc.text("Resultado - Método 1 (Google Generative AI):", 10, yOffset);
-        yOffset += 10;
+        yOffset += 10;  // Espaciado para el contenido
         doc.text(googleContent, 10, yOffset);
-
-        yOffset += 50; // Espacio entre resultados
+        yOffset += (googleContent.split('\n').length * 8) + 10;  // Ajusta el espacio según el número de líneas
+    
+        // Resultado - Método 2 (Llama API)
+        doc.setFontSize(12);
         doc.text("Resultado - Método 2 (Llama API):", 10, yOffset);
-        yOffset += 10;
+        yOffset += 10;  // Espaciado para el contenido
         doc.text(llamaContent, 10, yOffset);
-
-        yOffset += 50; // Espacio entre resultados
+        yOffset += (llamaContent.split('\n').length * 8) + 10;  // Ajusta el espacio según el número de líneas
+    
+        // Resultado - Método 3 (OpenAI)
+        doc.setFontSize(12);
         doc.text("Resultado - Método 3 (OpenAI):", 10, yOffset);
-        yOffset += 10;
+        yOffset += 10;  // Espaciado para el contenido
         doc.text(openaiContent, 10, yOffset);
-
+        yOffset += (openaiContent.split('\n').length * 8) + 10;  // Ajusta el espacio según el número de líneas
+    
         // Descargar el archivo PDF
         doc.save("plan_de_mejora.pdf");
     });
+    
 </script>
 {% endblock %}
