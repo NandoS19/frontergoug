@@ -42,71 +42,92 @@
 <!-- Sección de métodos de evaluación -->
 <section class="container mt-5">
     <h2 class="text-center text-primary mb-4">Nuestros Métodos de Evaluación</h2>
-    <div class="row">
-        <!-- Método OWAS -->
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h3 class="card-title text-primary">Método OWAS</h3>
-                    <p class="card-text">
-                        El Método OWAS analiza posturas de trabajo para identificar riesgos ergonómicos y clasifica las
-                        acciones necesarias para su corrección.
-                    </p>
-                </div>
-                <img src="{{ url_for('static', filename='img/owasmetodo.jpg') }}" alt="Método OWAS" class="card-img-bottom"
-                    style="border-bottom-left-radius: 0.75rem; border-bottom-right-radius: 0.75rem;">
-            </div>
-        </div>
-        
-        <!-- Método ROSA -->
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h3 class="card-title text-primary">Método ROSA</h3>
-                    <p class="card-text">
-                        Diseñado para evaluar estaciones de trabajo en oficinas, el Método ROSA es ideal para identificar
-                        mejoras en el mobiliario y la postura.
-                    </p>
-                </div>
-                <img src="{{ url_for('static', filename='img/rosametodo.png') }}" alt="Método ROSA" class="card-img-bottom"
-                    style="border-bottom-left-radius: 0.75rem; border-bottom-right-radius: 0.75rem;">
-            </div>
-        </div>
-    </div>
-
-    <!-- Separador con borde grueso -->
-    <div class="col-12 mb-4" style="border-top: 4px solid #007bff; margin-top: 30px; margin-bottom: 30px;"></div>
-
-    <div class="row">
-        <!-- Método NIOSH -->
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h3 class="card-title text-primary">Método NIOSH</h3>
-                    <p class="card-text">
-                        Evalúa la carga máxima recomendada para manipulación manual y ayuda a prevenir lesiones por
-                        sobreesfuerzo físico.
-                    </p>
-                </div>
-                <img src="{{ url_for('static', filename='img/nioshmetodo.jpeg') }}" alt="Método NIOSH" class="card-img-bottom"
-                    style="border-bottom-left-radius: 0.75rem; border-bottom-right-radius: 0.75rem;">
-            </div>
+    <div id="metodosCarousel" class="carousel slide" data-bs-ride="carousel">
+        <!-- Indicadores del carrusel -->
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#metodosCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#metodosCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#metodosCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            <button type="button" data-bs-target="#metodosCarousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
         </div>
 
-        <!-- Método REBA -->
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h3 class="card-title text-primary">Método REBA</h3>
-                    <p class="card-text">
-                        El Método REBA evalúa posturas en actividades dinámicas y ayuda a reducir riesgos ergonómicos en
-                        trabajos físicos intensos.
-                    </p>
+        <!-- Contenedor de diapositivas -->
+        <div class="carousel-inner">
+            <!-- Método OWAS -->
+            <div class="carousel-item active">
+                <div class="d-flex justify-content-center align-items-center">
+                    <img src="{{ url_for('static', filename='img/owasmetodo.jpg') }}" alt="Método OWAS" class="img-fluid me-4" style="width: 300px; height: auto; border-radius: 10px;">
+                    <div>
+                        <h3 class="text-primary">Método OWAS</h3>
+                        <p>
+                            El Método OWAS es una herramienta ergonómica diseñada para evaluar posturas de trabajo. Analiza 
+                            diferentes posiciones del cuerpo (espalda, brazos, piernas) y la carga física soportada, asignando 
+                            niveles de riesgo que ayudan a priorizar acciones correctivas. Es ideal para trabajos que implican 
+                            esfuerzo físico repetitivo o mantenido, mejorando tanto la productividad como la salud del trabajador.
+                        </p>
+                    </div>
                 </div>
-                <img src="{{ url_for('static', filename='img/rebametodo.jpg') }}" alt="Método REBA" class="card-img-bottom"
-                    style="border-bottom-left-radius: 0.75rem; border-bottom-right-radius: 0.75rem;">
+            </div>
+
+            <!-- Método ROSA -->
+            <div class="carousel-item">
+                <div class="d-flex justify-content-center align-items-center">
+                    <img src="{{ url_for('static', filename='img/rosametodo.png') }}" alt="Método ROSA" class="img-fluid me-4" style="width: 300px; height: auto; border-radius: 10px;">
+                    <div>
+                        <h3 class="text-primary">Método ROSA</h3>
+                        <p>
+                            El Método ROSA (Rapid Office Strain Assessment) se utiliza para evaluar estaciones de trabajo en 
+                            oficinas, como escritorios y sillas. Examina factores como la posición del monitor, la altura del 
+                            asiento y los accesorios de soporte, proporcionando recomendaciones para reducir molestias y riesgos 
+                            ergonómicos en entornos laborales sedentarios.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Método NIOSH -->
+            <div class="carousel-item">
+                <div class="d-flex justify-content-center align-items-center">
+                    <img src="{{ url_for('static', filename='img/nioshmetodo.jpeg') }}" alt="Método NIOSH" class="img-fluid me-4" style="width: 300px; height: auto; border-radius: 10px;">
+                    <div>
+                        <h3 class="text-primary">Método NIOSH</h3>
+                        <p>
+                            El Método NIOSH calcula el peso máximo recomendado que una persona puede levantar de manera segura. 
+                            Este modelo matemático considera variables como la frecuencia del levantamiento, la distancia de carga 
+                            y el giro del torso. Es una herramienta esencial para prevenir lesiones por sobreesfuerzo físico en 
+                            actividades de manipulación manual.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Método REBA -->
+            <div class="carousel-item">
+                <div class="d-flex justify-content-center align-items-center">
+                    <img src="{{ url_for('static', filename='img/rebametodo.jpg') }}" alt="Método REBA" class="img-fluid me-4" style="width: 300px; height: auto; border-radius: 10px;">
+                    <div>
+                        <h3 class="text-primary">Método REBA</h3>
+                        <p>
+                            El Método REBA (Rapid Entire Body Assessment) es ideal para evaluar posturas corporales durante 
+                            actividades dinámicas. Analiza segmentos del cuerpo como el tronco, los brazos y las piernas, junto 
+                            con las cargas físicas y el tiempo de exposición. Este método es ampliamente utilizado en sectores 
+                            industriales para identificar riesgos ergonómicos y diseñar estrategias de intervención.
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
+
+        <!-- Controles del carrusel -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#metodosCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Anterior</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#metodosCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Siguiente</span>
+        </button>
     </div>
 </section>
+
 {% endblock %}
