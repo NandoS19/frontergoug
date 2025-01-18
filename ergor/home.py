@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request
-from .models import User, RiskLevel, RebaScore, RosaScore, OwasScore, NioshScore, ImprovementPlan
+from .models import User, RiskLevel, RebaScore, RosaScore, OwasScore, NioshScore
 
 bp = Blueprint('home', __name__)
 

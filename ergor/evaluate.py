@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash,g, session, jsonify
 from .auth import login_required
 from ergor import db
-from ergor.models import User, RosaScore, OwasScore, NioshScore, RebaScore
+from ergor.models import User, RosaScore, OwasScore, NioshScore, RebaScore, Employe
 import os
 
 # Importar la función para generar planes de mejora
@@ -15,24 +15,30 @@ def evaluate_page():
     
     return f'Pagina de evaluacion'
 
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 @bp.route('/results/<int:id>', methods=['GET'])
 @login_required
 def results(id):
     user = User.query.get_or_404(id)
     return render_template('admin/results.html', user=user)
 
-@bp.route('/rosa/<int:id>', methods=['GET'])
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+@bp.route('/rosa/<int:user_id>/<int:employee_id>', methods=['GET'])
 @login_required
-def rosa(id):
+def rosa(user_id,employee_id):
     # Lógica para procesar el video con el método ROSA
     
-    user = User.query.get_or_404(id)
+    user = User.query.get_or_404(user_id)
+    employe = Employe.query.get_or_404(employee_id)
     
-    if not user.video_path:
-        flash('El usuario no tiene un video subido')
+    if not employe.video_path:
+        flash('El empleado no tiene un video subido')
         return redirect(url_for('auth.upload', id = user.user_id))
     
-    filepath = os.path.join('ergor', 'static', user.video_path)
+    filepath = os.path.join('ergor', 'static', employe.video_path)
+    print (f"El archivo es: {filepath}")
     #flash (f"El archivo es: {filepath}")
     
     # Importar los módulos para procesamiento y evaluación
@@ -42,9 +48,11 @@ def rosa(id):
     # Procesar el video para calcular ángulos
     try:
         angles = process_video(filepath)
+        print (f"Los ángulos calculados son: {angles}")
         #flash(f"Ángulos calculados: {angles}")
     except Exception as e:
         flash(f"Error al procesar el video: {str(e)}")
+        print (f"Error al procesar el video: {str(e)}")
         return redirect(url_for('auth.upload', id=user.user_id))
 
     # Calcular puntajes ROSA
@@ -53,7 +61,7 @@ def rosa(id):
 
         # Guardar los resultados en la base de datos
         rosa_score = RosaScore(
-            user_id=user.user_id,
+            employe_id=employe.employe_id,
             chair_score=scores["chair_score"],
             monitor_score=scores["monitor_score"],
             phone_score=scores["phone_score"],
@@ -63,21 +71,29 @@ def rosa(id):
         db.session.add(rosa_score)
         db.session.commit()
 
-        flash("Evaluación ROSA completada con éxito")
-        return render_template('admin/rosa.html', user=user, scores=scores)
+        #flash("Evaluación ROSA completada con éxito")
+        print (f"Evaluación ROSA completada con éxito")
+        print (f"Los puntajes ROSA son: {scores}")
+        return render_template('admin/rosa.html', user=user, employe=employe, scores=scores)
     except Exception as e:
         flash(f"Error al calcular los puntajes ROSA: {str(e)}")
-        return redirect(url_for('auth.upload', id=user.user_id))
+        print (f"Error al calcular los puntajes ROSA: {str(e)}")
+        return redirect(url_for('auth.upload',  id=user.user_id))
+    
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 # Ruta para generar el plan de mejora del método ROSA
-@bp.route('/rosa/<int:id>/plan', methods=['GET'])
+@bp.route('/rosa/<int:user_id>/<int:employee_id>/plan', methods=['GET'])
 @login_required
-def rosa_plan(id):
-    result = generate_plan(user_id=id, method="ROSA")
+def rosa_plan(user_id, employee_id):
+    result = generate_plan(user_id=user_id, employee_id=employee_id, method="ROSA")
     if "error" in result:
         flash(result["error"])
         return redirect(url_for('evaluate.rosa', id=id))
 
-    return render_template('admin/plan.html', user_id=id, method="ROSA", plan=result["diagnostic_plan"])
+    return render_template('admin/plan.html',user_id=user_id, employee_id=employee_id, method="ROSA", plan=result["diagnostic_plan"])
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @bp.route('/reba/<int:id>', methods=['GET'])
 @login_required
@@ -178,6 +194,8 @@ def reba(id):
         # Redirigir a la página de carga de video
         return redirect(url_for('auth.upload', id=user.user_id))
 
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 @bp.route('/reba/<int:id>/plan', methods=['GET'])
 @login_required
 def reba_plan(id):
@@ -191,6 +209,8 @@ def reba_plan(id):
 
     # Renderiza el plan en la plantilla correspondiente
     return render_template('admin/plan.html', user_id=id, method="REBA", plan=result["diagnostic_plan"])
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @bp.route('/owas/<int:id>', methods=['GET'])
 @login_required
@@ -237,6 +257,9 @@ def owas(id):
     except Exception as e:
         flash(f"Error al calcular los puntajes OWAS: {str(e)}")
         return redirect(url_for('auth.upload', id=user.user_id))
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 # Ruta para generar el plan de mejora del método OWAS
 @bp.route('/owas/<int:id>/plan', methods=['GET'])
 @login_required
@@ -247,6 +270,8 @@ def owas_plan(id):
         return redirect(url_for('evaluate.owas', id=id))
 
     return render_template('admin/plan.html', user_id=id, method="OWAS", plan=result["diagnostic_plan"])
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @bp.route('/niosh/<int:id>', methods=['GET'])
 @login_required
@@ -311,6 +336,9 @@ def niosh(id):
     except Exception as e:
         flash(f"Error al calcular los puntajes NIOSH: {str(e)}")
         return redirect(url_for('auth.upload', id=user.user_id))
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 # Ruta para generar el plan de mejora del método NIOSH
 @bp.route('/niosh/<int:id>/plan', methods=['GET'])
 @login_required

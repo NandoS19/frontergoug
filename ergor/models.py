@@ -37,11 +37,11 @@ class Employe(db.Model):
     work = db.Column(db.String(50), nullable=False)
     time_company = db.Column(db.String(10), nullable=False)
     job_title = db.Column(db.String(20), nullable=False)
-    age = db.Column(db.Integer, db.CheckConstraint('age >= 0'), nullable=True)
-    height = db.Column(db.Numeric(5, 2), db.CheckConstraint('height > 0'), nullable=True)
-    weight = db.Column(db.Numeric(5, 2), db.CheckConstraint('weight > 0'), nullable=True)
-    gender = db.Column(db.String(20), db.CheckConstraint("gender IN ('Masculino', 'Femenino', 'Otro')"), nullable=True)
-    hours = db.Column(db.Integer, db.CheckConstraint('hours >= 0'), nullable=True)
+    age = db.Column(db.Integer, nullable=False)
+    height = db.Column(db.Numeric(5, 2), nullable=False)
+    weight = db.Column(db.Numeric(5, 2), nullable=False)
+    gender = db.Column(db.String(20), nullable=False)
+    hours = db.Column(db.Integer, nullable=False)
     video_path = db.Column(db.String(100))
     evaluation_date = db.Column(db.DateTime, default=func.now())  # Campo opcional recomendado
 

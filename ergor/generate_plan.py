@@ -1,7 +1,7 @@
 import google.generativeai as genai
 from llamaapi import LlamaAPI
 import openai
-from ergor.models import User, RosaScore, NioshScore, OwasScore, RebaScore
+from ergor.models import User, RosaScore, NioshScore, OwasScore, RebaScore, Employe
 from ergor import db
 
 # Configurar las APIs
@@ -10,26 +10,41 @@ llama = LlamaAPI("LA-05ca3abe055d4847aebd6b034374da2ff5a07974966e418e9d7f72b1863
 #llave de api openai falta aqui, por motivo de seguridad de Githup no dejo subir 
 
 
-def generate_plan(user_id, method):
+def generate_plan(user_id, employee_id, method):
     """
     Genera un plan de mejora y diagnóstico usando tres APIs (Google Generative AI, Llama API, OpenAI).
     :param user_id: ID del usuario.
+    :param employee_id: ID del empleado.
     :param method: Método de evaluación (ROSA, NIOSH, OWAS, REBA).
     :return: Diccionario con el diagnóstico y plan de mejora de cada API.
     """
     user = User.query.get(user_id)
     if not user:
         return {"error": "Usuario no encontrado"}
+    
+    employee = Employe.query.get(employee_id)
+    if not employee:
+        return {"error": "Empleado no encontrado"}
 
     # Crear el prompt basado en el método
     prompt = ""
     if method == "ROSA":
-        rosa_score = RosaScore.query.filter_by(user_id=user_id).order_by(RosaScore.evaluation_date.desc()).first()
+        rosa_score = RosaScore.query.filter_by(employee_id=employee_id).order_by(RosaScore.evaluation_date.desc()).first()
         if not rosa_score:
             return {"error": "No se encontraron resultados para el método ROSA"}
 
         prompt = (
-            f"Usuario: {user.username}\n"
+            f"Nombre de Empleado: {employee.name}\n"
+            f"Apellido de Empleado: {employee.last_name}\n"
+            f"Sector de Trabajo: {employee.work}\n"
+            f"Trabaja desde: {employee.time_company}\n"
+            f"Puesto de Trabajo: {employee.job_title}\n"
+            f"Edad: {employee.age} años\n"
+            f"Altura: {employee.height} m\n"
+            f"Peso: {employee.weight} kg\n"
+            f"Género: {employee.gender}\n"
+            f"Horas de Trabajo: {employee.hours} horas\n\n"
+            
             f"Puntajes ROSA:\n"
             f"- Puntaje de silla: {rosa_score.chair_score}\n"
             f"- Puntaje de monitor: {rosa_score.monitor_score}\n"

@@ -140,102 +140,97 @@ def upload(id):
     user = User.query.get_or_404(id)
     
     if request.method == 'POST':
-       name = request.form.get('name')
-       last_name = request.form.get('last_name') 
-       work = request.form.get('work')
-       time_company = request.form.get('time_company')
-       job_title = request.form.get('job_title')
-       age = request.form.get('age')
-       height = request.form.get('height')
-       weight = request.form.get('weight')
-       gender = request.form.get('gender')
-       hours = request.form.get('hours')
-       
-       error = None
-       
-       # Validaciones de campos requeridos
-       if not name or not last_name or not work or not job_title or not time_company or not age or not height or not weight or not gender or not hours:
-           error = 'Todos los campos son obligatorios'
-           flash(error)
-           return redirect(url_for('auth.upload', id=user.user_id))
-       
-       # Validaciones de formato
-       if not re.match("^[a-zA-Z]+$", name):
-           error = 'El nombre solo puede contener caracteres alfabéticos'
-       elif not re.match("^[a-zA-Z]+$", last_name):
-           error = 'El apellido solo puede contener caracteres alfabéticos'
-       elif not re.match("^[a-zA-Z0-9]+$", work):
-           error = 'El campo de trabajo solo puede contener caracteres alfanuméricos'
-    #    elif not re.match("^[a-zA-Z0-9]+$", time_company):
-    #        error = 'El campo de tiempo en la empresa solo puede contener caracteres alfanuméricos'
-    #    elif not re.match("^[a-zA-Z0-9]+$", job_title):
-    #        error = 'El campo de cargo de trabajo solo puede contener caracteres alfanuméricos'
-    #    elif not age.isdigit() or int(age) <= 0:
-    #        error = 'La edad debe ser un número positivo'
-    #    elif not height.isdigit() or int(height) <= 0:
-    #        error = 'La altura debe ser un número positivo'
-    #    elif not weight.isdigit() or int(weight) <= 0:
-    #        error = 'El peso debe ser un número positivo'
-    #    elif not hours.isdigit() or int(hours) <= 0:
-    #        error = 'Las horas deben ser un número positivo'
-       
-       if error:
-           flash(error)
-           return redirect(url_for('auth.upload', id=user.user_id))
-       
-       employee = Employe(name, last_name, work, time_company, job_title, age, height, weight, gender, hours, user_id=user.user_id)
-       db.session.add(employee)
-       
-       if 'uploadVideo' not in request.files:
-           
-           error = 'No se ha seleccionado un archivo'
-           flash(error)
-           
-       else:
-            # Obtener el archivo del formulario
-            video_path = request.files['uploadVideo']
-            
-            # Obtener el valor del combo box
-            metodo = request.form.get('metodo')
-            
-            if video_path.filename == '':
-                error = 'No se ha seleccionado un archivo'
-                flash(error)
-            
-            if video_path and allowed_file(video_path.filename):
-                
-                # Guardar el archivo en la carpeta definida
-                filename = secure_filename(video_path.filename)
-                filepath = os.path.join('ergor', 'static', 'uploads', filename)
-                video_path.save(filepath)
+        
+        # Obtener los datos del formulario
+        form_data = request.form
+        required_fields = ['name', 'last_name', 'work', 'time_company', 'job_title', 
+                           'age', 'height', 'weight', 'gender', 'hours']
+        error = None
 
-                # Guardar la ruta del archivo en la base de datos
-                # user.video_path = os.path.join('uploads', filename)
-                employee.video_path = os.path.join('uploads', filename)
+        # Validar campos obligatorios
+        for field in required_fields:
+            if not form_data.get(field):
+                error = f"El campo {field} es obligatorio"
+                break
+       
+       
+      # Validar formato de campos específicos
+        if error is None:
+            if not re.match("^[a-zA-Z]+$", form_data['name']):
+                error = 'El nombre solo puede contener letras'
+            elif not re.match("^[a-zA-Z]+$", form_data['last_name']):
+                error = 'El apellido solo puede contener letras'
 
-                if error is None:
-                    db.session.commit()
-                    flash('Video subido con éxito')
-                    # Redirigir a la función correspondiente según el método de evaluación
-                    if metodo == 'ROSA':
-                        # return redirect(url_for('evaluate.rosa', id=user.user_id))
-                        return redirect(url_for('evaluate.rosa', id=employee.employe_id))
-                    elif metodo == 'REBA':
-                        # return redirect(url_for('evaluate.reba', id=user.user_id))
-                        return redirect(url_for('evaluate.reba', id=employee.employe_id))
-                    elif metodo == 'OWAS':
-                        # return redirect(url_for('evaluate.owas', id=user.user_id))
-                        return redirect(url_for('evaluate.owas', id=employee.employe_id))
-                    elif metodo == 'NIOSH':
-                        # return redirect(url_for('evaluate.niosh', id=user.user_id))
-                        return redirect(url_for('evaluate.niosh', id=employee.employe_id))
-                    else:
-                        flash('Método de evaluación no válido')
-                else:
-                    flash(error)
-            else:
-                error = 'Formato de archivo no permitido'
-                flash(error)
+        if error:
+            flash(error)
+            return redirect(url_for('auth.upload', id=user.user_id))
+
+        # Crear empleado
+        employee = Employe(
+            name=form_data['name'],
+            last_name=form_data['last_name'],
+            work=form_data['work'],
+            time_company=form_data['time_company'],
+            job_title=form_data['job_title'],
+            age=int(form_data['age']),
+            height=float(form_data['height']),
+            weight=float(form_data['weight']),
+            gender=form_data['gender'],
+            hours=int(form_data['hours']),
+            user_id=user.user_id
+        )
+        db.session.add(employee)
+       
+        if 'uploadVideo' not in request.files:
+
+            error = 'No se ha seleccionado un archivo'
+            flash(error)
+
+        else:
+             # Obtener el archivo del formulario
+             video_path = request.files['uploadVideo']
+
+             # Obtener el valor del combo box
+             metodo = request.form.get('metodo')
+
+             if video_path.filename == '':
+                 error = 'No se ha seleccionado un archivo'
+                 flash(error)
+
+             if video_path and allowed_file(video_path.filename):
+
+                 # Guardar el archivo en la carpeta definida
+                 filename = secure_filename(video_path.filename)
+                 filepath = os.path.join('ergor', 'static', 'uploads', filename)
+                 video_path.save(filepath)
+
+                 # Guardar la ruta del archivo en la base de datos
+                 # user.video_path = os.path.join('uploads', filename)
+                 employee.video_path = os.path.join('uploads', filename)
+
+                 if error is None:
+                     db.session.commit()
+                     flash('Video subido con éxito')
+                     # Redirigir a la función correspondiente según el método de evaluación
+                     if metodo == 'ROSA':
+                         # return redirect(url_for('evaluate.rosa', user_id=user.user_id))
+                         return redirect(url_for('evaluate.rosa', user_id=user.user_id, employee_id=employee.employe_id))
+                     elif metodo == 'REBA':
+                         # return redirect(url_for('evaluate.reba', id=user.user_id))
+                         return redirect(url_for('evaluate.reba', user_id=user.user_id, employee_id=employee.employe_id))
+                     elif metodo == 'OWAS':
+                         # return redirect(url_for('evaluate.owas', id=user.user_id))
+                         return redirect(url_for('evaluate.owas', user_id=user.user_id, employee_id=employee.employe_id))
+                     elif metodo == 'NIOSH':
+                         # return redirect(url_for('evaluate.niosh', id=user.user_id))
+                         return redirect(url_for('evaluate.niosh', user_id=user.user_id, employee_id=employee.employe_id))
+                     else:
+                         flash('Método de evaluación no válido')
+                 else:
+                     flash(error)
+             else:
+                 error = 'Formato de archivo no permitido'
+                 flash(error)
     
     return render_template('admin/uploadvideo.html', user=user)
 
