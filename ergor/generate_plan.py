@@ -29,7 +29,7 @@ def generate_plan(user_id, employee_id, method):
     # Crear el prompt basado en el método
     prompt = ""
     if method == "ROSA":
-        rosa_score = RosaScore.query.filter_by(employee_id=employee_id).order_by(RosaScore.evaluation_date.desc()).first()
+        rosa_score = RosaScore.query.filter_by(employe_id=employee_id).order_by(RosaScore.evaluation_date.desc()).first()
         if not rosa_score:
             return {"error": "No se encontraron resultados para el método ROSA"}
 
@@ -37,7 +37,7 @@ def generate_plan(user_id, employee_id, method):
             f"Nombre de Empleado: {employee.name}\n"
             f"Apellido de Empleado: {employee.last_name}\n"
             f"Sector de Trabajo: {employee.work}\n"
-            f"Trabaja desde: {employee.time_company}\n"
+            f"Trabaja hace: {employee.time_company}\n"
             f"Puesto de Trabajo: {employee.job_title}\n"
             f"Edad: {employee.age} años\n"
             f"Altura: {employee.height} m\n"
