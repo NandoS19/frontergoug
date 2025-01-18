@@ -103,6 +103,62 @@ class RosaScore(db.Model):
     def __repr__(self):
         return f'<RosaScore {self.score_id}>'
 
+# Tabla de puntajes OWAS
+class OwasScore(db.Model):
+    __tablename__ = 'owas_scores'
+
+    score_id = db.Column(db.Integer, primary_key=True)
+    employe_id = db.Column(db.Integer, db.ForeignKey('employe.employe_id'), nullable=False)  # Relación con Employe
+    back_score = db.Column(db.Integer, db.CheckConstraint('back_score >= 0'), nullable=False)  # Puntaje de la espalda
+    arms_score = db.Column(db.Integer, db.CheckConstraint('arms_score >= 0'), nullable=False)  # Puntaje de los brazos
+    legs_score = db.Column(db.Integer, db.CheckConstraint('legs_score >= 0'), nullable=False)  # Puntaje de las piernas
+    total_score = db.Column(db.Numeric(5, 2), db.CheckConstraint('total_score >= 0'), nullable=False)
+    evaluation_date = db.Column(db.DateTime, default=datetime.utcnow)
+    level_id = db.Column(db.Integer, db.ForeignKey('risk_levels.level_id'), nullable=True)  # Nivel de riesgo asociado
+
+    def __init__(self, employe_id, back_score, arms_score, legs_score, total_score, level_id=None):
+        self.employe_id = employe_id
+        self.back_score = back_score
+        self.arms_score = arms_score
+        self.legs_score = legs_score
+        self.total_score = total_score
+        self.level_id = level_id
+
+    def __repr__(self):
+        return f'<OwasScore {self.score_id}>'
+
+# Tabla de puntajes NIOSH
+class NioshScore(db.Model):
+    __tablename__ = 'niosh_scores'
+    
+    score_id = db.Column(db.Integer, primary_key=True)
+    employe_id = db.Column(db.Integer, db.ForeignKey('employe.employe_id'), nullable=False)  # Relación con Employe
+    load_weight = db.Column(db.Numeric(5, 2), db.CheckConstraint('load_weight > 0'), nullable=False)
+    horizontal_distance = db.Column(db.Numeric(5, 2), db.CheckConstraint('horizontal_distance > 0'), nullable=False)
+    vertical_distance = db.Column(db.Numeric(5, 2), db.CheckConstraint('vertical_distance > 0'), nullable=False)
+    asymmetry_angle = db.Column(db.Numeric(5, 2), db.CheckConstraint('asymmetry_angle >= 0'), nullable=False)
+    frequency = db.Column(db.Integer, db.CheckConstraint('frequency > 0'), nullable=False)
+    displacement_distance = db.Column(db.Numeric(5, 2), db.CheckConstraint('displacement_distance >= 0'), nullable=False)
+    grip_quality = db.Column(db.String(10), nullable=False)  # "bueno", "regular", "malo"
+    rwl = db.Column(db.Numeric(5, 2), db.CheckConstraint('rwl > 0'), nullable=False)
+    evaluation_date = db.Column(db.DateTime, default=func.now())
+    level_id = db.Column(db.Integer, db.ForeignKey('risk_levels.level_id'), nullable=True)  # Nivel de riesgo asociado
+    
+    def __init__(self, employe_id, load_weight, horizontal_distance, vertical_distance, asymmetry_angle, frequency, displacement_distance, grip_quality, rwl, level_id=None):
+        self.employe_id = employe_id
+        self.load_weight = load_weight
+        self.horizontal_distance = horizontal_distance
+        self.vertical_distance = vertical_distance
+        self.asymmetry_angle = asymmetry_angle
+        self.frequency = frequency
+        self.displacement_distance = displacement_distance
+        self.grip_quality = grip_quality
+        self.rwl = rwl
+        self.level_id = level_id
+    
+    def __repr__(self):
+        return f'<NioshScore {self.score_id}>'
+
 # Tabla de planes de mejora
 class GeneratePlan(db.Model):
     __tablename__ = 'generate_plan'
