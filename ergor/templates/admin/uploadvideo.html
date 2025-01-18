@@ -15,6 +15,56 @@
             <form action="{{ url_for('auth.upload', id=g.user.user_id) }}" method="post" enctype="multipart/form-data"
                 class="p-4 border rounded shadow-sm bg-light">
 
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="name" name="name" required
+                        placeholder="Nombre de Empleado">
+                    <label for="name">Nombre de Empleado</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="last_name" name="last_name" required
+                        placeholder="Apellido de Empleado">
+                    <label for="last_name">Apellido del Empleado</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="work" name="work" required placeholder="Trabajo">
+                    <label for="work">Trabajo</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="time_company" name="time_company" required
+                        placeholder="Tiempo en la empresa">
+                    <label for="time_company">Tiempo en la empresa</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="job_title" class="form-control" id="job_title" name="job_title" required
+                        placeholder="Job_Title">
+                    <label for="job_title">Cargo de trabajo</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="age" class="form-control" id="age" name="age" required placeholder="Age">
+                    <label for="age">Edad</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="height" class="form-control" id="height" name="height" required placeholder="Height">
+                    <label for="height">Altura (metros)</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="weight" class="form-control" id="weight" name="weight" required replaceholder="Weight">
+                    <label for="weight">Peso (kg)</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <select class="form-select" id="gender" name="gender" required replaceholder="Gender">
+                        <option value="" disabled selected>Selecciona tu género</option>
+                        <option value="male">Masculino</option>
+                        <option value="female">Femenino</option>
+                        <option value="other">Otro</option>
+                    </select>
+                    <label for="gender">Género</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="hours" class="form-control" id="hours" name="hours" required replaceholder="Hours">
+                    <label for="hours">Horas de trabajo</label>
+                </div>
+
                 <!-- Botón para subir video -->
                 <div class="form-group mb-4">
                     <label for="uploadVideo" class="form-label fw-bold">Cargar Video:</label>
@@ -22,56 +72,47 @@
                         required>
                     <small class="form-text text-muted">El video debe estar en formato MP4 o similar.</small>
                 </div>
-                <!DOCTYPE html>
+                <div class="container mt-5">
+                    <div class="row justify-content-center">
+                        <div class="col-md-6">
 
-                <body>
-                    <div class="container mt-5">
-                        <div class="row justify-content-center">
-                            <div class="col-md-6">
-                                
-                                <!--<p class="text-center">Previsualización del Video</p>-->
-                                <!-- Previsualización del Video -->
-                                <!--<div class="mb-4">
-                                    <video id="videoPreview" controls class="w-100" style="display: none;">
-                                    </video>
-                                </div>-->
-                                
-                                <!-- Combo box para seleccionar el método -->
-                                <div class="form-group mb-4">
-                                    <label for="metodo" class="form-label fw-bold">Seleccionar Método:</label>
-                                    <select class="form-control" id="metodo" name="metodo">
-                                        <option value="ROSA">ROSA</option>
-                                        <option value="NIOSH">NIOSH</option>
-                                        <option value="REBA">REBA</option>
-                                        <option value="OWAS">OWAS</option>
-                                    </select>
-                                </div>
-                                <!-- Previsualización del Video -->
-                                <div class="mb-4">
-                                    <video id="videoPreview" controls style="width: 120%; height: auto; display: none;"></video>
-                                </div>
-                                
-                                <!-- Botón para procesar el video -->
-                                <div class="d-grid">
-                                    <button type="submit" class="btn btn-success btn-lg">Evaluar Video</button>
-                                </div>
+                            <!-- Combo box para seleccionar el método -->
+                            <div class="form-group mb-4">
+                                <label for="metodo" class="form-label fw-bold">Seleccionar Método:</label>
+                                <select class="form-control" id="metodo" name="metodo">
+                                    <option value="ROSA">ROSA</option>
+                                    <option value="NIOSH">NIOSH</option>
+                                    <option value="REBA">REBA</option>
+                                    <option value="OWAS">OWAS</option>
+                                </select>
+                            </div>
+                            <!-- Previsualización del Video -->
+                            <div class="mb-4">
+                                <video id="videoPreview" controls
+                                    style="width: 120%; height: auto; display: none;"></video>
+                            </div>
+
+                            <!-- Botón para procesar el video -->
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-success btn-lg">Evaluar Video</button>
                             </div>
                         </div>
                     </div>
+                </div>
             </form>
-                    <script>
-                        document.getElementById('uploadVideo').addEventListener('change', function (event) {
-                            const videoPreview = document.getElementById('videoPreview');
-                            const file = event.target.files[0];
+            <script>
+                document.getElementById('uploadVideo').addEventListener('change', function (event) {
+                    const videoPreview = document.getElementById('videoPreview');
+                    const file = event.target.files[0];
 
-                            if (file) {
-                                const fileURL = URL.createObjectURL(file);
-                                videoPreview.src = fileURL;
-                                videoPreview.style.display = 'block';
-                            } else {
-                                videoPreview.style.display = 'none';
-                            }
-                        });
-                    </script>
+                    if (file) {
+                        const fileURL = URL.createObjectURL(file);
+                        videoPreview.src = fileURL;
+                        videoPreview.style.display = 'block';
+                    } else {
+                        videoPreview.style.display = 'none';
+                    }
+                });
+            </script>
 
-                    {% endblock %}
+            {% endblock %}
