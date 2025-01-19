@@ -1,8 +1,5 @@
 {% extends 'base.html' %}
 
-{% block head %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-{% endblock %}
 
 {% block content %}
 <div class="container mt-5"> 
@@ -36,7 +33,7 @@
     </div>
 
     <div class="text-center mt-4">
-        <a href="{{ url_for('evaluate.reba_plan', id=user.user_id) }}" class="btn btn-primary">Generar Plan de Mejora</a>
+        <a href="{{ url_for('evaluate.reba_plan', user_id=user.user_id, employee_id=employe.employe_id) }}" class="btn btn-primary">Generar Plan de Mejora</a>
         <a href="{{ url_for('auth.upload', id=user.user_id) }}" class="btn btn-secondary">Volver a subir otro video</a>
     </div>
 </div>

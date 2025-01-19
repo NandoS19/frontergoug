@@ -95,17 +95,20 @@ def rosa_plan(user_id, employee_id):
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-@bp.route('/reba/<int:id>', methods=['GET'])
+@bp.route('/reba/<int:user_id>/<int:employee_id>', methods=['GET'])
 @login_required
-def reba(id):
-    user = User.query.get_or_404(id)
+def reba(user_id,employee_id):
+
+    user = User.query.get_or_404(user_id)
+    employe = Employe.query.get_or_404(employee_id)
     
-    if not user.video_path:
+    if not employe.video_path:
         flash('El usuario no tiene un video subido.')
         return redirect(url_for('auth.upload', id=user.user_id))
     
-    filepath = os.path.join('ergor', 'static', user.video_path)
-    
+    filepath = os.path.join('ergor', 'static', employe.video_path)
+    print (f"El archivo es: {filepath}")
+
     # Importar las funciones necesarias para procesar el video
     from ergor.process_videoREBA import process_video
     from ergor.process_videoREBA import calcular_puntuacion_global_A
@@ -159,7 +162,7 @@ def reba(id):
         # Guardamos los códigos posturales y las puntuaciones en la base de datos
         from ergor.models import RebaScore
         reba_score = RebaScore(
-            user_id=user.user_id,
+            employe_id=employe.employe_id,
             trunk_score=formatted_codes["trunk_score"],
             neck_score=formatted_codes["neck_score"],
             leg_score=formatted_codes["leg_score"],
@@ -178,7 +181,8 @@ def reba(id):
         
         # Renderizar la página de resultados
         return render_template('admin/reba.html', 
-                                user=user, 
+                                user=user,
+                                employe=employe, 
                                 group_a_codes=formatted_codes,
                                 group_b_codes=formatted_codes,
                                 puntuacion_grupo_A=puntuacion_grupo_A,
@@ -196,11 +200,11 @@ def reba(id):
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-@bp.route('/reba/<int:id>/plan', methods=['GET'])
+@bp.route('/reba/<int:user_id>/<int:employee_id>/plan', methods=['GET'])
 @login_required
-def reba_plan(id):
+def reba_plan(user_id, employee_id):
     # Genera el plan usando el método REBA
-    result = generate_plan(user_id=id, method="REBA")
+    result = generate_plan(user_id=user_id, employee_id=employee_id, method="REBA")
     
     # Verifica si hubo un error en la generación del plan
     if "error" in result:
@@ -208,7 +212,7 @@ def reba_plan(id):
         return redirect(url_for('evaluate.reba', id=id))  # Redirige a la página de evaluación REBA
 
     # Renderiza el plan en la plantilla correspondiente
-    return render_template('admin/plan.html', user_id=id, method="REBA", plan=result["diagnostic_plan"])
+    return render_template('admin/plan.html', user_id=user_id, employee_id=employee_id, method="REBA", plan=result["diagnostic_plan"])
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -273,19 +277,21 @@ def owas_plan(id):
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-@bp.route('/niosh/<int:id>', methods=['GET'])
+@bp.route('/niosh/<int:user_id>/<int:employee_id>', methods=['GET'])
 @login_required
-def niosh(id):
+def niosh(user_id,employee_id):
+
+    user = User.query.get_or_404(user_id)
+    employe = Employe.query.get_or_404(employee_id)
+
     from ergor.process_videoNIOSH import process_video
     from ergor.niosh_evaluation import evaluate_niosh
 
-    user = User.query.get_or_404(id)
-
-    if not user.video_path:
-        flash('El usuario no tiene un video subido')
+    if not employe.video_path:
+        flash('El usuario no tiene un video subido.')
         return redirect(url_for('auth.upload', id=user.user_id))
-
-    filepath = os.path.join('ergor', 'static', user.video_path)
+    
+    filepath = os.path.join('ergor', 'static', employe.video_path)
 
     try:
         # Procesar el video para calcular factores
@@ -312,7 +318,7 @@ def niosh(id):
 
         # Guardar los resultados en la base de datos
         niosh_score = NioshScore(
-            user_id=user.user_id,
+            employe_id=employe.employe_id,
             load_weight=load_weight,
             horizontal_distance=factors["horizontal_distance"],
             vertical_distance=factors["vertical_distance"],
@@ -330,6 +336,7 @@ def niosh(id):
         return render_template(
             'admin/niosh.html',
             user=user,
+            employe=employe,
             scores=scores
         )
 
@@ -340,12 +347,12 @@ def niosh(id):
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Ruta para generar el plan de mejora del método NIOSH
-@bp.route('/niosh/<int:id>/plan', methods=['GET'])
+@bp.route('/niosh/<int:user_id>/<int:employee_id>/plan', methods=['GET'])
 @login_required
-def niosh_plan(id):
-    result = generate_plan(user_id=id, method="NIOSH")
+def niosh_plan(user_id, employee_id):
+    result = generate_plan(user_id=user_id, employee_id=employee_id, method="NIOSH")
     if "error" in result:
         flash(result["error"])
         return redirect(url_for('evaluate.niosh', id=id))
 
-    return render_template('admin/plan.html', user_id=id, method="NIOSH", plan=result["diagnostic_plan"])
+    return render_template('admin/plan.html', user_id=user_id, employee_id=employee_id, method="NIOSH", plan=result["diagnostic_plan"])

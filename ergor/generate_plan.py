@@ -53,12 +53,24 @@ def generate_plan(user_id, employee_id, method):
             f"- Puntaje total: {rosa_score.total_score}\n\n"
             f"Con base en estos resultados, genera un diagnóstico y un plan de mejora ergonómico detallado."
         )
+    
     elif method == "NIOSH":
-        niosh_score = NioshScore.query.filter_by(user_id=user_id).order_by(NioshScore.evaluation_date.desc()).first()
+        niosh_score = NioshScore.query.filter_by(employe_id=employee_id).order_by(NioshScore.evaluation_date.desc()).first()
         if not niosh_score:
             return {"error": "No se encontraron resultados para el método NIOSH"}
 
         prompt = (
+            f"Nombre de Empleado: {employee.name}\n"
+            f"Apellido de Empleado: {employee.last_name}\n"
+            f"Sector de Trabajo: {employee.work}\n"
+            f"Trabaja hace: {employee.time_company}\n"
+            f"Puesto de Trabajo: {employee.job_title}\n"
+            f"Edad: {employee.age} años\n"
+            f"Altura: {employee.height} m\n"
+            f"Peso: {employee.weight} kg\n"
+            f"Género: {employee.gender}\n"
+            f"Horas de Trabajo: {employee.hours} horas\n\n"
+
             f"Usuario: {user.username}\n"
             f"Puntajes NIOSH:\n"
             f"- Peso de la carga: {niosh_score.load_weight} kg\n"
@@ -85,12 +97,24 @@ def generate_plan(user_id, employee_id, method):
             f"- Puntaje total: {owas_score.total_score}\n\n"
             f"Con base en estos resultados, genera un diagnóstico y un plan de mejora ergonómico detallado."
         )
+        
     elif method == "REBA":
-        reba_score = RebaScore.query.filter_by(user_id=user_id).order_by(RebaScore.evaluation_date.desc()).first()
+        reba_score = RebaScore.query.filter_by(employe_id=employee_id).order_by(RebaScore.evaluation_date.desc()).first()
         if not reba_score:
             return {"error": "No se encontraron resultados para el método REBA"}
 
         prompt = (
+            f"Nombre de Empleado: {employee.name}\n"
+            f"Apellido de Empleado: {employee.last_name}\n"
+            f"Sector de Trabajo: {employee.work}\n"
+            f"Trabaja hace: {employee.time_company}\n"
+            f"Puesto de Trabajo: {employee.job_title}\n"
+            f"Edad: {employee.age} años\n"
+            f"Altura: {employee.height} m\n"
+            f"Peso: {employee.weight} kg\n"
+            f"Género: {employee.gender}\n"
+            f"Horas de Trabajo: {employee.hours} horas\n\n"
+
             f"Usuario: {user.username}\n"
             f"Puntajes REBA:\n"
             f"- Grupo A: {reba_score.group_a_score}\n"
