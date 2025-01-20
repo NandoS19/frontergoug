@@ -14,7 +14,7 @@ def calculate_angle(point1, point2, point3):
     cosine_angle = np.dot(ab, bc) / (np.linalg.norm(ab) * np.linalg.norm(bc))
     return round(np.degrees(np.arccos(np.clip(cosine_angle, -1.0, 1.0))), 2)
 
-def process_video_owas(filepath):
+def process_video(filepath):
     """
     Procesa un video para calcular ángulos corporales y determinar el nivel de riesgo OWAS.
     :param filepath: Ruta completa del archivo de video.
