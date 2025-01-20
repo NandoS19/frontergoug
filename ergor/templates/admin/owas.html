@@ -1,30 +1,63 @@
 {% extends 'base.html' %}
 
-{% block head %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-{% endblock %}
-
 {% block content %}
-<div class="container mt-5"> 
-    <h1 class="display-4 text-center">Resultados de la Evaluación OWAS</h1>
-    <p class="text-center text-muted">Usuario: <strong>{{ user.username }}</strong></p>
+<div class="container mt-5">
+    <header class="text-center">
+        <h1 class="display-4">Resultados de la Evaluación OWAS</h1>
+        <p class="text-muted">Usuario: <strong>{{ user.username }}</strong></p>
+    </header>
 
-    <div class="card mt-4 shadow">
-        <div class="card-body">
-            <h3 class="card-title">Detalles de la Evaluación</h3>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">Puntaje de espalda: <strong>{{ scores.back_score }}</strong></li>
-                <li class="list-group-item">Puntaje de brazos: <strong>{{ scores.arms_score }}</strong></li>
-                <li class="list-group-item">Puntaje de piernas: <strong>{{ scores.legs_score }}</strong></li>
-                <li class="list-group-item">Puntaje total: <strong>{{ scores.total_score }}</strong></li>
-                <li class="list-group-item">Nivel de riesgo: <strong>{{ scores.risk_level }}</strong></li>
-            </ul>
+    <main>
+        <div class="card mt-4 shadow">
+            <div class="card-body">
+                <h3 class="card-title">Detalles de la Evaluación</h3>
+                <table class="table table-bordered mt-3">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Parámetro</th>
+                            <th>Clasificación</th>
+                            <th>Categoría de Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Espalda</td>
+                            <td><strong>{{ scores.back_classification }}</strong></td>
+                            <td><strong>{{ scores.back_action }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Brazos</td>
+                            <td><strong>{{ scores.arms_classification }}</strong></td>
+                            <td><strong>{{ scores.arms_action }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Piernas</td>
+                            <td><strong>{{ scores.legs_classification }}</strong></td>
+                            <td><strong>{{ scores.legs_action }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Carga</td>
+                            <td><strong>{{ scores.load_classification }}</strong></td>
+                            <td><strong>{{ scores.load_action }}</strong></td>
+                        </tr>
+                        <tr class="table-info">
+                            <td><strong>Puntaje Total</strong></td>
+                            <td colspan="2"><strong>{{ scores.total_score }}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
 
-    <div class="text-center mt-4">
-        <a href="{{ url_for('evaluate.owas_plan', id=user.user_id) }}" class="btn btn-primary">Generar Plan de Mejora</a>
-        <a href="{{ url_for('auth.upload', id=user.user_id) }}" class="btn btn-secondary">Volver a subir otro video</a>
-    </div>
+        <div class="text-center mt-4">
+            <a href="{{ url_for('evaluate.owas_plan', user_id=user.user_id, employee_id=employe.employe_id) }}" 
+               class="btn btn-primary">
+                <i class="bi bi-file-earmark-plus"></i> Generar Plan de Mejora
+            </a>
+            <a href="{{ url_for('auth.upload', id=user.user_id) }}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver a subir otro video
+            </a>
+        </div>
+    </main>
 </div>
 {% endblock %}
