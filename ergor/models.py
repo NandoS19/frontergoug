@@ -148,23 +148,25 @@ class RosaScore(db.Model):
 # Tabla de puntajes OWAS
 class OwasScore(db.Model):
     __tablename__ = 'owas_scores'
-
+    
     score_id = db.Column(db.Integer, primary_key=True)
-    employe_id = db.Column(db.Integer, db.ForeignKey('employe.employe_id'), nullable=False)  # Relación con Employe
-    back_score = db.Column(db.Integer, db.CheckConstraint('back_score >= 0'), nullable=False)  # Puntaje de la espalda
-    arms_score = db.Column(db.Integer, db.CheckConstraint('arms_score >= 0'), nullable=False)  # Puntaje de los brazos
-    legs_score = db.Column(db.Integer, db.CheckConstraint('legs_score >= 0'), nullable=False)  # Puntaje de las piernas
-    total_score = db.Column(db.Numeric(5, 2), db.CheckConstraint('total_score >= 0'), nullable=False)
-    level_id = db.Column(db.Integer, db.ForeignKey('risk_levels.level_id'), nullable=True)  # Nivel de riesgo asociado
-    evaluation_date = db.Column(db.DateTime, default=func.now())  # Campo opcional recomendado
-
-    def __init__(self, employe_id, back_score, arms_score, legs_score, total_score, level_id=None):
+    employe_id = db.Column(db.Integer, db.ForeignKey('employe.employe_id'), nullable=False)  # Relación con el empleado
+    back_category = db.Column(db.Integer, db.CheckConstraint('back_category >= 1 AND back_category <= 3'), nullable=False)
+    arms_category = db.Column(db.Integer, db.CheckConstraint('arms_category >= 1 AND arms_category <= 3'), nullable=False)
+    legs_category = db.Column(db.Integer, db.CheckConstraint('legs_category >= 1 AND legs_category <= 3'), nullable=False)
+    load_category = db.Column(db.Integer, db.CheckConstraint('load_category >= 1 AND load_category <= 3'), nullable=False)
+    action_category = db.Column(db.Integer, db.CheckConstraint('action_category >= 1 AND action_category <= 4'), nullable=False)  # Categoría máxima de acción
+    load_weight = db.Column(db.Float, nullable=False)  # Peso de la carga en kg
+    evaluation_date = db.Column(db.DateTime, default=datetime.utcnow)  # Fecha de la evaluación
+    
+    def __init__(self, employe_id, back_category, arms_category, legs_category, load_category, action_category, load_weight):
         self.employe_id = employe_id
-        self.back_score = back_score
-        self.arms_score = arms_score
-        self.legs_score = legs_score
-        self.total_score = total_score
-        self.level_id = level_id
+        self.back_category = back_category
+        self.arms_category = arms_category
+        self.legs_category = legs_category
+        self.load_category = load_category
+        self.action_category = action_category
+        self.load_weight = load_weight
 
     def __repr__(self):
         return f'<OwasScore {self.score_id}>'
