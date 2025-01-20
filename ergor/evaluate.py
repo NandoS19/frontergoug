@@ -216,48 +216,57 @@ def reba_plan(user_id, employee_id):
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-@bp.route('/owas/<int:id>', methods=['GET'])
+@bp.route('/owas/<int:user_id>/<int:employee_id>', methods=['GET'])
 @login_required
-def owas(id):
+def owas(user_id, employee_id):
     # Lógica para procesar el video con el método OWAS
  
-    user = User.query.get_or_404(id)
-    
-    if not user.video_path:
+    user = User.query.get_or_404(user_id)
+    employe = Employe.query.get_or_404(employee_id)
+
+    if not employe.video_path:
         flash('El usuario no tiene un video subido')
         return redirect(url_for('auth.upload', id=user.user_id))
     
-    filepath = os.path.join('ergor', 'static', user.video_path)
+    filepath = os.path.join('ergor', 'static', employe.video_path)
+    print (f"El archivo es: {filepath}")
+    #flash (f"El archivo es: {filepath}")
     
     # Importar los módulos para procesamiento y evaluación
-    from ergor.process_videoOWAS import process_video_owas
+    from ergor.process_videoOWAS import process_video
     from ergor.owas_evaluation import evaluate_owas
     
     # Procesar el video para calcular ángulos
     try:
-        angles = process_video_owas(filepath)
+        angles = process_video(filepath)
+        print (f"Los ángulos calculados son: {angles}")
+        #flash(f"Ángulos calculados: {angles}")
     except Exception as e:
         flash(f"Error al procesar el video: {str(e)}")
+        print (f"Error al procesar el video: {str(e)}")
         return redirect(url_for('auth.upload', id=user.user_id))
     
     # Guardar los resultados en la base de datos
     try:
         
-        scores = evaluate_owas(angles)
+        scores = evaluate_owas(angles, load_weight=employe.weight)
         
         owas_scores = OwasScore(
-            user_id=user.user_id,
-            back_score=scores["back_score"],
-            arms_score=scores["arms_score"],
-            legs_score=scores["legs_score"],
-            total_score=scores["total_score"],
+            employe_id=employe.employe_id,
+            back_category=scores["back_category"],
+            arms_category=scores["arms_category"],
+            legs_category=scores["legs_category"],
+            load_category=scores["load_category"],
+            action_category=scores["action_category"],
+            
         )
         
         db.session.add(owas_scores)
         db.session.commit()
         
         flash("Evaluación OWAS completada con éxito")
-        return render_template('admin/owas.html', user=user, scores=scores)
+        print (f"Los puntajes OWAS son: {scores}")
+        return render_template('admin/owas.html', user=user, employe=employe,scores=scores)
     except Exception as e:
         flash(f"Error al calcular los puntajes OWAS: {str(e)}")
         return redirect(url_for('auth.upload', id=user.user_id))
@@ -265,15 +274,15 @@ def owas(id):
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Ruta para generar el plan de mejora del método OWAS
-@bp.route('/owas/<int:id>/plan', methods=['GET'])
+@bp.route('/owas/<int:user_id>/<int:employee_id>/plan', methods=['GET'])
 @login_required
-def owas_plan(id):
-    result = generate_plan(user_id=id, method="OWAS")
+def owas_plan(user_id, employee_id):
+    result = generate_plan(user_id=user_id, employee_id=employee_id, method="OWAS")
     if "error" in result:
         flash(result["error"])
         return redirect(url_for('evaluate.owas', id=id))
 
-    return render_template('admin/plan.html', user_id=id, method="OWAS", plan=result["diagnostic_plan"])
+    return render_template('admin/plan.html', user_id=id, employee_id=employee_id,method="OWAS", plan=result["diagnostic_plan"])
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
