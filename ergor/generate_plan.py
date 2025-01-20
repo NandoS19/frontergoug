@@ -84,17 +84,29 @@ def generate_plan(user_id, employee_id, method):
             f"Con base en estos resultados, genera un diagnóstico y un plan de mejora ergonómico detallado."
         )
     elif method == "OWAS":
-        owas_score = OwasScore.query.filter_by(user_id=user_id).order_by(OwasScore.evaluation_date.desc()).first()
+        owas_score = OwasScore.query.filter_by(employe_id=employee_id).order_by(OwasScore.evaluation_date.desc()).first()
         if not owas_score:
             return {"error": "No se encontraron resultados para el método OWAS"}
 
         prompt = (
-            f"Usuario: {user.username}\n"
+            f"Nombre de Empleado: {employee.name}\n"
+            f"Apellido de Empleado: {employee.last_name}\n"
+            f"Sector de Trabajo: {employee.work}\n"
+            f"Trabaja hace: {employee.time_company}\n"
+            f"Puesto de Trabajo: {employee.job_title}\n"
+            f"Edad: {employee.age} años\n"
+            f"Altura: {employee.height} m\n"
+            f"Peso: {employee.weight} kg\n"
+            f"Género: {employee.gender}\n"
+            f"Horas de Trabajo: {employee.hours} horas\n\n"
+            
             f"Puntajes OWAS:\n"
-            f"- Puntaje de espalda: {owas_score.back_score}\n"
-            f"- Puntaje de brazos: {owas_score.arms_score}\n"
-            f"- Puntaje de piernas: {owas_score.legs_score}\n"
-            f"- Puntaje total: {owas_score.total_score}\n\n"
+            f"- Puntaje de espalda: {owas_score.back_category}\n"
+            f"- Puntaje de brazos: {owas_score.arms_category}\n"
+            f"- Puntaje de piernas: {owas_score.legs_category}\n"
+            f"- Puntaje de carga: {owas_score.load_category}\n\n"
+            f"- Puntaje de categoria: {owas_score.action_category}\n\n"
+
             f"Con base en estos resultados, genera un diagnóstico y un plan de mejora ergonómico detallado."
         )
         
