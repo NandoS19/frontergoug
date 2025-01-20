@@ -1,45 +1,54 @@
-def evaluate_owas(angles):
+def evaluate_owas(angles, load_weight):
     """
-    Evalúa los niveles de riesgo OWAS basados en los ángulos calculados.
-    :param angles: Diccionario con los ángulos calculados.
-    :return: Diccionario con puntajes OWAS y nivel de riesgo total.
+    Evalúa las posturas corporales utilizando el método OWAS.
+    :param angles: Diccionario con ángulos corporales promedio.
+    :param load_weight: Peso de la carga manejada (en kg).
+    :return: Diccionario con categorías OWAS para espalda, brazos, piernas y carga.
     """
-    back_score = 0
-    arms_score = 0
-    legs_score = 0
+    back_category = 0
+    arms_category = 0
+    legs_category = 0
+    load_category = 0
 
-    # Evaluación de la espalda (back_score)
-    if 0 <= angles["back"] <= 20:
-        back_score = 1  # Riesgo bajo
-    elif 21 <= angles["back"] <= 45:
-        back_score = 2  # Riesgo moderado
+    # Clasificación de espalda
+    if angles["back"] <= 20:
+        back_category = 1  # Postura neutra
+    elif 20 < angles["back"] <= 45:
+        back_category = 2  # Inclinación moderada
     else:
-        back_score = 3  # Riesgo alto
+        back_category = 3  # Flexión excesiva
 
-    # Evaluación de los brazos (arms_score)
-    if 60 <= angles["arms"] <= 100:
-        arms_score = 1  # Postura adecuada
-    elif 40 <= angles["arms"] < 60 or 100 < angles["arms"] <= 120:
-        arms_score = 2  # Ajuste necesario
+    # Clasificación de brazos
+    if angles["arms"] <= 45:
+        arms_category = 1  # Postura neutra
+    elif 45 < angles["arms"] <= 90:
+        arms_category = 2  # Elevación moderada
     else:
-        arms_score = 3  # Riesgo alto
+        arms_category = 3  # Elevación extrema
 
-    # Evaluación de las piernas (legs_score)
-    if 0 <= angles["legs"] <= 30:
-        legs_score = 1  # Postura estable
-    elif 31 <= angles["legs"] <= 60:
-        legs_score = 2  # Ajuste necesario
+    # Clasificación de piernas
+    if angles["legs"] <= 45:
+        legs_category = 1  # Postura neutra
+    elif 45 < angles["legs"] <= 90:
+        legs_category = 2  # Inclinación o flexión moderada
     else:
-        legs_score = 3  # Riesgo alto
+        legs_category = 3  # Flexión extrema
 
-    # Cálculo del puntaje total
-    total_score = back_score + arms_score + legs_score
+    # Clasificación de carga
+    if load_weight <= 10:
+        load_category = 1  # Peso ligero
+    elif 10 < load_weight <= 20:
+        load_category = 2  # Peso moderado
+    else:
+        load_category = 3  # Peso pesado
+
+    # Calcular categoría de acción OWAS
+    action_category = back_category + arms_category + legs_category + load_category
 
     return {
-        "back_score": back_score,
-        "arms_score": arms_score,
-        "legs_score": legs_score,
-        "total_score": total_score,
-        "risk_level": "Bajo" if total_score <= 3 else "Moderado" if total_score <= 6 else "Alto"
+        "back_category": back_category,
+        "arms_category": arms_category,
+        "legs_category": legs_category,
+        "load_category": load_category,
+        "action_category": action_category
     }
-    
