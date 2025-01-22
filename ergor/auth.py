@@ -16,7 +16,7 @@ def register():
         email = request.form.get('email')
         password = request.form.get('password')
         
-        #Validacion de datos
+        # Validacion de datos
         error = None
         
         # Validaciones de formato
@@ -27,7 +27,7 @@ def register():
         elif len(password) < 8:
             error = 'La contraseña debe tener al menos 8 caracteres'
         
-        #Comparando nombre de usuario con los existentes
+        # Comparando nombre de usuario con los existentes
         user_email = User.query.filter_by(email=email).first()
         
         if user_email is not None:
@@ -36,8 +36,10 @@ def register():
             user = User(username, email, generate_password_hash(password))
             db.session.add(user)
             db.session.commit()
+            flash('¡Registro exitoso! Bienvenido a ERGO-UG.', 'success')
             return redirect(url_for('auth.login'))
-        flash(error)
+        
+        flash(error, 'error')
         
     return render_template('auth/register.html')
 

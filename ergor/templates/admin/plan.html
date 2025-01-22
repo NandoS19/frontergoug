@@ -1,112 +1,142 @@
 {% extends 'base.html' %}
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/showdown/dist/showdown.min.js"></script>
 {% endblock %}
 {% block content %}
 <div class="container mt-5">
     <h1 class="display-4 text-center">Plan de Mejora y Diagnóstico</h1>
     <p class="text-center text-muted">Método: <strong>{{ method }}</strong></p>
     <p class="text-center text-muted">Usuario ID: <strong>{{ user_id }}</strong></p>
-    <!-- Resultados de cada API -->
-    <div class="card mt-4 shadow">
-        <div class="card-body">
-            <h3 class="card-title">Resultado - Método 1 </h3>
-            <pre id="plan-google" class="bg-light p-3 border rounded">{{ plan.google }}</pre>
+
+    <!-- Resultados de cada API con Markdown -->
+    <div class="accordion" id="methodsAccordion">
+        <!-- Método 1 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    Resultado - Método 1
+                </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#methodsAccordion">
+                <div class="accordion-body">
+                    <div id="markdown-google" class="formatted-text">{{ plan.google | safe }}</div>
+                </div>
+            </div>
+        </div>
+        <!-- Método 2 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingTwo">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                    Resultado - Método 2
+                </button>
+            </h2>
+            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#methodsAccordion">
+                <div class="accordion-body">
+                    <div id="markdown-llama" class="formatted-text">{{ plan.llama | safe }}</div>
+                </div>
+            </div>
+        </div>
+        <!-- Método 3 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingThree">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                    Resultado - Método 3
+                </button>
+            </h2>
+            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#methodsAccordion">
+                <div class="accordion-body">
+                    <div id="markdown-openai" class="formatted-text">{{ plan.openai | safe }}</div>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="card mt-4 shadow">
-        <div class="card-body">
-            <h3 class="card-title">Resultado - Método 2 </h3>
-            <pre id="plan-llama" class="bg-light p-3 border rounded">{{ plan.llama }}</pre>
-        </div>
-    </div>
-    <div class="card mt-4 shadow">
-        <div class="card-body">
-            <h3 class="card-title">Resultado - Método 3 </h3>
-            <pre id="plan-openai" class="bg-light p-3 border rounded">{{ plan.openai }}</pre>
-        </div>
-    </div>
+
     <!-- Botones de acción -->
     <div class="text-center mt-4">
         <button id="download-pdf" class="btn btn-primary">Descargar como PDF</button>
         <a href="{{ url_for('evaluate.evaluate_page') }}" class="btn btn-secondary">Volver</a>
     </div>
 </div>
-<!-- Incluir la biblioteca jsPDF -->
+
+<!-- Asegúrate de que el script de jsPDF se cargue al final -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 <script>
-document.getElementById("download-pdf").addEventListener("click", function () {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-
-    // Título general
-    doc.setFontSize(16);
-    doc.text("Plan de Mejora y Diagnóstico", 10, 10);
-
-    // Detalles generales
-    doc.setFontSize(12);
-    doc.text(`Método: {{ method }}`, 10, 20);
-    doc.text(`Usuario ID: {{ user_id }}`, 10, 30);
-
-    // Contenido de cada resultado
-    const googleContent = document.getElementById("plan-google").textContent;
-    const llamaContent = document.getElementById("plan-llama").textContent;
-    const openaiContent = document.getElementById("plan-openai").textContent;
-
-    // Función para agregar contenido con salto de página si es necesario
-    function addContentWithPageBreak(doc, title, text, yOffset) {
-        doc.setFontSize(12);
-        doc.text(title, 10, yOffset);
-        yOffset += 10;
-
-        const lines = doc.splitTextToSize(text, 180); // Ajusta el ancho del texto
-        lines.forEach((line, index) => {
-            if (yOffset > 280) { // Si se alcanza el final de la página
-                doc.addPage();
-                yOffset = 10; // Reiniciar el yOffset para la nueva página
-            }
-            // Verificar si la línea contiene texto en negrita
-            if (line.includes("**")) {
-                const parts = line.split("**");
-                let xOffset = 10;
-                parts.forEach((part, i) => {
-                    if (i % 2 === 1) {
-                        doc.setFont("helvetica", "bold");
-                    } else {
-                        doc.setFont("helvetica", "normal");
-                    }
-                    doc.text(part, xOffset, yOffset);
-                    xOffset += doc.getTextWidth(part);
-                });
-            } else {
-                doc.text(line, 10, yOffset);
-            }
-            yOffset += 10; // Ajusta el espacio entre líneas
+    document.addEventListener("DOMContentLoaded", function () {
+        const converter = new showdown.Converter();
+    
+        // Convertir el contenido Markdown a HTML
+        document.querySelectorAll(".formatted-text").forEach((element) => {
+            element.innerHTML = converter.makeHtml(element.textContent);
         });
-        return yOffset;
-    }
 
-    let yOffset = 40;
+        // Verificar si jsPDF está disponible
+        const { jsPDF } = window.jspdf;
+        if (!jsPDF) {
+            console.error("jsPDF no está disponible.");
+            return;
+        }
 
-    // Resultado - Método 1 (Google Generative AI)
-    yOffset = addContentWithPageBreak(doc, "Resultado - Método 1:", googleContent, yOffset);
-
-    // Añadir una nueva página para el siguiente método
-    doc.addPage();
-    yOffset = 10;
-
-    // Resultado - Método 2 (Llama API)
-    yOffset = addContentWithPageBreak(doc, "Resultado - Método 2:", llamaContent, yOffset);
-
-    // Añadir una nueva página para el siguiente método
-    doc.addPage();
-    yOffset = 10;
-
-    // Resultado - Método 3 (OpenAI)
-    yOffset = addContentWithPageBreak(doc, "Resultado - Método 3:", openaiContent, yOffset);
-
-    // Descargar el archivo PDF
-    doc.save("plan_de_mejora.pdf");
-});
+        // Exportar contenido a PDF
+        document.getElementById("download-pdf").addEventListener("click", function () {
+            const doc = new jsPDF();
+    
+            // Título general
+            doc.setFontSize(16);
+            doc.text("Plan de Mejora y Diagnóstico", 10, 10);
+    
+            // Detalles generales
+            doc.setFontSize(12);
+            doc.text(`Método: {{ method }}`, 10, 20);
+            doc.text(`Usuario ID: {{ user_id }}`, 10, 30);
+    
+            // Contenido de cada método
+            const methods = [
+                { title: "Resultado - Método 1", content: document.querySelector("#collapseOne .formatted-text").innerHTML },
+                { title: "Resultado - Método 2", content: document.querySelector("#collapseTwo .formatted-text").innerHTML },
+                { title: "Resultado - Método 3", content: document.querySelector("#collapseThree .formatted-text").innerHTML },
+            ];
+    
+            let yOffset = 40;
+    
+            methods.forEach((method) => {
+                if (yOffset > 270) {
+                    doc.addPage();
+                    yOffset = 10;
+                }
+    
+                // Título del método en negrita
+                doc.setFont("helvetica", "bold");
+                doc.text(`${method.title}:`, 10, yOffset);
+                yOffset += 10;
+    
+                // Convertir HTML a texto plano para el PDF
+                const tempElement = document.createElement("div");
+                tempElement.innerHTML = method.content;
+                const plainText = tempElement.textContent || tempElement.innerText;
+    
+                // Cambiar la fuente a normal para el contenido del texto
+                doc.setFont("helvetica", "normal");
+    
+                // Dividir el texto en líneas y agregarlo al PDF
+                const lines = doc.splitTextToSize(plainText, 180);
+                lines.forEach((line) => {
+                    if (yOffset > 270) {
+                        doc.addPage();
+                        yOffset = 10;
+                    }
+                    doc.text(line, 10, yOffset);
+                    yOffset += 10;
+                });
+    
+                yOffset += 10; // Espaciado entre métodos
+            });
+    
+            // Descargar el archivo PDF
+            doc.save("plan_de_mejora.pdf");
+        });
+    });
 </script>
+
 {% endblock %}

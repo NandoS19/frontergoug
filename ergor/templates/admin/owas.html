@@ -22,27 +22,27 @@
                     <tbody>
                         <tr>
                             <td>Espalda</td>
-                            <td><strong>{{ scores.back_classification }}</strong></td>
-                            <td><strong>{{ scores.back_action }}</strong></td>
+                            <td><strong>{{ scores.back_category }}</strong></td>
+                            <td><strong>{{ scores.action_category }}</strong></td>
                         </tr>
                         <tr>
                             <td>Brazos</td>
-                            <td><strong>{{ scores.arms_classification }}</strong></td>
-                            <td><strong>{{ scores.arms_action }}</strong></td>
+                            <td><strong>{{ scores.arms_category }}</strong></td>
+                            <td><strong>{{ scores.action_category }}</strong></td>
                         </tr>
                         <tr>
                             <td>Piernas</td>
-                            <td><strong>{{ scores.legs_classification }}</strong></td>
-                            <td><strong>{{ scores.legs_action }}</strong></td>
+                            <td><strong>{{ scores.legs_category }}</strong></td>
+                            <td><strong>{{ scores.action_category }}</strong></td>
                         </tr>
                         <tr>
                             <td>Carga</td>
-                            <td><strong>{{ scores.load_classification }}</strong></td>
-                            <td><strong>{{ scores.load_action }}</strong></td>
+                            <td><strong>{{ scores.load_category }}</strong></td>
+                            <td><strong>{{ scores.action_category }}</strong></td>
                         </tr>
                         <tr class="table-info">
-                            <td><strong>Puntaje Total</strong></td>
-                            <td colspan="2"><strong>{{ scores.total_score }}</strong></td>
+                            <td><strong>Peso de la Carga</strong></td>
+                            <td colspan="2"><strong>{{ scores.load_weight }} kg</strong></td>
                         </tr>
                     </tbody>
                 </table>
@@ -60,4 +60,4 @@
         </div>
     </main>
 </div>
-{% endblock %}
+{% endblock %}  
