@@ -302,7 +302,14 @@ def niosh(user_id,employee_id):
 
     try:
         # Calcular RWL y LI
-        load_weight = 50  # Peso de la carga (kg)
+        load_weight = session.get('load_weight')
+
+        if not load_weight:
+            flash("No se encontró el peso de la carga ingresado. Intente nuevamente.", "error")
+            print("DEBUG: session.get('load_weight'):", session.get('load_weight'))  # ✅ Depuración
+            return redirect(url_for('auth.upload', id=user.user_id))
+
+        flash(f"Peso de la carga recuperado: {load_weight}", "success")  # ✅ Mensaje de éxito
         frequency = 2     # Frecuencia de levantamiento
 
         # Calcular RWL y LI
