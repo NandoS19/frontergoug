@@ -9,22 +9,6 @@ from ergor.generate_plan import generate_plan
 
 bp = Blueprint('evaluate', __name__, url_prefix='/evaluate') 
 
-@bp.route('/evaluate')
-@login_required
-def evaluate_page():
-    
-    return f'Pagina de evaluacion'
-
-#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-@bp.route('/results/<int:id>', methods=['GET'])
-@login_required
-def results(id):
-    user = User.query.get_or_404(id)
-    return render_template('admin/results.html', user=user)
-
-#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 @bp.route('/rosa/<int:user_id>/<int:employee_id>', methods=['GET'])
 @login_required
 def rosa(user_id,employee_id):
@@ -43,7 +27,7 @@ def rosa(user_id,employee_id):
     
     # Importar los módulos para procesamiento y evaluación
     from ergor.process_videoROSA import process_video
-    from ergor.rosa_evaluation import evaluate_rosa
+    from ergor.rosa_evaluation import evaluate_Rosa
 
     # Procesar el video para calcular ángulos
     try:
@@ -57,7 +41,7 @@ def rosa(user_id,employee_id):
 
     # Calcular puntajes ROSA
     try:
-        scores = evaluate_rosa(angles)
+        scores = evaluate_Rosa(angles, None)
 
         # Guardar los resultados en la base de datos
         rosa_score = RosaScore(
@@ -363,3 +347,19 @@ def niosh_plan(user_id, employee_id):
         return redirect(url_for('evaluate.niosh', id=id))
 
     return render_template('admin/plan.html', user_id=user_id, employee_id=employee_id, method="NIOSH", plan=result["diagnostic_plan"])
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+@bp.route('/evaluate')
+@login_required
+def evaluate_page():
+    
+    return f'Pagina de evaluacion'
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+@bp.route('/results/<int:id>', methods=['GET'])
+@login_required
+def results(id):
+    user = User.query.get_or_404(id)
+    return render_template('admin/results.html', user=user)
