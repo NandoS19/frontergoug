@@ -7,7 +7,6 @@ from ergor import db
 # Configurar las APIs
 genai.configure(api_key="AIzaSyAo46Co2yniw1aQDFWbcZsfsVipbv0v_zM")  # API de Google Generative AI
 llama = LlamaAPI("LA-05ca3abe055d4847aebd6b034374da2ff5a07974966e418e9d7f72b18635c32b")  # Llama API
-#llave de api openai falta aqui, por motivo de seguridad de Githup no dejo subir 
 
 
 def generate_plan(user_id, employee_id, method):
@@ -34,7 +33,6 @@ def generate_plan(user_id, employee_id, method):
             return {"error": "No se encontraron resultados para el método ROSA"}
 
         prompt = (
-            f"**FICHA MÉDICA ERGONÓMICA**\n\n"
             f"**Datos del Empleado**:\n"
             f"**Caso de estudio: Evaluación ergonómica basada en el método ROSA**\n\n"
             f"**Contexto del empleado:**\n"
@@ -50,6 +48,14 @@ def generate_plan(user_id, employee_id, method):
             f"- Puntaje de teléfono: {rosa_score.phone_score}.\n"
             f"- Puntaje total ROSA: {rosa_score.total_score}.\n\n"
             
+            f"El valor de la puntuación ROSA puede oscilar entre 1 y 10, siendo más grande cuanto mayor es el riesgo para la persona que ocupa el puesto. "
+            f"El valor 1 indica que no se aprecia riesgo. "
+            f"Valores entre 2 y 4 indican que el nivel de riesgo es bajo, pero que algunos aspectos del puesto son mejorables." 
+            f"Valores iguales o superiores a 5 indican que el nivel de riesgo es elevado. "
+            f"A partir de la puntuación final ROSA se proponen 5 Niveles de Actuación sobre el puesto." 
+            f"El Nivel de Actuación establece si es necesaria una actuación sobre el puesto y su urgencia y puede oscilar entre el nivel 0, que indica que no es necesaria la actuación, hasta el nivel 4 correspondiente a que la actuación sobre el puesto es urgente. "
+            f"En el caso de que la puntuación ROSA sea igual o superior a 5, se considera que el puesto de trabajo presenta riesgos ergonómicos y se debe actuar sobre él.\n\n"
+            
             f"**Solicitudes:**\n"
             f"Con base en los datos proporcionados, realiza las siguientes tareas:\n"
             f"1. **Diagnóstico detallado:** Identifica las principales áreas de riesgo ergonómico relacionadas con los resultados del método ROSA. Describe cómo cada puntaje impacta en la salud del empleado y justifica por qué se consideran riesgos críticos.\n"
@@ -59,6 +65,7 @@ def generate_plan(user_id, employee_id, method):
             f"- El diagnóstico debe ser lo más detallado posible, priorizando las áreas con mayor puntaje.\n"
             f"- Las recomendaciones deben ser prácticas, priorizando aquellas de fácil implementación pero con alto impacto.\n"
             f"- Considera el perfil físico del empleado y el contexto laboral para personalizar las soluciones."
+            f"- La respuesta debe ser devuelta como si fueras a llenar una ficha medica."
         )
     
     elif method == "NIOSH":
