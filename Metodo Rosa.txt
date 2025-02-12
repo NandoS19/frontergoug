@@ -1,6 +1,16 @@
+Tabla 1
+Puntuación	Riesgo	Nivel	Actuación
+1	Inapreciable	0	No es necesaria actuación.
+2 - 3 - 4	Mejorable	1	Pueden mejorarse algunos elementos del puesto.
+5	Alto	2	Es necesaria la actuación.
+6 - 7 - 8	Muy Alto	3	Es necesaria la actuación cuanto antes.
+9 - 10	Extremo	4	Es necesaria la actuación urgentemente.
+
 Puntuacion de Silla:
 
-Puntuacion de la altura del asiento
+Se comienza obteniendo la Puntuación de la Silla. Para ello es necesario obtener previamente las puntuaciones de la Altura del Asiento, la Profundidad del Asiento, los Reposabrazos y el Respaldo mediante los diagramas de valoración mostrados en las tablas: Tabla 2, Tabla 3, Tabla 4 y Tabla 5. En ellos se indica la puntuación del elemento (que oscilará generalmente entre 1 y 2 o 3 puntos), y determinadas circunstancias que pueden incrementar la puntuación obtenida. Por ejemplo, si el asiento está muy bajo provocando que el ángulo entre el muslo y la pantorrilla sea inferior a 90º la puntuación de la Altura del Asiento es 2. Si además ocurre que no hay espacio suficiente para las piernas bajo la mesa, la puntuación será incrementada en un punto, resultando una puntuación para la Altura del Asiento de 3. Si además la altura del asiento no fuera regulable la puntuación final sería 4.
+
+Puntuacion de la altura del asiento (Tabla 2)
 
 +1 Punto Rodillas flectadas 90 grados aproximadamente
 +2 Puntos si el asiento se encuentra a una altura muy baja, angulo de la rollida es menor a 90 grados
@@ -11,7 +21,7 @@ La puntuacion se incremente en +1 punto si ocurre lo siguiente:
 Espacio insuficiente para las piernas bajo la mesa
 La altura del asiento no es regulable
 
-Puntuacion de la profundidad del asiento:
+Puntuacion de la profundidad del asiento (Tabla 3):
 
 +1 Punto/s Aproximadamente 8 cm de espacio entre el asiento y la parte trasera de las rodillas.
 +2 Punto/s Asiento muy largo. Menos de 8 cm de espacio entre el asiento y la parte trasera de las rodillas.
@@ -20,7 +30,7 @@ Puntuacion de la profundidad del asiento:
 La puntuacion se incremente en +1 punto si ocurre lo siguiente:
 La profundidad del asiento no es regulable
 
-Puntuacion de los Reposabrazos
+Puntuacion de los Reposabrazos (Tabla 4):
 
 +1 Punto/s Codos bien apoyados en línea con los hombros. Los hombros están relajados.
 +2 Punto/s Reposabrazos demasiado altos. Los hombros están encogidos.
@@ -31,7 +41,7 @@ Reposabrazos demasiado separados.
 La superficie del reposabrazos es dura o está dañada.
 Reposabrazos no ajustables.
 
-Puntuacion del Respaldo
+Puntuacion del Respaldo (Tabla 5):
 
 +1 Punto/s Respaldo reclinado entre 95 y 110º y apoyo lumbar adecuado.
 +2 Punto/s Sin apoyo lumbar o apoyo lumbar no situado en la parte baja de la espalda.
@@ -44,7 +54,7 @@ Respaldo no ajustable.
 
 La suma de las puntuaciones de la Altura del Asiento y la Profundidad del Asiento, y la suma de las puntuaciones de los Reposabrazos y el Respaldo, se emplean para obtener el valor correspondiente de la Tabla A mostrada en la Tabla 6. A la puntuación así obtenida se le sumará la puntuación correspondiente al tiempo de uso de la silla.
 
-TABLA A	
+TABLA A	(Tabla 6):
 Reposabrazos + Respaldo (Horizonal)
 2	3	4	5	6	7	8	9
 Altura Asiento + Prof. Asiento(Vertical)
@@ -59,7 +69,7 @@ Matriz
 6	6	6	7	7	8	8	9
 7	7	7	8	8	9	9	9
 
-Finalmente, para obtener la Puntuación de la Silla, al valor obtenido en la Tabla A se le sumará la puntuación correspondiente al tiempo de uso de la silla.
+Finalmente, para obtener la Puntuación de la Silla, al valor obtenido en la Tabla A se le sumará la puntuación correspondiente al tiempo de uso de la silla. La puntuación del tiempo de uso puede obtenerse de la Tabla 7. La Figura 1 resume el proceso de obtención de la Puntuación de la Silla.
 
 Puntuacion del tiempo de uso (Tabla 7)
 -1 Punto/s Menos de 1hora en total o menos de 30 minutos ininterrumpidos
@@ -70,8 +80,11 @@ Puntuacion del tiempo de uso (Tabla 7)
 
 Puntuacion de la Pantalla y los Perifericos
 
-A diferencia que en el caso de la puntuación de la silla, la puntuación de la pantalla y los periféricos debe incluir la puntuación por el tiempo de uso.
-En este caso, la puntuación por tiempo de uso dependerá del tiempo que el trabajador emplee la pantalla en su jornada. De la misma forma se obtendrán las puntuaciones del resto de elementos: añadiendo la puntuación por tiempo de uso de cada elemento a las obtenidas en los diagramas de valoración.
+A continuación se obtendrá la puntuación correspondiente a la Pantalla y a los Periféricos (teclado, mouse y teléfono). Para ello es necesario obtener previamente las puntuaciónes de la Pantalla, del Teléfono, del Mouse y del Teclado mediante los diagramas de valoración mostrados en las tablas: Tabla 8, Tabla 9, Tabla 11 y Tabla 12.
+
+A diferencia que en el caso de la puntuación de la silla, la puntuación de la pantalla y los periféricos debe incluir la puntuación por el tiempo de uso. Por ejemplo, la Puntuación de la Pantalla será la obtenida empleando la Tabla 8 más la puntuación debida al tiempo de uso del monitor obtenida empleando la Tabla 7. En este caso, la puntuación por tiempo de uso dependerá del tiempo que el trabajador emplee la pantalla en su jornada. De la misma forma se obtendrán las puntuaciones del resto de elementos: añadiendo la puntuación por tiempo de uso de cada elemento a las obtenidas en los diagramas de valoración.
+
+Puntuacion de Pantalla (Tabla 8)
 
 +1 Punto/s Pantalla a entre 45 y 75 cm. de distancia de los ojos y borde superior a la altura de los ojos.
 +2 Punto/s Pantalla muy baja. 30º por debajo del nivel de los ojos.
@@ -83,7 +96,7 @@ Es necesario manejar documentos y no existe un atril o soporte para ellos.
 Brillos o reflejos en la pantalla.
 Pantalla muy lejos. A más de 75 cm. de distancia o fuera del alcance del brazo.(Esta circunstancia solo se considerará si la Pantalla está muy baja.)
 
-Puntuacion del telefono (tabla 8)
+Puntuacion del telefono (tabla 9)
 
 +1 Punto/s Se usan cascos auriculares o se usa el teléfono con una mano y el cuello en posición neutral. El teléfono está cerca (30 cm. o menos).
 +2 Punto/s El teléfono está lejos. A más de 30 cm.
@@ -96,7 +109,7 @@ El teléfono no tiene función manos libres.
 
 A la puntuación obtenida para la pantalla empleando la Tabla 8 habrá que añadir la puntuación debida al tiempo de uso del monitor obtenida empleando la Tabla 7. La suma de ambas puntuaciones determinará la Puntuación del Monitor. De la misma manera, a la puntuación obtenida para el teléfono empleando la Tabla 9 habrá que añadir la puntuación la puntuación debida al tiempo de uso del teléfono obtenida empleando también la Tabla 7, pero considerando ahora el tiempo que el trabajador emplea el teléfono. La suma de ambas puntuaciones determinará la Puntuación del Teléfono.
 
-TABLA B	
+TABLA B	(Tabla 10)
 Puntuación de la Pantalla (Horizonal)
 0	1	2	3	4	5	6	7
 Puntuación del Teléfono(Vertical)
@@ -136,7 +149,7 @@ El teclado, o la plataforma sobre la que reposa, no son ajustables.
 
 A la puntuación obtenida para el mouse empleando la Tabla 11 habrá que añadir la puntuación debida al tiempo de uso del mouse obtenida empleando la Tabla 7. La suma de ambas puntuaciones determinará la Puntuación del Mouse. De la misma manera, a la puntuación obtenida para el teclado empleando la Tabla 12 habrá que añadir la puntuación la puntuación debida al tiempo de uso del teclado obtenida empleando también la Tabla 7, pero considerando ahora el tiempo que el trabajador emplea el teclado. La suma de ambas puntuaciones determinará la Puntuación del Teclado.
 
-TABLA C	
+TABLA C	(Tabla 13)
 Puntuación del Teclado (Horizonal)
 0	1	2	3	4	5	6	7
 Puntuación del Mouse (Vertical)
@@ -151,9 +164,9 @@ Matriz
 5	6	6	7	7	8	8	9
 6	7	7	8	8	9	9	9
 
-Finalmente, se obtendrá la Puntuación de la Pantalla y los Periféricos. Para consultar esta tabla se emplearán los valores obtenidos anteriormente de la Tabla B y de la Tabla C.
+Finalmente, se obtendrá la Puntuación de la Pantalla y los Periféricos. Para consultar esta tabla se emplearán los valores obtenidos anteriormente de la Tabla B y de la Tabla C. Para ello se consultará la Tabla D mostrada en la Tabla 14. Para consultar esta tabla se emplearán los valores obtenidos anteriormente de la Tabla B y de la Tabla C.
 
-TABLA D	
+TABLA D	(Tabla 14)
 Puntuación Tabla C (Horizonal)
 1	2	3	4	5	6	7	8	9
 Puntuación Tabla B (Vertical)
@@ -173,7 +186,8 @@ Puntuación final ROSA
 
 Una vez obtenidas la Puntuación de la Silla y la Puntuación de la Pantalla y los Periféricos se empleará la Tabla E mostrada en la Tabla 15 para determinar la Puntuación ROSA final.
 
-TABLA E	Puntuación Pantalla y Periféricos
+TABLA E	(Tabla 15)
+Puntuación Pantalla y Periféricos
 1	2	3	4	5	6	7	8	9	10
 Puntuación Silla
 1	2	3	4	5	6	7	8	9	10
@@ -189,11 +203,14 @@ Matriz
 9	9	9	9	9	9	9	9	9	10
 10	10	10	10	10	10	10	10	10	10
 
-Como se indicó anteriormente el valor de la puntuación ROSA puede oscilar entre 1 y 10, siendo más grande cuanto mayor es el riesgo para la persona que ocupa el puesto. El valor 1 indica que no se aprecia riesgo. Valores entre 2 y 4 indican que el nivel de riesgo es bajo, pero que algunos aspectos del puesto son mejorables. Valores iguales o superiores a 5 indican que el nivel de riesgo es elevado. A partir de la puntuación final ROSA se proponen 5 Niveles de Actuación sobre el puesto. El Nivel de Actuación establece si es necesaria una actuación sobre el puesto y su urgencia y puede oscilar entre el nivel 0, que indica que no es necesaria la actuación, hasta el nivel 4 correspondiente a que la actuación sobre el puesto es urgente. Las actuaciones prioritarias pueden establecerse a partir de las puntuaciones parciales obtenidas para cada elemento del puesto.
+Como se indicó anteriormente el valor de la puntuación ROSA puede oscilar entre 1 y 10, siendo más grande cuanto mayor es el riesgo para la persona que ocupa el puesto. El valor 1 indica que no se aprecia riesgo. Valores entre 2 y 4 indican que el nivel de riesgo es bajo, pero que algunos aspectos del puesto son mejorables. Valores iguales o superiores a 5 indican que el nivel de riesgo es elevado. A partir de la puntuación final ROSA se proponen 5 Niveles de Actuación sobre el puesto. El Nivel de Actuación establece si es necesaria una actuación sobre el puesto y su urgencia y puede oscilar entre el nivel 0, que indica que no es necesaria la actuación, hasta el nivel 4 correspondiente a que la actuación sobre el puesto es urgente. Las actuaciones prioritarias pueden establecerse a partir de las puntuaciones parciales obtenidas para cada elemento del puesto. La Tabla 16 muestra los Niveles de Actuación según la puntuación final ROSA.
 
-Puntuación	Riesgo	Nivel	Actuación
-1	Inapreciable	0	No es necesaria actuación.
-2 - 3 - 4	Mejorable	1	Pueden mejorarse algunos elementos del puesto.
-5	Alto	2	Es necesaria la actuación.
-6 - 7 - 8	Muy Alto	3	Es necesaria la actuación cuanto antes.
-9 - 10	Extremo	4	Es necesaria la actuación urgentemente.
+Tabla 16: Niveles de actuación según la puntuación final obtenida.
+
+Puntuación	        Riesgo	        Nivel	                    Actuación
+1	             Inapreciable	      0	                    No es necesaria actuación.
+2 - 3 - 4	       Mejorable	      1	            Pueden mejorarse algunos elementos del puesto.
+5	                Alto	          2	                Es necesaria la actuación.
+6 - 7 - 8	      Muy Alto	          3	               Es necesaria la actuación cuanto antes.
+9 - 10	          Extremo	          4	               Es necesaria la actuación urgentemente.
+
