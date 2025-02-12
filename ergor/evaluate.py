@@ -27,7 +27,7 @@ def rosa(user_id,employee_id):
     
     # Importar los módulos para procesamiento y evaluación
     from ergor.process_videoROSA import process_video
-    from ergor.rosa_evaluation import evaluate_Rosa
+    from ergor.rosa_evaluation import evaluate_ROSA
 
     # Procesar el video para calcular ángulos
     try:
@@ -41,7 +41,7 @@ def rosa(user_id,employee_id):
 
     # Calcular puntajes ROSA
     try:
-        scores = evaluate_Rosa(angles, None)
+        scores = evaluate_ROSA(angles, None)
 
         # Guardar los resultados en la base de datos
         rosa_score = RosaScore(
