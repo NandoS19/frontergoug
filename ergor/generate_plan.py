@@ -7,7 +7,6 @@ from ergor import db
 # Configurar las APIs
 genai.configure(api_key="AIzaSyAo46Co2yniw1aQDFWbcZsfsVipbv0v_zM")  # API de Google Generative AI
 llama = LlamaAPI("LA-05ca3abe055d4847aebd6b034374da2ff5a07974966e418e9d7f72b18635c32b")  # Llama API
-#llave de api openai falta aqui, por motivo de seguridad de Githup no dejo subir 
 
 
 def generate_plan(user_id, employee_id, method):
@@ -34,34 +33,39 @@ def generate_plan(user_id, employee_id, method):
             return {"error": "No se encontraron resultados para el método ROSA"}
 
         prompt = (
-            f"**FICHA MÉDICA ERGONÓMICA**\n\n"
             f"**Datos del Empleado**:\n"
-            f"- Nombre: {employee.name} {employee.last_name}\n"
-            f"- Puesto de Trabajo: {employee.job_title}\n"
-            f"- Edad: {employee.age} años\n"
-            f"- Altura: {employee.height} m\n"
-            f"- Peso: {employee.weight} kg\n"
-            f"- Género: {employee.gender}\n"
-            f"- Horas de trabajo por día: {employee.hours} horas\n\n"
+            f"**Caso de estudio: Evaluación ergonómica basada en el método ROSA**\n\n"
+            f"**Contexto del empleado:**\n"
+            f"El empleado, {employee.name} {employee.last_name}, tiene {employee.age} años y trabaja en el sector de {employee.work} desempeñando el puesto de {employee.job_title}. \n"
+            f"Lleva {employee.time_company} años trabajando en la empresa y realiza jornadas laborales de {employee.hours} horas al día.\n"
+            f"Sus características físicas son las siguientes: {employee.height} m de altura y {employee.weight} kg de peso. El empleado se identifica como {employee.gender}.\n\n"
             
-            f"**Método de Evaluación: ROSA**\n"
-            f"- Puntaje de silla: {rosa_score.chair_score}\n"
-            f"- Puntaje de monitor: {rosa_score.monitor_score}\n"
-            f"- Puntaje de teclado: {rosa_score.keyboard_score}\n"
-            f"- Puntaje de teléfono: {rosa_score.phone_score}\n"
-            f"- Puntaje total: {rosa_score.total_score}\n\n"
+            f"**Resultados del análisis ergonómico:**\n"
+            f"El método ROSA ha evaluado el entorno laboral del empleado, obteniendo los siguientes puntajes:\n"
+            f"- Puntaje de silla: {rosa_score.chair_score}.\n"
+            f"- Puntaje de monitor: {rosa_score.monitor_score}.\n"
+            f"- Puntaje de teclado: {rosa_score.keyboard_score}.\n"
+            f"- Puntaje de teléfono: {rosa_score.phone_score}.\n"
+            f"- Puntaje total ROSA: {rosa_score.total_score}.\n\n"
             
-            f"**Diagnóstico**:\n"
-            f"Con base en los puntajes anteriores, se observa una carga ergonómica elevada en las siguientes áreas:\n"
-            f"- Silla: La posición de la silla no ofrece un soporte adecuado para {employee.name}.\n"
-            f"- Monitor: El monitor está a una altura inadecuada, lo que podría generar dolor en el cuello.\n"
-            f"- Teclado: El teclado está mal alineado, lo que genera tensión en los brazos y muñecas.\n\n"
+            f"El valor de la puntuación ROSA puede oscilar entre 1 y 10, siendo más grande cuanto mayor es el riesgo para la persona que ocupa el puesto. "
+            f"El valor 1 indica que no se aprecia riesgo. "
+            f"Valores entre 2 y 4 indican que el nivel de riesgo es bajo, pero que algunos aspectos del puesto son mejorables." 
+            f"Valores iguales o superiores a 5 indican que el nivel de riesgo es elevado. "
+            f"A partir de la puntuación final ROSA se proponen 5 Niveles de Actuación sobre el puesto." 
+            f"El Nivel de Actuación establece si es necesaria una actuación sobre el puesto y su urgencia y puede oscilar entre el nivel 0, que indica que no es necesaria la actuación, hasta el nivel 4 correspondiente a que la actuación sobre el puesto es urgente. "
+            f"En el caso de que la puntuación ROSA sea igual o superior a 5, se considera que el puesto de trabajo presenta riesgos ergonómicos y se debe actuar sobre él.\n\n"
             
-            f"**Plan de Mejora Ergonómica**:\n"
-            f"1. Ajustar la altura y el soporte de la silla para asegurar un correcto apoyo lumbar.\n"
-            f"2. Colocar el monitor a la altura de los ojos para reducir la tensión en el cuello.\n"
-            f"3. Reajustar la posición del teclado para mantener una postura neutral en las muñecas.\n"
-            f"4. Realizar pausas activas cada 30 minutos para evitar la fatiga muscular.\n"
+            f"**Solicitudes:**\n"
+            f"Con base en los datos proporcionados, realiza las siguientes tareas:\n"
+            f"1. **Diagnóstico detallado:** Identifica las principales áreas de riesgo ergonómico relacionadas con los resultados del método ROSA. Describe cómo cada puntaje impacta en la salud del empleado y justifica por qué se consideran riesgos críticos.\n"
+            f"2. **Plan de mejora ergonómico personalizado:** Proporciona recomendaciones claras y prácticas para abordar los riesgos identificados. Asegúrate de incluir soluciones específicas, como ajustes en el mobiliario, cambios en el diseño del entorno laboral, prácticas preventivas y sugerencias de capacitación ergonómica.\n"
+            f"3. **Justificación del plan:** Explica brevemente por qué las soluciones propuestas son efectivas para mitigar los riesgos y cómo contribuyen al bienestar del empleado.\n\n"
+            f"**Notas adicionales:**\n"
+            f"- El diagnóstico debe ser lo más detallado posible, priorizando las áreas con mayor puntaje.\n"
+            f"- Las recomendaciones deben ser prácticas, priorizando aquellas de fácil implementación pero con alto impacto.\n"
+            f"- Considera el perfil físico del empleado y el contexto laboral para personalizar las soluciones."
+            f"- La respuesta debe ser devuelta como si fueras a llenar una ficha medica."
         )
     
     elif method == "NIOSH":
