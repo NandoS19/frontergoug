@@ -317,8 +317,9 @@ def niosh(user_id,employee_id):
             asymmetry_angle=factors["asymmetry_angle"],
             frequency=frequency,
             displacement_distance=factors["displacement_distance"],
-            grip_quality=factors["grip_quality"],  # Incluyendo el valor derivado
-            rwl=scores["RWL"]
+            grip_quality=factors["grip_quality"],
+            rwl=scores["RWL"],
+            li=scores["LI"]  # NUEVO: Guardar LI en la base de datos
         )
         db.session.add(niosh_score)
         db.session.commit()
