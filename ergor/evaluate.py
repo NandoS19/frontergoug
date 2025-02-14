@@ -26,8 +26,9 @@ def rosa(user_id,employee_id):
     #flash (f"El archivo es: {filepath}")
     
     # Importar los módulos para procesamiento y evaluación
-    from ergor.process_videoROSA import process_video
-    from ergor.rosa_evaluation import evaluate_ROSA
+    # from ergor.process_videoROSA import process_video
+    from ergor.controller.rosa_evaluation import evaluate_ROSA
+    from ergor.controller.rosaVideo import process_video
 
     # Procesar el video para calcular ángulos
     try:
@@ -94,10 +95,10 @@ def reba(user_id,employee_id):
     print (f"El archivo es: {filepath}")
 
     # Importar las funciones necesarias para procesar el video
-    from ergor.process_videoREBA import process_video
-    from ergor.process_videoREBA import calcular_puntuacion_global_A
-    from ergor.process_videoREBA import calcular_puntuacion_global_grupo_B
-    from ergor.process_videoREBA import calcular_puntuacion_final
+    from ergor.controller.process_videoREBA import process_video
+    from ergor.controller.process_videoREBA import calcular_puntuacion_global_A
+    from ergor.controller.process_videoREBA import calcular_puntuacion_global_grupo_B
+    from ergor.controller.process_videoREBA import calcular_puntuacion_final
 
     try:
         # Procesamos el video y obtenemos los datos de los códigos posturales más altos
@@ -217,8 +218,8 @@ def owas(user_id, employee_id):
     #flash (f"El archivo es: {filepath}")
     
     # Importar los módulos para procesamiento y evaluación
-    from ergor.process_videoOWAS import process_video
-    from ergor.owas_evaluation import evaluate_owas
+    from ergor.controller.process_videoOWAS import process_video
+    from ergor.controller.owas_evaluation import evaluate_owas
     
     # Procesar el video para calcular ángulos
     try:
@@ -268,8 +269,8 @@ def niosh(user_id,employee_id):
     user = User.query.get_or_404(user_id)
     employe = Employe.query.get_or_404(employee_id)
 
-    from ergor.process_videoNIOSH import process_video
-    from ergor.niosh_evaluation import evaluate_niosh
+    from ergor.controller.process_videoNIOSH import process_video
+    from ergor.controller.niosh_evaluation import evaluate_niosh
 
     if not employe.video_path:
         flash('El usuario no tiene un video subido.')
