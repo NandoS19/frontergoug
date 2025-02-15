@@ -8,46 +8,76 @@ def evaluate_ROSA(angles, usage_times=None):
     :return: Diccionario con puntajes ROSA y puntaje total.
     """
     
+    # Valores por defecto para el tiempo de uso (parametrizados)
     if usage_times is None:
         usage_times = {
-            "chair": -1,
-            "monitor": -1,
-            "keyboard": -1,
-            "phone": -1
+            "chair": 0,  # 0 puntos (entre 1 y 4 horas en total o 30 minutos ininterrumpidos)
+            "monitor": 0,
+            "keyboard": 0,
+            "phone": 0
         }
     
+    # Inicialización de puntuaciones
     chair_score = 0
     monitor_score = 0
     keyboard_score = 0
     phone_score = 0
 
     # Evaluación de la altura del asiento (Tabla 2)
-    if 85 <= angles["knee"] <= 95:
-        chair_score += 1
-    elif angles["knee"] < 85 or angles["knee"] > 95:
-        chair_score += 2
     if angles["knee"] < 85:
-        chair_score += 3
+        chair_score += 2  # Asiento muy bajo, ángulo de rodilla < 90º
+        # if angles.get("feet_contact", 1) == 0:  # Pies no tienen contacto con el suelo
+            # chair_score += 1
+    elif angles["knee"] > 95:
+        chair_score += 2  # Asiento muy alto, ángulo de rodilla > 90º
+    else:
+        chair_score += 1  # Ángulo de rodilla aprox. 90º
+
+    # Incrementos adicionales para la altura del asiento
+    # if angles.get("leg_space", 0) == 0:  # Espacio insuficiente para las piernas
+    #     chair_score += 1
+    # if angles.get("seat_height_adjustable", 0) == 0:  # Altura no regulable
+    #     chair_score += 1
 
     # Evaluación de la profundidad del asiento (Tabla 3)
-    if 8 <= angles["seat_depth"] <= 12:
-        chair_score += 1
+    if angles.get("seat_depth", 8) < 8:
+        chair_score += 2  # Asiento muy largo
+    elif angles.get("seat_depth", 8) > 8:
+        chair_score += 2  # Asiento muy corto
     else:
-        chair_score += 2
+        chair_score += 1  # Espacio adecuado
+
+    # # Incremento adicional para la profundidad del asiento
+    # if angles.get("seat_depth_adjustable", 0) == 0:  # Profundidad no regulable
+    #     chair_score += 1
 
     # Evaluación de los reposabrazos (Tabla 4)
-    if 85 <= angles["elbow"] <= 95:
-        chair_score += 1
+    if angles["elbow"] < 85 or angles["elbow"] > 95:
+        chair_score += 2  # Reposabrazos demasiado altos o bajos
     else:
-        chair_score += 2
+        chair_score += 1  # Codos bien apoyados
+
+    # Incrementos adicionales para los reposabrazos
+    # if angles.get("armrest_separation", 0) == 1:  # Reposabrazos demasiado separados
+        # chair_score += 1
+    # if angles.get("armrest_surface", 0) == 1:  # Superficie dura o dañada
+        # chair_score += 1
+    # if angles.get("armrest_adjustable", 0) == 0:  # Reposabrazos no ajustables
+        # chair_score += 1
 
     # Evaluación del respaldo (Tabla 5)
-    if 95 <= angles["back"] <= 110:
-        chair_score += 1
+    if angles["back"] < 95 or angles["back"] > 110:
+        chair_score += 2  # Respaldo no reclinado adecuadamente
     else:
-        chair_score += 2
-    
-    # Ajuste por tiempo de uso (Tabla 7)
+        chair_score += 1  # Respaldo reclinado adecuadamente
+
+    # Incrementos adicionales para el respaldo
+    # if angles.get("work_surface_height", 0) == 1:  # Superficie de trabajo demasiado alta
+        # chair_score += 1
+    # if angles.get("backrest_adjustable", 0) == 0:  # Respaldo no ajustable
+        # chair_score += 1
+
+    # Ajuste por tiempo de uso de la silla (Tabla 7)
     chair_score += usage_times["chair"]
 
     # Matriz de puntuación de la silla (Tabla A)
@@ -63,26 +93,56 @@ def evaluate_ROSA(angles, usage_times=None):
     chair_score = tabla_A[min(chair_score, 6)][min(chair_score, 7)]
 
     # Evaluación de la pantalla (Tabla 8)
-    if 45 <= angles["monitor_distance"] <= 75:
-        monitor_score += 1
-    elif angles["monitor_distance"] < 45:
-        monitor_score += 2
+    if angles["monitor_distance"] < 45:
+        monitor_score += 2  # Pantalla muy baja
+    elif angles["monitor_distance"] > 75:
+        monitor_score += 3  # Pantalla demasiado alta
     else:
-        monitor_score += 3
+        monitor_score += 1  # Distancia adecuada
+
+    # Incrementos adicionales para la pantalla
+    if angles.get("monitor_lateral_deviation", 0) == 1:  # Pantalla desviada lateralmente
+        monitor_score += 1
+    if angles.get("document_holder", 0) == 0:  # No hay atril para documentos
+        monitor_score += 1
+    if angles.get("monitor_glare", 0) == 1:  # Brillos o reflejos en la pantalla
+        monitor_score += 1
+    if angles.get("monitor_too_far", 0) == 1:  # Pantalla muy lejos
+        monitor_score += 1
+
+    # Ajuste por tiempo de uso del monitor (Tabla 7)
     monitor_score += usage_times["monitor"]
 
     # Evaluación del teléfono (Tabla 9)
-    if angles["phone_distance"] <= 30:
-        phone_score += 1
+    if angles["phone_distance"] > 30:
+        phone_score += 2  # Teléfono lejos
     else:
-        phone_score += 2
+        phone_score += 1  # Teléfono cerca
+
+    # Incrementos adicionales para el teléfono
+    # if angles.get("phone_shoulder", 0) == 1:  # Teléfono sujetado entre cuello y hombro
+        # phone_score += 2
+    # if angles.get("phone_hands_free", 0) == 0:  # Teléfono no tiene función manos libres
+        # phone_score += 1
+
+    # Ajuste por tiempo de uso del teléfono (Tabla 7)
     phone_score += usage_times["phone"]
 
     # Evaluación del teclado (Tabla 12)
-    if 0 <= angles["wrist"] <= 15:
-        keyboard_score += 1
+    if angles["wrist"] > 15:
+        keyboard_score += 2  # Muñecas extendidas más de 15º
     else:
-        keyboard_score += 2
+        keyboard_score += 1  # Muñecas rectas
+
+    # Incrementos adicionales para el teclado
+    if angles.get("wrist_deviation", 0) == 1:  # Muñecas desviadas lateralmente
+        keyboard_score += 1
+    if angles.get("keyboard_height", 0) == 1:  # Teclado demasiado alto
+        keyboard_score += 1
+    if angles.get("keyboard_adjustable", 0) == 0:  # Teclado no ajustable
+        keyboard_score += 1
+
+    # Ajuste por tiempo de uso del teclado (Tabla 7)
     keyboard_score += usage_times["keyboard"]
 
     # Matriz de puntuación de pantalla y periféricos (Tabla D)
@@ -123,136 +183,3 @@ def evaluate_ROSA(angles, usage_times=None):
     }
 
 
-# def evaluate_rosa(angles):
-#     """
-#     Calcula puntajes detallados de ROSA basados en los ángulos proporcionados.
-#     :param angles: Diccionario con los ángulos calculados.
-#     :return: Diccionario con puntajes ROSA y puntaje total.
-#     """
-#     chair_score = 0
-#     monitor_score = 0
-#     keyboard_score = 0
-#     phone_score = 0
-
-#     # Evaluación de silla (chair_score)
-#     if 90 <= angles["hip"] <= 110:
-#         chair_score += 1  # Postura adecuada
-#     elif 70 <= angles["hip"] < 90 or 110 < angles["hip"] <= 130:
-#         chair_score += 2  # Ajuste necesario
-#     else:
-#         chair_score += 3  # Revisión urgente
-
-#     # Evaluación del monitor (monitor_score)
-#     if 0 <= angles["shoulder"] <= 20:
-#         monitor_score += 1  # Altura adecuada
-#     elif 20 < angles["shoulder"] <= 40:
-#         monitor_score += 2  # Requiere ajuste
-#     else:
-#         monitor_score += 3  # Riesgo alto
-
-#     # Evaluación del teclado/ratón (keyboard_score)
-#     if 70 <= angles["elbow"] <= 100:
-#         keyboard_score += 1  # Postura adecuada
-#     elif 60 <= angles["elbow"] < 70 or 100 < angles["elbow"] <= 120:
-#         keyboard_score += 2  # Ajuste necesario
-#     else:
-#         keyboard_score += 3  # Revisión urgente
-
-#     # Evaluación del teléfono (phone_score)
-#     phone_score = 1  # Puntaje fijo para este ejemplo
-
-#     # Cálculo del puntaje total
-#     total_score = chair_score + monitor_score + keyboard_score + phone_score
-
-#     return {
-#         "chair_score": chair_score,
-#         "monitor_score": monitor_score,
-#         "keyboard_score": keyboard_score,
-#         "phone_score": phone_score,
-#         "total_score": total_score
-#     }
-
-# def evaluate_Rosa(angles, usage_times=None):
-#     """
-#     Calcula puntajes detallados de ROSA basados en los ángulos proporcionados y tiempos de uso.
-#     :param angles: Diccionario con los ángulos calculados.
-#     :param usage_times: Diccionario con los tiempos de uso de cada elemento.
-#     :return: Diccionario con puntajes ROSA y puntaje total.
-#     """
-    
-#     if usage_times is None:
-#         usage_times = {
-#             "chair": -1,  # Por defecto, 1 hora de uso de la silla
-#             "monitor": -1,  # Por defecto, 1 hora de uso del monitor
-#             "keyboard": -1,  # Por defecto, 1 hora de uso del teclado
-#             "phone": -1  # Por defecto, 1 hora de uso del teléfono
-#         }
-    
-#     chair_score = 0
-#     monitor_score = 0
-#     keyboard_score = 0
-#     phone_score = 0
-
-#     # Evaluación de la altura del asiento
-#     if 85 <= angles["knee"] <= 95:
-#         chair_score += 1  # Rodillas flectadas 90 grados aproximadamente
-#     elif angles["knee"] < 85 or angles["knee"] > 95:
-#         chair_score += 2  # Asiento muy bajo o muy alto
-#     if angles["knee"] < 85:
-#         chair_score += 3  # Pies no tienen contacto con el suelo
-
-#     # Evaluación de la profundidad del asiento
-#     if 8 <= angles["seat_depth"] <= 12:
-#         chair_score += 1  # Espacio adecuado entre asiento y rodillas
-#     else:
-#         chair_score += 2  # Asiento muy largo o muy corto
-
-#     # Evaluación de los reposabrazos
-#     if 85 <= angles["elbow"] <= 95:
-#         chair_score += 1  # Codos bien apoyados y hombros relajados
-#     else:
-#         chair_score += 2  # Reposabrazos demasiado altos o bajos
-
-#     # Evaluación del respaldo
-#     if 95 <= angles["back"] <= 110:
-#         chair_score += 1  # Respaldo reclinado adecuadamente
-#     else:
-#         chair_score += 2  # Sin apoyo lumbar o respaldo no adecuado
-
-#     # Evaluación del monitor
-#     if 45 <= angles["monitor_distance"] <= 75:
-#         monitor_score += 1  # Distancia adecuada de la pantalla
-#     elif angles["monitor_distance"] < 45:
-#         monitor_score += 2  # Pantalla muy baja
-#     else:
-#         monitor_score += 3  # Pantalla demasiado alta
-
-#     # Evaluación del teclado
-#     if 0 <= angles["wrist"] <= 15:
-#         keyboard_score += 1  # Muñecas rectas y hombros relajados
-#     else:
-#         keyboard_score += 2  # Muñecas extendidas más de 15 grados
-
-#     # Evaluación del teléfono
-#     if angles["phone_distance"] <= 30:
-#         phone_score += 1  # Teléfono cerca y cuello en posición neutral
-#     else:
-#         phone_score += 2  # Teléfono lejos
-
-#     # Ajuste por tiempo de uso
-#     chair_score += usage_times["chair"]
-#     monitor_score += usage_times["monitor"]
-#     keyboard_score += usage_times["keyboard"]
-#     phone_score += usage_times["phone"]
-
-#     # Cálculo del puntaje total
-#     total_score = chair_score + monitor_score + keyboard_score + phone_score
-
-#     return {
-#         "chair_score": chair_score,
-#         "monitor_score": monitor_score,
-#         "keyboard_score": keyboard_score,
-#         "phone_score": phone_score,
-#         "total_score": total_score
-#     }
-    
