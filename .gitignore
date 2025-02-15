@@ -8,4 +8,4 @@ ergor/__pycache__/__init__
 .venv
 /.venv
 __pycache__
-
+.env
