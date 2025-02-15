@@ -5,43 +5,44 @@
 <section class="container mt-5" {{ value }}>
     <div class="row align-items-center">
         <div class="col-md-6 py-5" style="margin-top: 50px;">
-            <h1 class="display-4 fst-italic text-primary" data-aos="fade-up">
+            <h1 class="display-4 fst-italic text-primary">
                 {% block title %}Bienvenido a ERGO-UG{% endblock %}
             </h1>
-            <p class="lead text-muted" data-aos="fade-up" data-aos-delay="200">
+            <p class="lead text-muted">
                 Aquí podrás evaluar distintos métodos ergonómicos para mejorar tu calidad de vida. Nuestra plataforma es
                 fácil de usar y te permite poner a prueba la precisión de las inteligencias artificiales generativas para
                 evaluar riesgos ergonómicos.
             </p>
-            <p data-aos="fade-up" data-aos-delay="400">
+            <p>
                 Para empezar, simplemente haz clic en el botón "Evaluar" y comienza el proceso paso a paso. Puedes incluir
                 videos para que nuestra aplicación web realice un análisis en conjunto con inteligencias artificiales
                 generativas, obtener un diagnóstico y un plan de mejora, además de valorar los resultados obtenidos.
             </p>
-            <p data-aos="fade-up" data-aos-delay="600">¡Únete a nuestra comunidad hoy y comienza a disfrutar de los beneficios de ERGO-UG!</p>
+            <p>¡Únete a nuestra comunidad hoy y comienza a disfrutar de los beneficios de ERGO-UG!</p>
             {% if g.user %}
-            <a href="{{ url_for('auth.upload', id=g.user.user_id) }}" class="btn btn-primary btn-lg mt-3 shadow-sm custom-btn" data-aos="fade-up" data-aos-delay="800">
+            <a href="{{ url_for('auth.upload', id=g.user.user_id) }}" class="btn btn-primary btn-lg mt-3 shadow-sm" style="border-radius: 30px;">
                 Evaluar
             </a>
             {% else %}
-            <p class="text-warning mt-3" style="font-size: 1.5rem; font-weight: bold; color: #FF5733; text-align: center;" data-aos="fade-up" data-aos-delay="800">
+            <p class="text-warning mt-3" style="font-size: 1.5rem; font-weight: bold; color: #FF5733; text-align: center;">
                 ¡Por favor, inicia sesión para comenzar a evaluar!
             </p>
-            <a href="{{ url_for('auth.login') }}" class="btn btn-secondary btn-lg mt-3 shadow-sm custom-btn" style="border-radius: 30px; padding: 15px 40px; font-size: 1.25rem;" data-aos="fade-up" data-aos-delay="1000">
+            <a href="{{ url_for('auth.login') }}" class="btn btn-secondary btn-lg mt-3 shadow-sm" style="border-radius: 30px; padding: 15px 40px; font-size: 1.25rem;">
                 Iniciar Sesión
             </a>
             {% endif %}
         </div>
         <div class="col-md-5" style="margin-top: 50px; margin-left: 30px;">
-            <img src="{{ url_for('static', filename='img/ergoug.jpg') }}" alt="Imagen de bienvenida" class="img-fluid" style="width: 100%; height: auto; object-fit: cover; border-radius: 15px;" data-aos="fade-left">
+            <img src="{{ url_for('static', filename='img/ergoug.jpg') }}" alt="Imagen de bienvenida" class="img-fluid"
+                style="width: 100%; height: auto; object-fit: cover; border-radius: 15px;">
         </div>
     </div>
 </section>
 
 <!-- Sección de métodos de evaluación -->
 <section class="container mt-5">
-    <h2 class="text-center text-primary mb-4" data-aos="fade-up">Nuestros Métodos de Evaluación</h2>
-    <div id="metodosCarousel" class="carousel slide" data-bs-ride="carousel" data-aos="fade-up" data-aos-delay="200">
+    <h2 class="text-center text-primary mb-4">Nuestros Métodos de Evaluación</h2>
+    <div id="metodosCarousel" class="carousel slide" data-bs-ride="carousel">
         <!-- Indicadores del carrusel -->
         <div class="carousel-indicators">
             <button type="button" data-bs-target="#metodosCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
@@ -128,24 +129,5 @@
         </button>
     </div>
 </section>
-<!-- Sección Cómo Funciona -->
-<section class="container mt-5" id="como-funciona">
-    <h2 class="text-center text-primary mb-4" data-aos="fade-up">¿Cómo Funciona?</h2>
-    <div class="row text-center">
-        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-            <h4>Paso 1</h4>
-            <p>Sube un video o imagen del entorno de trabajo que deseas evaluar.</p>
-        </div>
-        <div class="col-md-4" data-aos="fade-up" data-aos-delay="400">
-            <h4>Paso 2</h4>
-            <p>Nuestra inteligencia artificial analizará las posturas y factores de riesgo.</p>
-        </div>
-        <div class="col-md-4" data-aos="fade-up" data-aos-delay="600">
-            <h4>Paso 3</h4>
-            <p>Recibe un diagnóstico detallado y sugerencias para mejorar la ergonomía de tu espacio.</p>
-        </div>
-    </div>
-</section>
 
 {% endblock %}
-
