@@ -1,13 +1,18 @@
+import os
+from dotenv import load_dotenv
 import google.generativeai as genai
 from llamaapi import LlamaAPI
 import openai
 from ergor.models import User, RosaScore, NioshScore, OwasScore, RebaScore, Employe
 from ergor import db
 
-# Configurar las APIs
-genai.configure(api_key="AIzaSyAo46Co2yniw1aQDFWbcZsfsVipbv0v_zM")  # API de Google Generative AI
-llama = LlamaAPI("LA-05ca3abe055d4847aebd6b034374da2ff5a07974966e418e9d7f72b18635c32b")  # Llama API
+# Cargar las variables de entorno
+load_dotenv()
 
+# Configurar las APIs usando variables de entorno
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+llama = LlamaAPI(os.getenv("LLAMA_API_KEY"))
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def generate_plan(user_id, employee_id, method):
     """
