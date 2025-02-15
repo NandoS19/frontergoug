@@ -29,7 +29,7 @@ def evaluate_niosh(load_weight, horizontal_distance, vertical_distance, asymmetr
 
     return {
     "RWL": round(RWL, 2),
-    "LI": round(LI, 2),
+    "LI": round(LI, 2), #Se asegura de retornar LI
     "risk_level": "Alto" if LI > 3 else "Moderado" if LI > 1 else "Bajo",
     "horizontal_distance": round(horizontal_distance, 2),
     "vertical_distance": round(vertical_distance, 2),
@@ -38,4 +38,5 @@ def evaluate_niosh(load_weight, horizontal_distance, vertical_distance, asymmetr
     "grip_quality": grip_quality,
     "load_weight": round(load_weight, 2),  # Peso de la carga
     "frequency": frequency  # Frecuencia de levantamiento
+    
 }

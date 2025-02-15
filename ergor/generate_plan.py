@@ -74,6 +74,7 @@ def generate_plan(user_id, employee_id, method):
             return {"error": "No se encontraron resultados para el método NIOSH"}
 
         prompt = (
+            f"-solo con los datos que te estoy dando aqui, excepto en diagnostico y pan de mejora, en eso si dame mas detalles de un diagnostico y plan de mejora ergonomica, pero manten la estructura de FICHA MÉDICA ERGONÓMICA, Datos del Empleado, Método de Evaluación: NIOSH , este mensaje no muestres de (solo con los datos que te estoy dando aqui):"
             f"**FICHA MÉDICA ERGONÓMICA**\n\n"
             f"**Datos del Empleado**:\n"
             f"- Nombre: {employee.name} {employee.last_name}\n"
@@ -93,9 +94,11 @@ def generate_plan(user_id, employee_id, method):
             f"- Desplazamiento vertical: {niosh_score.displacement_distance} m\n"
             f"- Calidad del agarre: {niosh_score.grip_quality}\n"
             f"- RWL: {niosh_score.rwl} kg\n\n"
+            f"- Índice de Levantamiento (LI): {niosh_score.li}\n"
+            
             
             f"**Diagnóstico**:\n"
-            f"Se ha detectado que el empleado está expuesto a un riesgo elevado de lesiones en la columna debido a la frecuencia y carga del trabajo.\n\n"
+            f"Se ha detectado que el empleado está expuesto a un riesgo elevado de lesiones en la columna debido al índice de levantamiento (LI) y peso de la carga.\n\n"
             
             f"**Plan de Mejora Ergonómica**:\n"
             f"1. Reducir el peso de la carga para evitar esfuerzo excesivo.\n"

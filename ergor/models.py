@@ -176,7 +176,7 @@ class NioshScore(db.Model):
     __tablename__ = 'niosh_scores'
     
     score_id = db.Column(db.Integer, primary_key=True)
-    employe_id = db.Column(db.Integer, db.ForeignKey('employe.employe_id'), nullable=False)  # Relación con Employe
+    employe_id = db.Column(db.Integer, db.ForeignKey('employe.employe_id'), nullable=False)
     load_weight = db.Column(db.Numeric(5, 2), db.CheckConstraint('load_weight > 0'), nullable=False)
     horizontal_distance = db.Column(db.Numeric(5, 2), db.CheckConstraint('horizontal_distance > 0'), nullable=False)
     vertical_distance = db.Column(db.Numeric(5, 2), db.CheckConstraint('vertical_distance > 0'), nullable=False)
@@ -185,10 +185,11 @@ class NioshScore(db.Model):
     displacement_distance = db.Column(db.Numeric(5, 2), db.CheckConstraint('displacement_distance >= 0'), nullable=False)
     grip_quality = db.Column(db.String(10), nullable=False)  # "bueno", "regular", "malo"
     rwl = db.Column(db.Numeric(5, 2), db.CheckConstraint('rwl > 0'), nullable=False)
-    level_id = db.Column(db.Integer, db.ForeignKey('risk_levels.level_id'), nullable=True)  # Nivel de riesgo asociado
+    li = db.Column(db.Numeric(5, 2), db.CheckConstraint('li > 0'), nullable=False)  # NUEVO: Índice de levantamiento
+    level_id = db.Column(db.Integer, db.ForeignKey('risk_levels.level_id'), nullable=True)
     evaluation_date = db.Column(db.DateTime, default=func.now())
-    
-    def __init__(self, employe_id, load_weight, horizontal_distance, vertical_distance, asymmetry_angle, frequency, displacement_distance, grip_quality, rwl, level_id=None):
+
+    def __init__(self, employe_id, load_weight, horizontal_distance, vertical_distance, asymmetry_angle, frequency, displacement_distance, grip_quality, rwl, li, level_id=None):
         self.employe_id = employe_id
         self.load_weight = load_weight
         self.horizontal_distance = horizontal_distance
@@ -198,6 +199,7 @@ class NioshScore(db.Model):
         self.displacement_distance = displacement_distance
         self.grip_quality = grip_quality
         self.rwl = rwl
+        self.li = li  # NUEVO: Guardar LI
         self.level_id = level_id
     
     def __repr__(self):
