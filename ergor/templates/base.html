@@ -110,11 +110,13 @@
                                     <span class="d-inline-block bg-success rounded-circle p-1"></span> Evaluar
                                 </a>
                             </li>
+                            <!-- COMENTAR DE SER NECESARIO -->
                             <li>
                                 <a class="dropdown-item" href="{{ url_for('evaluate.results', id=g.user.user_id) }}">
                                     <span class="d-inline-block bg-primary rounded-circle p-1"></span> Mis Resultados
                                 </a>
                             </li>
+                            <!-- CIERRE DE COMENTARIO -->
                             <li>
                                 <a class="dropdown-item" href="{{ url_for('auth.profile', id=g.user.user_id) }}">
                                     <span class="d-inline-block bg-info rounded-circle p-1"></span> Perfil
