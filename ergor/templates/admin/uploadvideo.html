@@ -35,24 +35,24 @@
                     <label for="time_company">Tiempo en la empresa(Años)</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="job_title" name="job_title" required
-                        placeholder="Cargo de trabajo">
+                    <input type="job_title" class="form-control" id="job_title" name="job_title" required
+                        placeholder="Job_Title">
                     <label for="job_title">Cargo de trabajo</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <input type="number" class="form-control" id="age" name="age" required placeholder="Edad">
+                    <input type="age" class="form-control" id="age" name="age" required placeholder="Age">
                     <label for="age">Edad</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <input type="number" step="0.01" class="form-control" id="height" name="height" required placeholder="Altura">
+                    <input type="height" class="form-control" id="height" name="height" required placeholder="Height">
                     <label for="height">Altura (metros)</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <input type="number" class="form-control" id="weight" name="weight" required placeholder="Peso">
+                    <input type="weight" class="form-control" id="weight" name="weight" required replaceholder="Weight">
                     <label for="weight">Peso (kg)</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <select class="form-select" id="gender" name="gender" required>
+                    <select class="form-select" id="gender" name="gender" required replaceholder="Gender">
                         <option value="" disabled selected>Selecciona tu género</option>
                         <option value="male">Masculino</option>
                         <option value="female">Femenino</option>
@@ -61,32 +61,15 @@
                     <label for="gender">Género</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <input type="number" class="form-control" id="hours" name="hours" required placeholder="Horas de trabajo">
+                    <input type="hours" class="form-control" id="hours" name="hours" required replaceholder="Hours">
                     <label for="hours">Horas de trabajo</label>
-                </div>
-
-                <!-- Selección del Método -->
-                <div class="form-floating mb-3">
-                    <select class="form-select" id="metodo" name="metodo" required>
-                        <option value="" disabled selected>Selecciona un método</option>
-                        <option value="ROSA">ROSA</option>
-                        <option value="NIOSH">NIOSH</option>
-                        <option value="REBA">REBA</option>
-                        <option value="OWAS">OWAS</option>
-                    </select>
-                    <label for="metodo">Seleccionar Método</label>
-                </div>
-
-                <!-- Campo de Peso de la Carga (oculto por defecto) -->
-                <div class="form-floating mb-3" id="loadWeightField" style="display: none;">
-                    <input type="number" class="form-control" id="load_weight" name="load_weight" placeholder="Peso de la carga (kg)">
-                    <label for="load_weight">Peso de la carga (kg)</label>
                 </div>
 
                 <!-- Botón para subir video -->
                 <div class="form-group mb-4">
                     <label for="uploadVideo" class="form-label fw-bold">Cargar Video:</label>
-                    <input type="file" class="form-control" id="uploadVideo" name="uploadVideo" accept="video/*" required>
+                    <input type="file" class="form-control" id="uploadVideo" name="uploadVideo" accept="video/*"
+                        required>
                     <small class="form-text text-muted">El video debe estar en formato MP4 o similar.</small>
                 </div>
                 <div class="container mt-5">
@@ -104,33 +87,49 @@
                                     <option value="OWAS">OWAS</option>
                                 </select>
                             </div>
+                            <div id="loadWeightContainer" class="form-floating mb-3" style="display: none;">
+                                <input type="number" step="0.01" class="form-control" id="load_weight" name="load_weight" placeholder="Peso de la carga">
+                                <label for="load_weight">Peso de la carga (kg)</label>
+                            </div>
+                            
+                            <script>
+                                document.getElementById('metodo').addEventListener('change', function () {
+                                    const loadWeightContainer = document.getElementById('loadWeightContainer');
+                                    if (this.value === 'NIOSH') {
+                                        loadWeightContainer.style.display = 'block';
+                                    } else {
+                                        loadWeightContainer.style.display = 'none';
+                                    }
+                                });
+                            </script>
                             <!-- Previsualización del Video -->
                             <div class="mb-4">
                                 <video id="videoPreview" controls
                                     style="width: 120%; height: auto; display: none;"></video>
                             </div>
 
-                <!-- Botón para procesar el video -->
-                <div class="d-grid">
-                    <button type="submit" class="btn btn-success btn-lg">Evaluar Video</button>
+                            <!-- Botón para procesar el video -->
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-success btn-lg">Evaluar Video</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </form>
-        </div>
-    </div>
-</div>
+            <script>
+                document.getElementById('uploadVideo').addEventListener('change', function (event) {
+                    const videoPreview = document.getElementById('videoPreview');
+                    const file = event.target.files[0];
 
-<script>
-    // Mostrar u ocultar el campo de peso de la carga según el método seleccionado
-    document.getElementById('metodo').addEventListener('change', function () {
-        var loadWeightField = document.getElementById('loadWeightField');
-        if (this.value === 'OWAS') {
-            loadWeightField.style.display = 'block'; // Muestra el campo si se elige OWAS
-        } else {
-            loadWeightField.style.display = 'none'; // Oculta el campo si es otro método
-        }
-    });
-</script>
+                    if (file) {
+                        const fileURL = URL.createObjectURL(file);
+                        videoPreview.src = fileURL;
+                        videoPreview.style.display = 'block';
+                    } else {
+                        videoPreview.style.display = 'none';
+                    }
+                });
+            </script>
 
 {% endblock %}
-            
             
