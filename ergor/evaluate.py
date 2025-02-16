@@ -59,7 +59,13 @@ def rosa(user_id,employee_id):
         #flash("Evaluación ROSA completada con éxito")
         print (f"Evaluación ROSA completada con éxito")
         print (f"Los puntajes ROSA son: {scores}")
-        return render_template('admin/rosa.html', user=user, employe=employe, scores=scores)
+        return render_template('admin/rosa.html', user=user, employe=employe, scores=scores,
+                            suma_altura_profundidad=scores["suma_altura_profundidad"],
+                            suma_reposabrazos_respaldo=scores["suma_reposabrazos_respaldo"],
+                            monitor_phone_score=scores["monitor_phone_score"],
+                            keyboard_mouse_score=scores["keyboard_mouse_score"],
+                            peripherals_score=scores["peripherals_score"],
+                            mouse_score=scores["mouse_score"])
     except Exception as e:
         flash(f"Error al calcular los puntajes ROSA: {str(e)}")
         print (f"Error al calcular los puntajes ROSA: {str(e)}")
