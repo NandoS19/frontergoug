@@ -129,20 +129,8 @@
             loadWeightField.style.display = 'none'; // Oculta el campo si es otro método
         }
     });
-
-    // Previsualización del video
-    document.getElementById('uploadVideo').addEventListener('change', function (event) {
-        const videoPreview = document.getElementById('videoPreview');
-        const file = event.target.files[0];
-
-        if (file) {
-            const fileURL = URL.createObjectURL(file);
-            videoPreview.src = fileURL;
-            videoPreview.style.display = 'block';
-        } else {
-            videoPreview.style.display = 'none';
-        }
-    });
 </script>
 
 {% endblock %}
+            
+            
