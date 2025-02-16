@@ -59,9 +59,9 @@ def evaluate_ROSA(angles, usage_times=None):
 
     # Evaluación de los reposabrazos (Tabla 4)
     if angles["elbow"] < 85 or angles["elbow"] > 95:
-        chair_score += 2  # Reposabrazos demasiado altos o bajos
+        suma_reposabrazos += 2  # Reposabrazos demasiado altos o bajos
     else:
-        chair_score += 1  # Codos bien apoyados
+        suma_reposabrazos += 1  # Codos bien apoyados
 
     # Incrementos adicionales para los reposabrazos
     if angles.get("armrest_separation", 0) == 1:  # Reposabrazos demasiado separados
@@ -96,6 +96,8 @@ def evaluate_ROSA(angles, usage_times=None):
     suma_altura_profundidad = suma_altura + suma_profundidad  # Suponiendo que chair_score ya es la suma de altura y profundidad
     suma_reposabrazos_respaldo = suma_reposabrazos + suma_respaldo  # Suponiendo que chair_score ya es la suma de reposabrazos y respaldo
     chair_score = tabla_A[min(suma_altura_profundidad - 2, 6)][min(suma_reposabrazos_respaldo - 2, 7)]
+    print (f"Suma altura profundidad: {suma_altura_profundidad}")
+    print (f"Suma reposabrazos respaldo {suma_reposabrazos_respaldo}")
     
     # Ajuste por tiempo de uso de la silla (Tabla 7)
     chair_score += usage_times["chair"]
