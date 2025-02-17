@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import google.generativeai as genai
 from llamaapi import LlamaAPI
 import openai
-from ergor.models import User, RosaScore, NioshScore, OwasScore, RebaScore, Employe
+from ergor.models import User, RosaScore, NioshScore, OwasScore, RebaScore, Employe, RiskLevel
 from ergor import db
 
 # Cargar las variables de entorno
@@ -37,6 +37,11 @@ def generate_plan(user_id, employee_id, method):
         if not rosa_score:
             return {"error": "No se encontraron resultados para el método ROSA"}
 
+        # Recuperar el RiskLevel relacionado con el RosaScore
+        risk_level = RiskLevel.query.get(rosa_score.level_id)
+        if not risk_level:
+            return {"error": "No se encontró el nivel de riesgo asociado al puntaje ROSA"}
+        
         prompt = (
             f"**Datos del Empleado**:\n"
             f"**Caso de estudio: Evaluación ergonómica basada en el método ROSA**\n\n"
@@ -50,16 +55,14 @@ def generate_plan(user_id, employee_id, method):
             f"- Puntaje de silla: {rosa_score.chair_score}.\n"
             f"- Puntaje de monitor: {rosa_score.monitor_score}.\n"
             f"- Puntaje de teclado: {rosa_score.keyboard_score}.\n"
+            f"- Puntaje de ratón: {rosa_score.mouse_score}.\n"
             f"- Puntaje de teléfono: {rosa_score.phone_score}.\n"
             f"- Puntaje total ROSA: {rosa_score.total_score}.\n\n"
             
-            f"El valor de la puntuación ROSA puede oscilar entre 1 y 10, siendo más grande cuanto mayor es el riesgo para la persona que ocupa el puesto. "
-            f"El valor 1 indica que no se aprecia riesgo. "
-            f"Valores entre 2 y 4 indican que el nivel de riesgo es bajo, pero que algunos aspectos del puesto son mejorables." 
-            f"Valores iguales o superiores a 5 indican que el nivel de riesgo es elevado. "
-            f"A partir de la puntuación final ROSA se proponen 5 Niveles de Actuación sobre el puesto." 
-            f"El Nivel de Actuación establece si es necesaria una actuación sobre el puesto y su urgencia y puede oscilar entre el nivel 0, que indica que no es necesaria la actuación, hasta el nivel 4 correspondiente a que la actuación sobre el puesto es urgente. "
-            f"En el caso de que la puntuación ROSA sea igual o superior a 5, se considera que el puesto de trabajo presenta riesgos ergonómicos y se debe actuar sobre él.\n\n"
+            f"**Nivel de Riesgo:**\n"
+            f"- Puntuación de riesgo: {risk_level.risk_score}\n"
+            f"- Nivel de riesgo: {risk_level.risk}\n"
+            f"- Descripción: {risk_level.description}\n\n"
             
             f"**Solicitudes:**\n"
             f"Con base en los datos proporcionados, realiza las siguientes tareas:\n"

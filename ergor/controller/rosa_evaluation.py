@@ -237,12 +237,15 @@ def evaluate_ROSA(angles, usage_times=None):
     print (f"Puntaje Silla: {chair_score}")
     print (f"Puntaje Perifericos: {peripherals_score}")
     print (f"Puntaje Total: {total_score}")
+    
+    risk_level_info = determine_risk_level(total_score)
 
     return {
         "chair_score": chair_score,
         "monitor_score": monitor_score,
         "keyboard_score": keyboard_score,
         "phone_score": phone_score,
+        "mouse_score": mouse_score,
         "mouse_score": mouse_score,
         "total_score": total_score,
         # Nuevos valores intermedios
@@ -251,5 +254,19 @@ def evaluate_ROSA(angles, usage_times=None):
         "monitor_phone_score": monitor_phone_score,
         "keyboard_mouse_score": keyboard_mouse_score,
         "peripherals_score": peripherals_score,
-        "mouse_score": mouse_score
+        # Nuevo campo con la información del nivel de riesgo
+        "risk_level_info": risk_level_info  
     }
+def determine_risk_level(total_score):
+    if total_score == 1:
+        return {"risk": "Inapreciable", "risk_level": 0, "description": "No es necesaria actuación."}
+    elif 2 <= total_score <= 4:
+        return {"risk": "Mejorable", "risk_level": 1, "description": "Pueden mejorarse algunos elementos del puesto."}
+    elif total_score == 5:
+        return {"risk": "Alto", "risk_level": 2, "description": "Es necesaria la actuación."}
+    elif 6 <= total_score <= 8:
+        return {"risk": "Muy Alto", "risk_level": 3, "description": "Es necesaria la actuación cuanto antes."}
+    elif 9 <= total_score <= 10:
+        return {"risk": "Extremo", "risk_level": 4, "description": "Es necesaria la actuación urgentemente."}
+    else:
+        return {"risk": "Desconocido", "risk_level": -1, "description": "Puntuación fuera de rango."}

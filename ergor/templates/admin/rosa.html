@@ -37,6 +37,11 @@
 
                 <!-- Puntaje de teléfono -->
                 <li class="list-group-item">
+                    <strong>Puntaje del mouse:</strong> {{ scores.mouse_score }}
+                </li>
+
+                <!-- Puntaje de teléfono -->
+                <li class="list-group-item">
                     <strong>Puntaje de teléfono:</strong> {{ scores.phone_score }}
                 </li>
 
@@ -48,7 +53,6 @@
                         <p>Puntaje Monitor + Teléfono: {{ monitor_phone_score }}</p>
                         <h5>Tabla B</h5>
                         <img src="{{ url_for('static', filename='img/TablaB.png') }}" alt="Tabla B" class="img-fluid">
-                        <p>Puntaje Mouse: {{ mouse_score }}</p>
                         <p>Puntaje Teclado + Mouse: {{ keyboard_mouse_score }}</p>
                         <h5>Tabla C</h5>
                         <img src="{{ url_for('static', filename='img/TablaC.png') }}" alt="Tabla C" class="img-fluid">
