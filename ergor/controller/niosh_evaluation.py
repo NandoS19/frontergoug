@@ -27,16 +27,23 @@ def evaluate_niosh(load_weight, horizontal_distance, vertical_distance, asymmetr
     # Índice de levantamiento
     LI = load_weight / RWL
 
-    return {
-    "RWL": round(RWL, 2),
-    "LI": round(LI, 2), #Se asegura de retornar LI
-    "risk_level": "Alto" if LI > 3 else "Moderado" if LI > 1 else "Bajo",
-    "horizontal_distance": round(horizontal_distance, 2),
-    "vertical_distance": round(vertical_distance, 2),
-    "asymmetry_angle": round(asymmetry_angle, 2),
-    "displacement_distance": round(displacement_distance, 2),
-    "grip_quality": grip_quality,
-    "load_weight": round(load_weight, 2),  # Peso de la carga
-    "frequency": frequency  # Frecuencia de levantamiento
-    
-}
+    # Resultados
+    results = {
+        "RWL": round(RWL, 2),
+        "LI": round(LI, 2),
+        "risk_level": "Alto" if LI > 3 else "Moderado" if LI > 1 else "Bajo",
+        "horizontal_distance": round(horizontal_distance, 2),
+        "vertical_distance": round(vertical_distance, 2),
+        "asymmetry_angle": round(asymmetry_angle, 2),
+        "displacement_distance": round(displacement_distance, 2),
+        "grip_quality": grip_quality,
+        "load_weight": round(load_weight, 2),
+        "frequency": frequency
+    }
+
+    # Imprimir resultados
+    print("\nResultados de Evaluación NIOSH:")
+    for key, value in results.items():
+        print(f"{key}: {value}")
+
+    return results
