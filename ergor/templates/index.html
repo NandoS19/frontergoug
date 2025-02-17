@@ -2,47 +2,46 @@
 
 {% block content %}
 <!-- Sección de bienvenida -->
-<section class="container mt-5" {{ value }}>
+<section class="container mt-5">
     <div class="row align-items-center">
-        <div class="col-md-6 py-5" style="margin-top: 50px;">
-            <h1 class="display-4 fst-italic text-primary">
+        <div class="col-md-6 py-5">
+            <h1 class="display-4 fst-italic text-primary" data-aos="fade-up">
                 {% block title %}Bienvenido a ERGO-UG{% endblock %}
             </h1>
-            <p class="lead text-muted">
+            <p class="lead text-muted" data-aos="fade-up" data-aos-delay="200">
                 Aquí podrás evaluar distintos métodos ergonómicos para mejorar tu calidad de vida. Nuestra plataforma es
                 fácil de usar y te permite poner a prueba la precisión de las inteligencias artificiales generativas para
                 evaluar riesgos ergonómicos.
             </p>
-            <p>
+            <p data-aos="fade-up" data-aos-delay="400">
                 Para empezar, simplemente haz clic en el botón "Evaluar" y comienza el proceso paso a paso. Puedes incluir
                 videos para que nuestra aplicación web realice un análisis en conjunto con inteligencias artificiales
                 generativas, obtener un diagnóstico y un plan de mejora, además de valorar los resultados obtenidos.
             </p>
-            <p>¡Únete a nuestra comunidad hoy y comienza a disfrutar de los beneficios de ERGO-UG!</p>
+            <p data-aos="fade-up" data-aos-delay="600">¡Únete a nuestra comunidad hoy y comienza a disfrutar de los beneficios de ERGO-UG!</p>
             {% if g.user %}
-            <a href="{{ url_for('auth.upload', id=g.user.user_id) }}" class="btn btn-primary btn-lg mt-3 shadow-sm" style="border-radius: 30px;">
+            <a href="{{ url_for('auth.upload', id=g.user.user_id) }}" class="btn btn-primary btn-lg mt-3 shadow-sm custom-btn" data-aos="fade-up" data-aos-delay="800">
                 Evaluar
             </a>
             {% else %}
-            <p class="text-warning mt-3" style="font-size: 1.5rem; font-weight: bold; color: #FF5733; text-align: center;">
+            <p class="text-warning mt-3 fs-4 fw-bold text-center" data-aos="fade-up" data-aos-delay="800">
                 ¡Por favor, inicia sesión para comenzar a evaluar!
             </p>
-            <a href="{{ url_for('auth.login') }}" class="btn btn-secondary btn-lg mt-3 shadow-sm" style="border-radius: 30px; padding: 15px 40px; font-size: 1.25rem;">
+            <a href="{{ url_for('auth.login') }}" class="btn btn-secondary btn-lg mt-3 shadow-sm custom-btn rounded-pill py-3 px-5 fs-5" data-aos="fade-up" data-aos-delay="1000">
                 Iniciar Sesión
             </a>
             {% endif %}
         </div>
-        <div class="col-md-5" style="margin-top: 50px; margin-left: 30px;">
-            <img src="{{ url_for('static', filename='img/ergoug.jpg') }}" alt="Imagen de bienvenida" class="img-fluid"
-                style="width: 100%; height: auto; object-fit: cover; border-radius: 15px;">
+        <div class="col-md-5">
+            <img src="{{ url_for('static', filename='img/ergoug.jpg') }}" alt="Imagen de bienvenida" class="img-fluid rounded-3" data-aos="fade-left">
         </div>
     </div>
 </section>
 
 <!-- Sección de métodos de evaluación -->
 <section class="container mt-5">
-    <h2 class="text-center text-primary mb-4">Nuestros Métodos de Evaluación</h2>
-    <div id="metodosCarousel" class="carousel slide" data-bs-ride="carousel">
+    <h2 class="text-center text-primary mb-4" data-aos="fade-up">Nuestros Métodos de Evaluación</h2>
+    <div id="metodosCarousel" class="carousel slide" data-bs-ride="carousel" data-aos="fade-up" data-aos-delay="200">
         <!-- Indicadores del carrusel -->
         <div class="carousel-indicators">
             <button type="button" data-bs-target="#metodosCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
@@ -56,7 +55,7 @@
             <!-- Método OWAS -->
             <div class="carousel-item active">
                 <div class="d-flex justify-content-center align-items-center">
-                    <img src="{{ url_for('static', filename='img/owasmetodo.jpg') }}" alt="Método OWAS" class="img-fluid me-4" style="width: 300px; height: auto; border-radius: 10px;">
+                    <img src="{{ url_for('static', filename='img/owasmetodo.jpg') }}" alt="Método OWAS" class="img-fluid me-4 rounded-3" style="width: 300px;">
                     <div>
                         <h3 class="text-primary">Método OWAS</h3>
                         <p>
@@ -72,7 +71,7 @@
             <!-- Método ROSA -->
             <div class="carousel-item">
                 <div class="d-flex justify-content-center align-items-center">
-                    <img src="{{ url_for('static', filename='img/rosametodo.png') }}" alt="Método ROSA" class="img-fluid me-4" style="width: 300px; height: auto; border-radius: 10px;">
+                    <img src="{{ url_for('static', filename='img/rosametodo.png') }}" alt="Método ROSA" class="img-fluid me-4 rounded-3" style="width: 300px;">
                     <div>
                         <h3 class="text-primary">Método ROSA</h3>
                         <p>
@@ -88,7 +87,7 @@
             <!-- Método NIOSH -->
             <div class="carousel-item">
                 <div class="d-flex justify-content-center align-items-center">
-                    <img src="{{ url_for('static', filename='img/nioshmetodo.jpeg') }}" alt="Método NIOSH" class="img-fluid me-4" style="width: 300px; height: auto; border-radius: 10px;">
+                    <img src="{{ url_for('static', filename='img/nioshmetodo.jpeg') }}" alt="Método NIOSH" class="img-fluid me-4 rounded-3" style="width: 300px;">
                     <div>
                         <h3 class="text-primary">Método NIOSH</h3>
                         <p>
@@ -104,7 +103,7 @@
             <!-- Método REBA -->
             <div class="carousel-item">
                 <div class="d-flex justify-content-center align-items-center">
-                    <img src="{{ url_for('static', filename='img/rebametodo.jpg') }}" alt="Método REBA" class="img-fluid me-4" style="width: 300px; height: auto; border-radius: 10px;">
+                    <img src="{{ url_for('static', filename='img/rebametodo.jpg') }}" alt="Método REBA" class="img-fluid me-4 rounded-3" style="width: 300px;">
                     <div>
                         <h3 class="text-primary">Método REBA</h3>
                         <p>
@@ -130,4 +129,52 @@
     </div>
 </section>
 
+<!-- Sección Cómo Funciona -->
+<section class="container mt-5" id="como-funciona">
+    <h2 class="text-center text-primary mb-4" data-aos="fade-up">¿Cómo Funciona?</h2>
+    <div class="row text-center">
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+            <h4>Paso 1</h4>
+            <p>Sube un video del entorno de trabajo que deseas evaluar.</p>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="400">
+            <h4>Paso 2</h4>
+            <p>Nuestra inteligencia artificial generativa analizará las posturas y factores de riesgo.</p>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="600">
+            <h4>Paso 3</h4>
+            <p>Recibe un diagnóstico detallado y sugerencias para mejorar la ergonomía de tu espacio.</p>
+        </div>
+    </div>
+    
+
+<section class="container mt-5">
+    <h2 class="text-center text-primary mb-4" data-aos="fade-up">Preguntas Frecuentes</h2>
+    <div class="accordion" id="faqAccordion">
+        <div class="accordion-item" data-aos="fade-up" data-aos-delay="200">
+            <h3 class="accordion-header" id="headingOne">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    ¿Cómo funciona el análisis de videos?
+                </button>
+            </h3>
+            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    La inteligencia artificial generativa, analiza las posturas y movimientos en el video para identificar riesgos ergonómicos y generar recomendaciones personalizadas.
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item" data-aos="fade-up" data-aos-delay="400">
+            <h3 class="accordion-header" id="headingTwo">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                    ¿Qué métodos de evaluación están disponibles?
+                </button>
+            </h3>
+            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    Actualmente ofrecemos los métodos OWAS, ROSA, NIOSH y REBA.
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}
