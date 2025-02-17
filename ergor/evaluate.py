@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash,g, session, jsonify
 from .auth import login_required
 from ergor import db
-from ergor.models import User, RosaScore, OwasScore, NioshScore, RebaScore, Employe
+from ergor.models import User, RosaScore, OwasScore, NioshScore, RebaScore, Employe, RiskLevel
 import os
 
 # Importar la función para generar planes de mejora
@@ -43,6 +43,19 @@ def rosa(user_id,employee_id):
     # Calcular puntajes ROSA
     try:
         scores = evaluate_ROSA(angles, None)
+        
+        # Determinar el nivel de riesgo
+        risk_level_info = scores["risk_level_info"]
+
+        # Guardar el nivel de riesgo en la tabla RiskLevel
+        risk_level = RiskLevel(
+            risk_score=scores["total_score"],
+            risk=risk_level_info["risk"],
+            risk_level=risk_level_info["risk_level"],
+            description=risk_level_info["description"]
+        )
+        db.session.add(risk_level)
+        db.session.commit()
 
         # Guardar los resultados en la base de datos
         rosa_score = RosaScore(
@@ -51,7 +64,9 @@ def rosa(user_id,employee_id):
             monitor_score=scores["monitor_score"],
             phone_score=scores["phone_score"],
             keyboard_score=scores["keyboard_score"],
-            total_score=scores["total_score"]
+            mouse_score=scores["mouse_score"],
+            total_score=scores["total_score"],
+            level_id=risk_level_info["risk_level"]
         )
         db.session.add(rosa_score)
         db.session.commit()
@@ -59,7 +74,12 @@ def rosa(user_id,employee_id):
         #flash("Evaluación ROSA completada con éxito")
         print (f"Evaluación ROSA completada con éxito")
         print (f"Los puntajes ROSA son: {scores}")
-        return render_template('admin/rosa.html', user=user, employe=employe, scores=scores)
+        return render_template('admin/rosa.html', user=user, employe=employe, scores=scores,
+                            suma_altura_profundidad=scores["suma_altura_profundidad"],
+                            suma_reposabrazos_respaldo=scores["suma_reposabrazos_respaldo"],
+                            monitor_phone_score=scores["monitor_phone_score"],
+                            keyboard_mouse_score=scores["keyboard_mouse_score"],
+                            peripherals_score=scores["peripherals_score"])
     except Exception as e:
         flash(f"Error al calcular los puntajes ROSA: {str(e)}")
         print (f"Error al calcular los puntajes ROSA: {str(e)}")

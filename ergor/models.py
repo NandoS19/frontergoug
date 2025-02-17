@@ -77,10 +77,14 @@ class RiskLevel(db.Model):
     __tablename__ = 'risk_levels'
     
     level_id = db.Column(db.Integer, primary_key=True)
-    risk_level = db.Column(db.String(50), nullable=False, unique=True)
+    risk_score = db.Column(db.Integer, nullable=False)
+    risk = db.Column(db.String(50), nullable=False)
+    risk_level = db.Column(db.Integer, nullable=False)
     description = db.Column(db.Text, nullable=True)
     
-    def __init__(self, risk_level, description=None):
+    def __init__(self, risk_score, risk, risk_level, description=None):
+        self.risk_score = risk_score
+        self.risk = risk
         self.risk_level = risk_level
         self.description = description
 
@@ -129,16 +133,18 @@ class RosaScore(db.Model):
     monitor_score = db.Column(db.Integer, db.CheckConstraint('monitor_score >= 0'), nullable=False)
     phone_score = db.Column(db.Integer, db.CheckConstraint('phone_score >= 0'), nullable=False)
     keyboard_score = db.Column(db.Integer, db.CheckConstraint('keyboard_score >= 0'), nullable=False)
+    mouse_score = db.Column(db.Integer, db.CheckConstraint('mouse_score >= 0'), nullable=False)
     total_score = db.Column(db.Numeric(5, 2), db.CheckConstraint('total_score >= 0'), nullable=False)
     level_id = db.Column(db.Integer, db.ForeignKey('risk_levels.level_id'), nullable=True)
     evaluation_date = db.Column(db.DateTime, default=func.now())  # Campo opcional recomendado
     
-    def __init__(self, employe_id, chair_score, monitor_score, phone_score, keyboard_score, total_score, level_id=None):
+    def __init__(self, employe_id, chair_score, monitor_score, phone_score, keyboard_score, mouse_score, total_score, level_id=None):
         self.employe_id = employe_id
         self.chair_score = chair_score
         self.monitor_score = monitor_score
         self.phone_score = phone_score
         self.keyboard_score = keyboard_score
+        self.mouse_score = mouse_score
         self.total_score = total_score
         self.level_id = level_id
 

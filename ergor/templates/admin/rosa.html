@@ -9,11 +9,60 @@
         <div class="card-body">
             <h3 class="card-title">Detalles de la Evaluación</h3>
             <ul class="list-group list-group-flush">
-                <li class="list-group-item">Puntaje de silla: <strong>{{ scores.chair_score }}</strong></li>
-                <li class="list-group-item">Puntaje de monitor: <strong>{{ scores.monitor_score }}</strong></li>
-                <li class="list-group-item">Puntaje de teclado: <strong>{{ scores.keyboard_score }}</strong></li>
-                <li class="list-group-item">Puntaje de teléfono: <strong>{{ scores.phone_score }}</strong></li>
-                <li class="list-group-item">Puntaje total: <strong>{{ scores.total_score }}</strong></li>
+                <!-- Puntaje de silla con desglose -->
+                <li class="list-group-item">
+                    <strong>Puntaje de silla:</strong> {{ scores.chair_score }}
+                    <button class="btn btn-link" onclick="toggleDetails('sillaDetails')">Ver detalles</button>
+                    <div id="sillaDetails" style="display: none;">
+                        <p>Suma Altura + Profundidad: {{ suma_altura_profundidad }}</p>
+                        <p>Suma Reposabrazos + Respaldo: {{ suma_reposabrazos_respaldo }}</p>
+                        <h5>Tabla A</h5>
+                        <img src="{{ url_for('static', filename='img/TablaA.png') }}" alt="Tabla A" class="img-fluid">
+                    </div>
+                </li>
+
+                <!-- Puntaje de monitor con desglose -->
+                <li class="list-group-item">
+                    <strong>Puntaje de monitor:</strong> {{ scores.monitor_score }}
+                    <!-- <button class="btn btn-link" onclick="toggleDetails('monitorDetails')">Ver detalles</button>
+                    <div id="monitorDetails" style="display: none;"></div> -->
+                </li>
+
+                <!-- Puntaje de teclado con desglose -->
+                <li class="list-group-item">
+                    <strong>Puntaje de teclado:</strong> {{ scores.keyboard_score }}
+                    <!-- <button class="btn btn-link" onclick="toggleDetails('tecladoDetails')">Ver detalles</button>
+                    <div id="tecladoDetails" style="display: none;"></div> -->
+                </li>
+
+                <!-- Puntaje de teléfono -->
+                <li class="list-group-item">
+                    <strong>Puntaje del mouse:</strong> {{ scores.mouse_score }}
+                </li>
+
+                <!-- Puntaje de teléfono -->
+                <li class="list-group-item">
+                    <strong>Puntaje de teléfono:</strong> {{ scores.phone_score }}
+                </li>
+
+                <!-- Puntaje total con desglose -->
+                <li class="list-group-item">
+                    <strong>Puntaje total:</strong> {{ scores.total_score }}
+                    <button class="btn btn-link" onclick="toggleDetails('totalDetails')">Ver detalles</button>
+                    <div id="totalDetails" style="display: none;">
+                        <p>Puntaje Monitor + Teléfono: {{ monitor_phone_score }}</p>
+                        <h5>Tabla B</h5>
+                        <img src="{{ url_for('static', filename='img/TablaB.png') }}" alt="Tabla B" class="img-fluid">
+                        <p>Puntaje Teclado + Mouse: {{ keyboard_mouse_score }}</p>
+                        <h5>Tabla C</h5>
+                        <img src="{{ url_for('static', filename='img/TablaC.png') }}" alt="Tabla C" class="img-fluid">
+                        <p>Puntaje Periféricos: {{ peripherals_score }}</p>
+                        <h5>Tabla D</h5>
+                        <img src="{{ url_for('static', filename='img/TablaD.png') }}" alt="Tabla D" class="img-fluid">
+                        <h5>Tabla E</h5>
+                        <img src="{{ url_for('static', filename='img/TablaE.png') }}" alt="Tabla E" class="img-fluid">
+                    </div>
+                </li>
             </ul>
         </div>
     </div>
@@ -23,4 +72,15 @@
         <a href="{{ url_for('auth.upload', id=user.user_id) }}" class="btn btn-secondary">Volver a subir otro video</a>
     </div>
 </div>
+
+<script>
+    function toggleDetails(id) {
+        var element = document.getElementById(id);
+        if (element.style.display === "none") {
+            element.style.display = "block";
+        } else {
+            element.style.display = "none";
+        }
+    }
+</script>
 {% endblock %}
