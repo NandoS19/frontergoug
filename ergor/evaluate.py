@@ -249,13 +249,18 @@ def owas(user_id, employee_id):
         return redirect(url_for('auth.upload', id=user.user_id))
       
     try:
-        #Obtener el peso de la carga desde la sesión
-        load_weight = session.get('load_weight')
-        if not load_weight:
-            flash("No se encontró el peso de la carga. Intente nuevamente.", "error")
-            return redirect(url_for('auth.upload', id=user.user_id))
+        posture_data = process_video(filepath)
+    except Exception as e:
+        flash(f"Error al procesar el video: {str(e)}")
+        return redirect(url_for('auth.upload', id=user.user_id))
+      
+    load_weight = session.get('load_weight')
+    if not load_weight:
+        flash("No se encontró el peso de la carga. Intente nuevamente.", "error")
+        return redirect(url_for('auth.upload', id=user.user_id))
 
-        scores = evaluate_owas(angles, load_weight)  
+    try:
+        scores = evaluate_owas(posture_data["posture_frequencies"], load_weight)  
         
         owas_scores = OwasScore(
             employe_id=employe.employe_id,
@@ -265,6 +270,7 @@ def owas(user_id, employee_id):
             load_weight=scores["load_weight"],
             action_category=scores["action_category"]
         )
+
         
         db.session.add(owas_scores)
         db.session.commit()
