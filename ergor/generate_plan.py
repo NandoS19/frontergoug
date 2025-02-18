@@ -1,13 +1,18 @@
+import os
+from dotenv import load_dotenv
 import google.generativeai as genai
 from llamaapi import LlamaAPI
 import openai
-from ergor.models import User, RosaScore, NioshScore, OwasScore, RebaScore, Employe
+from ergor.models import User, RosaScore, NioshScore, OwasScore, RebaScore, Employe, RiskLevel
 from ergor import db
 
-# Configurar las APIs
-genai.configure(api_key="AIzaSyAo46Co2yniw1aQDFWbcZsfsVipbv0v_zM")  # API de Google Generative AI
-llama = LlamaAPI("LA-05ca3abe055d4847aebd6b034374da2ff5a07974966e418e9d7f72b18635c32b")  # Llama API
+# Cargar las variables de entorno
+load_dotenv()
 
+# Configurar las APIs usando variables de entorno
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+llama = LlamaAPI(os.getenv("LLAMA_API_KEY"))
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def generate_plan(user_id, employee_id, method):
     """
@@ -32,6 +37,11 @@ def generate_plan(user_id, employee_id, method):
         if not rosa_score:
             return {"error": "No se encontraron resultados para el método ROSA"}
 
+        # Recuperar el RiskLevel relacionado con el RosaScore
+        risk_level = RiskLevel.query.get(rosa_score.level_id)
+        if not risk_level:
+            return {"error": "No se encontró el nivel de riesgo asociado al puntaje ROSA"}
+        
         prompt = (
             f"**Datos del Empleado**:\n"
             f"**Caso de estudio: Evaluación ergonómica basada en el método ROSA**\n\n"
@@ -45,16 +55,14 @@ def generate_plan(user_id, employee_id, method):
             f"- Puntaje de silla: {rosa_score.chair_score}.\n"
             f"- Puntaje de monitor: {rosa_score.monitor_score}.\n"
             f"- Puntaje de teclado: {rosa_score.keyboard_score}.\n"
+            f"- Puntaje de ratón: {rosa_score.mouse_score}.\n"
             f"- Puntaje de teléfono: {rosa_score.phone_score}.\n"
             f"- Puntaje total ROSA: {rosa_score.total_score}.\n\n"
             
-            f"El valor de la puntuación ROSA puede oscilar entre 1 y 10, siendo más grande cuanto mayor es el riesgo para la persona que ocupa el puesto. "
-            f"El valor 1 indica que no se aprecia riesgo. "
-            f"Valores entre 2 y 4 indican que el nivel de riesgo es bajo, pero que algunos aspectos del puesto son mejorables." 
-            f"Valores iguales o superiores a 5 indican que el nivel de riesgo es elevado. "
-            f"A partir de la puntuación final ROSA se proponen 5 Niveles de Actuación sobre el puesto." 
-            f"El Nivel de Actuación establece si es necesaria una actuación sobre el puesto y su urgencia y puede oscilar entre el nivel 0, que indica que no es necesaria la actuación, hasta el nivel 4 correspondiente a que la actuación sobre el puesto es urgente. "
-            f"En el caso de que la puntuación ROSA sea igual o superior a 5, se considera que el puesto de trabajo presenta riesgos ergonómicos y se debe actuar sobre él.\n\n"
+            f"**Nivel de Riesgo:**\n"
+            f"- Puntuación de riesgo: {risk_level.risk_score}\n"
+            f"- Nivel de riesgo: {risk_level.risk}\n"
+            f"- Descripción: {risk_level.description}\n\n"
             
             f"**Solicitudes:**\n"
             f"Con base en los datos proporcionados, realiza las siguientes tareas:\n"
@@ -155,16 +163,34 @@ def generate_plan(user_id, employee_id, method):
             f"- Horas de trabajo por día: {employee.hours} horas\n\n"
             
             f"**Método de Evaluación: REBA**\n"
+            f"**Puntaje del tronco:{reba_score.trunk_score}**\n"
+            f"**Puntaje del cuello:{reba_score.neck_score}**\n"
+            f"**Puntaje de las piernas:{reba_score.leg_score}**\n"
+            f"**Puntaje del brazo:{reba_score.arm_score}**\n"
+            f"**Puntaje del antebrazo:{reba_score.forearm_score}**\n"
+            f"**Puntaje de la muñeca:{reba_score.wrist_score}**\n"
+            f"**Grupo A:{reba_score.group_a_score}**\n"
+            f"**Grupo B:{reba_score.group_b_score}**\n"
             f"- Puntaje total: {reba_score.total_score}\n"
-            f"- Categoría: {reba_score.category}\n\n"
             
             f"**Diagnóstico**:\n"
-            f"El análisis de las posturas muestra una carga ergonómica peligrosa, especialmente para la espalda y brazos.\n\n"
-            
+            f"El análisis de las posturas en las tareas de estiba indica una carga ergonómica significativa, con especial impacto en la espalda, hombros y extremidades superiores. Los valores obtenidos a través del método REBA reflejan los riesgos asociados a la manipulación manual de cargas y las posturas forzadas adoptadas durante la jornada laboral.\n\n"
+            f"Los resultados se presentan a continuación:\n"
+            f"- **Grupo A**: Puntaje total {reba_score.group_a_score}.\n"
+            f"- **Grupo B**: Puntaje total {reba_score.group_b_score}.\n"
+            f"- **Puntaje Total REBA**: {reba_score.total_score}.\n\n"
+            f"Los valores han sido obtenidos conforme a las tablas de puntuación del método REBA, garantizando un análisis ergonómico preciso.\n\n"
+
             f"**Plan de Mejora Ergonómica**:\n"
-            f"1. Ajustar la postura de la espalda mediante soporte adicional en la silla.\n"
-            f"2. Optimizar la altura y ángulo de trabajo para evitar posiciones forzadas.\n"
-            f"3. Introducir pausas activas para reducir la tensión muscular.\n"
+            f"1. Implementar técnicas de levantamiento seguro para minimizar la carga en la espalda.\n"
+            f"2. Optimizar la disposición de la carga para reducir la necesidad de torsiones y flexiones excesivas.\n"
+            f"3. Introducir equipos auxiliares, como fajas ergonómicas o dispositivos de asistencia en la manipulación de peso.\n"
+            f"4. Establecer pausas programadas con ejercicios de estiramiento para aliviar la fatiga muscular.\n"
+            f"5. Capacitar a los estibadores en prácticas ergonómicas adecuadas para prevenir lesiones musculoesqueléticas.\n"
+
+            
+
+
         )
 
     # Obtener respuestas de las tres APIs
@@ -172,7 +198,7 @@ def generate_plan(user_id, employee_id, method):
 
     # Google Generative AI
     try:
-        model = genai.GenerativeModel("gemini-1.5-pro")
+        model = genai.GenerativeModel("gemini-2.0-flash")
         response = model.generate_content(prompt)
         results["google"] = response.text
     except Exception as e:
@@ -201,3 +227,5 @@ def generate_plan(user_id, employee_id, method):
         results["openai"] = f"Error: {str(e)}"
 
     return {"diagnostic_plan": results}
+
+

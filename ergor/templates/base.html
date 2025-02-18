@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ERGO-UG - {% block title %}  {% endblock %}</title>
+    <title>ERGO-UG - {% block title %}{% endblock %}</title>
 
     <!-- Estilos de bootstrap y de app -->
     <link rel="stylesheet" href=" {{ url_for('static', filename='css/bootstrap.min.css') }}">
@@ -18,10 +18,61 @@
         body {
             background-color: #f4f8fb;
             font-family: 'Roboto', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
         }
-        header {
-            background-color: #2e8b57; /* Verde ergonómico */
+        .dark-mode {
+            background-color: #424242;
             color: white;
+        }
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: rgba(46, 139, 87, 0.8); /* Verde ergonómico con 80% de opacidad */
+            padding-top: 20px;
+            transition: transform 0.3s;
+            overflow: hidden;
+            z-index: 1000; /* Asegura que la barra lateral esté por encima del contenido */
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar.collapsed {
+            transform: translateX(-100%); /* Mueve la barra lateral fuera de la pantalla */
+        }
+        .sidebar a {
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            display: block;
+            white-space: nowrap;
+        }
+        .sidebar a:hover {
+            background-color: rgba(30, 107, 58, 0.8); /* Verde oscuro para hover con 80% de opacidad */
+        }
+        .content {
+            padding: 20px;
+            transition: margin-left 0.3s;
+        }
+        .sidebar-toggler {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(46, 139, 87, 0.8); /* Verde ergonómico con 80% de opacidad */
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: left 0.3s;
+            z-index: 1001; /* Asegura que el botón esté por encima de la barra lateral */
+        }
+        .dark-mode .sidebar {
+            background-color: rgba(30, 107, 58, 0.8); /* Verde oscuro en modo oscuro con 80% de opacidad */
+        }
+        .dark-mode .sidebar-toggler {
+            background: rgba(30, 107, 58, 0.8); /* Verde oscuro en modo oscuro con 80% de opacidad */
         }
         .btn-primary, .btn-warning {
             border-radius: 30px;
@@ -36,15 +87,6 @@
         .alert {
             background-color: #d4edda; /* Verde suave */
             color: #155724;
-        }
-        .navbar {
-            background-color: #1e4e52; /* Azul ergonómico */
-        }
-        .navbar a {
-            color: #fff;
-        }
-        .navbar a:hover {
-            color: #f1c40f; /* Amarillo brillante al pasar el cursor */
         }
         .card {
             border: none;
@@ -66,6 +108,18 @@
         .img-fluid {
             border-radius: 10px;
         }
+        footer {
+            background-color: #1e4e52; /* Color de fondo del pie de página */
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .sidebar-footer {
+            margin-top: auto; /* Empuja el pie de la barra lateral hacia abajo */
+            padding: 10px 15px;
+            background-color: rgba(30, 107, 58, 0.8); /* Fondo oscuro para el pie con 80% de opacidad */
+        }
     </style>
 
     {% block head %}
@@ -75,91 +129,60 @@
 <body>
 
     {% block header %}
-    <header class="p-3" style="background-color: #2e8b57;"> <!-- Verde ergonómico -->
-        <div class="container">
-            <div class="d-flex align-items-center justify-content-between">
-                <a href="{{ url_for('home.index') }}" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
-                    <img src="{{ url_for('static', filename='img/bp-light.png') }}" alt="ergo ug" width="40">
-                </a>
-    
-                <div class="text-end">
-                    {% if not g.user %}
-                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light me-2">Iniciar sesión</a>
-                        <a href="{{ url_for('auth.register') }}" class="btn btn-warning">Registrate</a>
-                    {% else %}
-                        <!-- Menú desplegable con opciones del usuario -->
-                        <a href="#" class="link-light text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
-                            {% if g.user.photo is none %}
-                                <img src="{{ url_for('static', filename='img/user-light.png') }}" alt="mdo" width="32" height="32" class="rounded-circle">
-                            {% else %}
-                                <img src="{{ url_for('static', filename=g.user.photo) }}" alt="mdo" width="32" height="32" class="rounded-circle">
-                            {% endif %}
-                        </a>
-                        <ul class="dropdown-menu text-small">
-                            <li>
-                                <span class="dropdown-item-text fw-bold">Bienvenido, {{ g.user.username }}</span>
-                            </li>
-                            <li><hr></li>
-                            <li>
-                                <a class="dropdown-item" href="{{ url_for('home.index') }}">
-                                    <span class="d-inline-block bg-secondary rounded-circle p-1"></span> Inicio
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{{ url_for('auth.upload', id=g.user.user_id) }}">
-                                    <span class="d-inline-block bg-success rounded-circle p-1"></span> Evaluar
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{{ url_for('evaluate.results', id=g.user.user_id) }}">
-                                    <span class="d-inline-block bg-primary rounded-circle p-1"></span> Mis Resultados
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{{ url_for('auth.profile', id=g.user.user_id) }}">
-                                    <span class="d-inline-block bg-info rounded-circle p-1"></span> Perfil
-                                </a>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a class="dropdown-item" href="{{ url_for('auth.logout') }}">
-                                    <span class="d-inline-block bg-danger rounded-circle p-1"></span> Cerrar sesión
-                                </a>
-                            </li>
-                        </ul>
-                    {% endif %}
-                </div>
-            </div>
+    <button class="sidebar-toggler" onclick="toggleSidebar()">☰</button>
+    <button class="btn btn-dark" style="position: fixed; top: 10px; right: 10px;" onclick="toggleDarkMode()">Modo Oscuro</button>
+    <div class="sidebar" id="sidebar">
+        <div>
+            <a href="{{ url_for('home.index') }}" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+                <img src="{{ url_for('static', filename='img/ErgoUG.png') }}" alt="ergo ug" width="80">
+            </a>
+            <a href="{{ url_for('home.index') }}">Inicio</a>
+            {% if g.user %}
+                <a href="{{ url_for('auth.upload', id=g.user.user_id) }}">Evaluar</a>
+                <a href="{{ url_for('evaluate.results', id=g.user.user_id) }}">Mis Evaluaciones</a>
+                <a href="{{ url_for('auth.profile', id=g.user.user_id) }}">Perfil</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}">Iniciar sesión</a>
+                <a href="{{ url_for('auth.register') }}">Registrarse</a>
+            {% endif %}
         </div>
-    </header>
-    
-    {% endblock %}
-
-    {% for message in get_flashed_messages() %}
-    <div class="container mt-3">
-        <div class="row">
-            <div class="col-md-6 mx-auto">
-                <div class="alert alert-success" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            </div>
+        <div class="sidebar-footer">
+            {% if g.user %}
+                <a href="{{ url_for('auth.logout') }}">Cerrar sesión</a>
+            {% endif %}
         </div>
     </div>
-    
-    {% endfor %}
-
-    {% block content %}
-    <!-- Aquí va el contenido específico de cada página -->
     {% endblock %}
+
+    <div class="content" id="content">
+        {% for message in get_flashed_messages() %}
+        <div class="container mt-3">
+            <div class="row">
+                <div class="col-md-6 mx-auto">
+                    <div class="alert alert-success" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        {% block content %}
+        <!-- Aquí va el contenido específico de cada página -->
+        {% endblock %}
+    </div>
+
     <!-- Pie de página (footer) -->
-    <footer class="bg-dark text-light py-4 mt-5">
+    <footer>
         <div class="container">
             <div class="row">
                 <div class="col-12 text-center">
                     <h5 class="fw-bold">Proyecto ERGO-UG</h5>
                     <p class="mb-2">Este proyecto es parte de la investigación de la Universidad de Guayaquil, con el objetivo de promover la ergonomía en el ambiente laboral y académico.</p>
-                    <p class="mb-2">Universidad de Guayaquil, Facultad de Ingeniería en Sistemas</p>
+                    <p class="mb-2">Universidad de Guayaquil</p>
+                    <p class="mb-2">Facultad de Ingeniería Industrial</p>
+                    <p class="mb-2">Carrera de Ingeniería en Sistemas de Información</p>
                     <p class="mb-2">Teléfonos: +593 4 232 1000 / +593 4 232 1500</p>
                     <p>&copy; 2025 Universidad de Guayaquil - Todos los derechos reservados.</p>
                 </div>
@@ -168,6 +191,36 @@
     </footer>
 
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            const toggler = document.querySelector(".sidebar-toggler");
+            if (sidebar.classList.contains("collapsed")) {
+                sidebar.classList.remove("collapsed");
+                toggler.style.left = "260px";
+            } else {
+                sidebar.classList.add("collapsed");
+                toggler.style.left = "10px";
+            }
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+        }
+
+        // Ocultar la barra lateral al hacer clic fuera de ella
+        document.addEventListener("click", function(event) {
+            const sidebar = document.getElementById("sidebar");
+            const toggler = document.querySelector(".sidebar-toggler");
+            const isClickInsideSidebar = sidebar.contains(event.target);
+            const isClickOnToggler = toggler.contains(event.target);
+
+            if (!isClickInsideSidebar && !isClickOnToggler && !sidebar.classList.contains("collapsed")) {
+                sidebar.classList.add("collapsed");
+                toggler.style.left = "10px";
+            }
+        });
+    </script>
 </body>
 
 </html>

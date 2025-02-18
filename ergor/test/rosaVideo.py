@@ -8,19 +8,32 @@ def calculate_angle(point1: Tuple[float, float],
                    point3: Tuple[float, float]) -> float:
     """
     Calcula el ángulo entre tres puntos en 2D con mejor precisión y manejo de casos extremos.
+    
+    Args:
+        point1: Primer punto (x, y)
+        point2: Punto central (x, y)
+        point3: Tercer punto (x, y)
+    
+    Returns:
+        float: Ángulo en grados redondeado a 2 decimales
     """
+    # Convertir a arrays numpy y asegurar tipo float64 para mejor precisión
     a = np.array(point1, dtype=np.float64)
     b = np.array(point2, dtype=np.float64)
     c = np.array(point3, dtype=np.float64)
     
+    # Calcular vectores
     ab = a - b
     bc = c - b
     
+    # Normalizar vectores para mejorar la precisión numérica
     ab_norm = ab / np.linalg.norm(ab)
     bc_norm = bc / np.linalg.norm(bc)
     
+    # Calcular el ángulo usando el producto punto
     cosine_angle = np.dot(ab_norm, bc_norm)
     
+    # Manejar casos extremos debido a errores de redondeo
     if cosine_angle > 1.0:
         cosine_angle = 1.0
     elif cosine_angle < -1.0:
@@ -34,12 +47,21 @@ def calculate_distance(point1: Tuple[float, float],
                       frame_dimensions: Optional[Tuple[int, int]] = None) -> float:
     """
     Calcula la distancia normalizada entre dos puntos.
+    
+    Args:
+        point1: Primer punto (x, y)
+        point2: Segundo punto (x, y)
+        frame_dimensions: Dimensiones del frame (width, height) para normalización
+    
+    Returns:
+        float: Distancia normalizada redondeada a 2 decimales
     """
     a = np.array(point1, dtype=np.float64)
     b = np.array(point2, dtype=np.float64)
     distance = np.linalg.norm(a - b)
     
     if frame_dimensions:
+        # Normalizar usando la diagonal del frame como referencia
         diagonal = np.sqrt(frame_dimensions[0]**2 + frame_dimensions[1]**2)
         distance = (distance / diagonal) * 100
         
@@ -47,29 +69,37 @@ def calculate_distance(point1: Tuple[float, float],
 
 def process_video(filepath: str, sample_rate: int = 1) -> Dict[str, float]:
     """
-    Procesa un video para calcular ángulos corporales promedio y factores adicionales.
+    Procesa un video para calcular ángulos corporales promedio con mejor manejo de errores
+    y procesamiento más robusto.
+    
+    Args:
+        filepath: Ruta del archivo de video
+        sample_rate: Procesar 1 de cada N frames (default: 1)
+    
+    Returns:
+        Dict[str, float]: Diccionario con los ángulos y distancias promedio
+    
+    Raises:
+        ValueError: Si no se puede abrir el video o no se detectan poses
     """
+    # Inicializar MediaPipe con configuración optimizada
     mp_pose = mp.solutions.pose
     pose = mp_pose.Pose(
         min_detection_confidence=0.5,
         min_tracking_confidence=0.5,
-        model_complexity=2
+        model_complexity=2  # Usar modelo más preciso
     )
     
+    # Inicializar captura de video
     cap = cv2.VideoCapture(filepath)
     if not cap.isOpened():
         raise ValueError("No se puede abrir el archivo de video")
     
+    # Estructuras para almacenar mediciones
     measurements = {
         "hip": [], "shoulder": [], "elbow": [], "wrist": [],
         "knee": [], "neck": [], "back": [], "seat_depth": [],
-        "monitor_distance": [], "phone_distance": [],
-        "feet_contact": [], "leg_space": [], "seat_height_adjustable": [],
-        "seat_depth_adjustable": [], "armrest_separation": [], "armrest_surface": [],
-        "armrest_adjustable": [], "work_surface_height": [], "backrest_adjustable": [],
-        "monitor_lateral_deviation": [], "document_holder": [], "monitor_glare": [],
-        "monitor_too_far": [], "phone_shoulder": [], "phone_hands_free": [],
-        "wrist_deviation": [], "keyboard_height": [], "keyboard_adjustable": []
+        "monitor_distance": [], "phone_distance": []
     }
     
     frame_count = 0
@@ -84,6 +114,7 @@ def process_video(filepath: str, sample_rate: int = 1) -> Dict[str, float]:
         if frame_count % sample_rate != 0:
             continue
             
+        # Procesar frame
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         frame_height, frame_width = frame.shape[:2]
         results = pose.process(frame_rgb)
@@ -128,26 +159,6 @@ def process_video(filepath: str, sample_rate: int = 1) -> Dict[str, float]:
             measurements["seat_depth"].append(calculate_distance(left_hip, left_knee, frame_dims))
             measurements["monitor_distance"].append(calculate_distance(nose, left_shoulder, frame_dims))
             measurements["phone_distance"].append(calculate_distance(left_shoulder, left_wrist, frame_dims))
-            
-            # Estimación de factores adicionales (ejemplos)
-            measurements["feet_contact"].append(1 if left_ankle[1] < frame_height * 0.9 else 0)  # Suposición
-            measurements["leg_space"].append(1 if calculate_distance(left_knee, left_hip, frame_dims) > 10 else 0)  # Suposición
-            measurements["seat_height_adjustable"].append(1)  # Suposición: ajustable
-            measurements["seat_depth_adjustable"].append(1)  # Suposición: ajustable
-            measurements["armrest_separation"].append(0)  # Suposición: no separados
-            measurements["armrest_surface"].append(0)  # Suposición: superficie no dura
-            measurements["armrest_adjustable"].append(1)  # Suposición: ajustables
-            measurements["work_surface_height"].append(0)  # Suposición: no demasiado alta
-            measurements["backrest_adjustable"].append(1)  # Suposición: ajustable
-            measurements["monitor_lateral_deviation"].append(0)  # Suposición: no desviada
-            measurements["document_holder"].append(1)  # Suposición: hay atril
-            measurements["monitor_glare"].append(0)  # Suposición: no hay brillos
-            measurements["monitor_too_far"].append(0)  # Suposición: no muy lejos
-            measurements["phone_shoulder"].append(0)  # Suposición: no sujetado con hombro
-            measurements["phone_hands_free"].append(1)  # Suposición: manos libres
-            measurements["wrist_deviation"].append(0)  # Suposición: no desviadas
-            measurements["keyboard_height"].append(0)  # Suposición: no demasiado alto
-            measurements["keyboard_adjustable"].append(1)  # Suposición: ajustable
     
     cap.release()
     pose.close()
@@ -159,12 +170,15 @@ def process_video(filepath: str, sample_rate: int = 1) -> Dict[str, float]:
     averaged_measurements = {}
     for key, values in measurements.items():
         if values:
+            # Filtrar valores atípicos usando el rango intercuartil
             q1 = np.percentile(values, 25)
             q3 = np.percentile(values, 75)
             iqr = q3 - q1
             lower_bound = q1 - 1.5 * iqr
             upper_bound = q3 + 1.5 * iqr
             filtered_values = [x for x in values if lower_bound <= x <= upper_bound]
+            
+            # Calcular promedio de valores filtrados
             averaged_measurements[key] = round(np.mean(filtered_values), 2)
     
     return averaged_measurements
