@@ -119,6 +119,7 @@ def reba(user_id,employee_id):
     from ergor.controller.process_videoREBA import calcular_puntuacion_global_A
     from ergor.controller.process_videoREBA import calcular_puntuacion_global_grupo_B
     from ergor.controller.process_videoREBA import calcular_puntuacion_final
+    from ergor.controller.process_videoREBA import determinar_nivel_riesgo
 
     try:
         # Procesamos el video y obtenemos los datos de los códigos posturales más altos

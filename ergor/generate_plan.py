@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import google.generativeai as genai
 from llamaapi import LlamaAPI
 import openai
+from fpdf import FPDF
 from ergor.models import User, RosaScore, NioshScore, OwasScore, RebaScore, Employe, RiskLevel
 from ergor import db
 
@@ -163,16 +164,34 @@ def generate_plan(user_id, employee_id, method):
             f"- Horas de trabajo por día: {employee.hours} horas\n\n"
             
             f"**Método de Evaluación: REBA**\n"
+            f"**Puntaje del tronco:{reba_score.trunk_score}**\n"
+            f"**Puntaje del cuello:{reba_score.neck_score}**\n"
+            f"**Puntaje de las piernas:{reba_score.leg_score}**\n"
+            f"**Puntaje del brazo:{reba_score.arm_score}**\n"
+            f"**Puntaje del antebrazo:{reba_score.forearm_score}**\n"
+            f"**Puntaje de la muñeca:{reba_score.wrist_score}**\n"
+            f"**Grupo A:{reba_score.group_a_score}**\n"
+            f"**Grupo B:{reba_score.group_b_score}**\n"
             f"- Puntaje total: {reba_score.total_score}\n"
-            f"- Categoría: {reba_score.category}\n\n"
             
             f"**Diagnóstico**:\n"
-            f"El análisis de las posturas muestra una carga ergonómica peligrosa, especialmente para la espalda y brazos.\n\n"
-            
+            f"El análisis de las posturas en las tareas de estiba indica una carga ergonómica significativa, con especial impacto en la espalda, hombros y extremidades superiores. Los valores obtenidos a través del método REBA reflejan los riesgos asociados a la manipulación manual de cargas y las posturas forzadas adoptadas durante la jornada laboral.\n\n"
+            f"Los resultados se presentan a continuación:\n"
+            f"- **Grupo A**: Puntaje total {reba_score.group_a_score}.\n"
+            f"- **Grupo B**: Puntaje total {reba_score.group_b_score}.\n"
+            f"- **Puntaje Total REBA**: {reba_score.total_score}.\n\n"
+            f"Los valores han sido obtenidos conforme a las tablas de puntuación del método REBA, garantizando un análisis ergonómico preciso.\n\n"
+
             f"**Plan de Mejora Ergonómica**:\n"
-            f"1. Ajustar la postura de la espalda mediante soporte adicional en la silla.\n"
-            f"2. Optimizar la altura y ángulo de trabajo para evitar posiciones forzadas.\n"
-            f"3. Introducir pausas activas para reducir la tensión muscular.\n"
+            f"1. Implementar técnicas de levantamiento seguro para minimizar la carga en la espalda.\n"
+            f"2. Optimizar la disposición de la carga para reducir la necesidad de torsiones y flexiones excesivas.\n"
+            f"3. Introducir equipos auxiliares, como fajas ergonómicas o dispositivos de asistencia en la manipulación de peso.\n"
+            f"4. Establecer pausas programadas con ejercicios de estiramiento para aliviar la fatiga muscular.\n"
+            f"5. Capacitar a los estibadores en prácticas ergonómicas adecuadas para prevenir lesiones musculoesqueléticas.\n"
+
+            
+
+
         )
 
     # Obtener respuestas de las tres APIs
@@ -180,7 +199,7 @@ def generate_plan(user_id, employee_id, method):
 
     # Google Generative AI
     try:
-        model = genai.GenerativeModel("gemini-1.5-pro")
+        model = genai.GenerativeModel("gemini-2.0-flash")
         response = model.generate_content(prompt)
         results["google"] = response.text
     except Exception as e:
@@ -209,3 +228,61 @@ def generate_plan(user_id, employee_id, method):
         results["openai"] = f"Error: {str(e)}"
 
     return {"diagnostic_plan": results}
+
+def generate_pdf(employee, method, scores, diagnosis, improvement_plan):
+    # Crear una instancia de FPDF
+    pdf = FPDF()
+    pdf.set_auto_page_break(auto=True, margin=15)
+    
+    # Agregar una página
+    pdf.add_page()
+    
+    # Configuración de fuente para el título
+    pdf.set_font("Arial", style='B', size=16)
+    pdf.cell(200, 10, "FICHA MÉDICA ERGONÓMICA", ln=True, align='C')
+    pdf.ln(10)
+    
+    # Datos del empleado
+    pdf.set_font("Arial", style='B', size=12)
+    pdf.cell(0, 10, "Datos del Empleado", ln=True)
+    pdf.set_font("Arial", size=12)
+    pdf.multi_cell(0, 10, f"Nombre: {employee['name']} {employee['last_name']}\n"
+                        f"Puesto de Trabajo: {employee['job_title']}\n"
+                        f"Edad: {employee['age']} años\n"
+                        f"Altura: {employee['height']} m\n"
+                        f"Peso: {employee['weight']} kg\n"
+                        f"Género: {employee['gender']}\n"
+                        f"Horas de trabajo por día: {employee['hours']} horas\n")
+    pdf.ln(5)
+    
+    # Método de evaluación y puntajes
+    pdf.set_font("Arial", style='B', size=12)
+    pdf.cell(0, 10, f"Método de Evaluación: {method}", ln=True)
+    pdf.set_font("Arial", size=12)
+    for key, value in scores.items():
+        pdf.cell(0, 10, f"{key}: {value}", ln=True)
+    pdf.ln(5)
+    
+    # Diagnóstico
+    pdf.set_font("Arial", style='B', size=12)
+    pdf.cell(0, 10, "Diagnóstico", ln=True)
+    pdf.set_font("Arial", size=12)
+    pdf.multi_cell(0, 10, diagnosis)
+    pdf.ln(5)
+    
+    # Plan de mejora
+    pdf.set_font("Arial", style='B', size=12)
+    pdf.cell(0, 10, "Plan de Mejora Ergonómica", ln=True)
+    pdf.set_font("Arial", size=12)
+    pdf.multi_cell(0, 10, improvement_plan)
+    
+    # Crear la carpeta pdf_planes si no existe
+    folder_path = "pdf_planes"
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+    
+    # Guardar el archivo en la carpeta pdf_planes
+    output_path = os.path.join(folder_path, f"plan_mejora_{employee['name']}_{method}.pdf")
+    pdf.output(output_path)
+    
+    return output_path
