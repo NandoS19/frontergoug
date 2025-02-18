@@ -152,6 +152,6 @@ def evaluate_owas(posture_frequencies, load_weight):
         "legs_category": legs_category,
         "load_weight": load_code,
         "action_category": action_category,
-        "risk_level": risk_level
+        "risk_level": "Bajo" if action_category == 1 else "Moderado" if action_category == 2 else "Alto" if action_category == 3 else "Muy Alto"
 
     }
