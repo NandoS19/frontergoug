@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="display-4 text-center">Resultados de la Evaluación ROSA</h1>
+    <p class="text-center text-muted">Usuario: <strong>{{ user.username }}</strong></p>
+
+    <div class="card mt-4 shadow">
+        <div class="card-body">
+            <h3 class="card-title">Detalles de la Evaluación</h3>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Puntaje de silla: <strong>{{ scores.chair_score }}</strong></li>
+                <li class="list-group-item">Puntaje de monitor: <strong>{{ scores.monitor_score }}</strong></li>
+                <li class="list-group-item">Puntaje de teclado: <strong>{{ scores.keyboard_score }}</strong></li>
+                <li class="list-group-item">Puntaje de teléfono: <strong>{{ scores.phone_score }}</strong></li>
+                <li class="list-group-item">Puntaje total: <strong>{{ scores.total_score }}</strong></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{{ url_for('evaluate.rosa_plan', user_id=user.user_id, employee_id=employe.employe_id) }}" class="btn btn-primary">Generar Plan de Mejora</a>
+        <a href="{{ url_for('auth.upload', id=user.user_id) }}" class="btn btn-secondary">Volver a subir otro video</a>
+    </div>
+</div>
+{% endblock %}

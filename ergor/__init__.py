@@ -26,7 +26,7 @@ def create_app():
     
     
     #Migrar modelos a base de datos
-    from .models import User, RiskLevel, RebaScore, RosaScore, OwasScore, NioshScore, ImprovementPlan
+    from .models import User, Employe, RiskLevel, RebaScore, RosaScore, OwasScore, NioshScore, GeneratePlan 
     with app.app_context():
         db.create_all()
 

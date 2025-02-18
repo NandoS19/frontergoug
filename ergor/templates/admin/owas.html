@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <header class="text-center">
+        <h1 class="display-4">Resultados de la Evaluación OWAS</h1>
+        <p class="text-muted">Usuario: <strong>{{ user.username }}</strong></p>
+    </header>
+
+    <main>
+        <div class="card mt-4 shadow">
+            <div class="card-body">
+                <h3 class="card-title">Detalles de la Evaluación</h3>
+                <table class="table table-bordered mt-3">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Parámetro</th>
+                            <th>Clasificación</th>
+                            <th>Categoría de Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Espalda</td>
+                            <td><strong>{{ scores.back_category }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Brazos</td>
+                            <td><strong>{{ scores.arms_category }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Piernas</td>
+                            <td><strong>{{ scores.legs_category }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Carga</td>
+                            <td><strong>{{ scores.load_category }}</strong></td>
+                        </tr>
+                        <tr class="table-info">
+                            <td><strong>Peso de la Carga</strong></td>
+                            <td colspan="2"><strong>{{ scores.load_weight }} kg</strong></td>
+                        </tr>
+                        <tr class="table-warning">
+                            <td><strong>Categoría de Acción Total</strong></td>
+                            <td colspan="2"><strong>{{ scores.action_category }}</strong></td>
+                        </tr>
+                    </tbody>
+                    
+                </table>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{{ url_for('evaluate.owas_plan', user_id=user.user_id, employee_id=employe.employe_id) }}" 
+               class="btn btn-primary">
+                <i class="bi bi-file-earmark-plus"></i> Generar Plan de Mejora
+            </a>
+            <a href="{{ url_for('auth.upload', id=user.user_id) }}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver a subir otro video
+            </a>
+        </div>
+    </main>
+</div>
+{% endblock %}  

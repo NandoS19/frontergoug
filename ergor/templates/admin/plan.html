@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/showdown/dist/showdown.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h1 class="display-4 text-center">Plan de Mejora y Diagnóstico</h1>
+    <p class="text-center text-muted">Método: <strong>{{ method }}</strong></p>
+    <p class="text-center text-muted">Usuario ID: <strong>{{ user_id }}</strong></p>
+
+    <!-- Resultado principal (Google Gemini) -->
+    <div id="google-result" class="card p-4 mb-4">
+        <h2 class="text-center">Resultado Modelo 1</h2>
+        <div id="markdown-google" class="formatted-text">{{ plan.google | safe }}</div>
+        <button class="btn btn-success mt-3" onclick="downloadPDF('Modelo 1', 'markdown-google')">Descargar PDF</button>
+    </div>
+
+    <!-- Botón para mostrar otros resultados -->
+    <div class="text-center">
+        <button id="show-carousel" class="btn btn-primary">Ver otros resultados</button>
+        <button id="show-main-result" class="btn btn-secondary" style="display: none;">Ver resultado principal</button>
+    </div>
+
+    <!-- Carrusel oculto por defecto -->
+    <div id="results-carousel-container" class="mt-4" style="display: none;">
+        <div id="resultsCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <!-- Resultado Modelo 2 -->
+                <div class="carousel-item active">
+                    <div class="card p-4">
+                        <h2 class="text-center">Resultado Modelo 2</h2>
+                        <div id="markdown-llama" class="formatted-text">{{ plan.llama | safe }}</div>
+                        <button class="btn btn-success mt-3" onclick="downloadPDF('Modelo 2', 'markdown-llama')">Descargar PDF</button>
+                    </div>
+                </div>
+                <!-- Resultado Modelo 3 -->
+                <div class="carousel-item">
+                    <div class="card p-4">
+                        <h2 class="text-center">Resultado Modelo 3</h2>
+                        <div id="markdown-openai" class="formatted-text">{{ plan.openai | safe }}</div>
+                        <button class="btn btn-success mt-3" onclick="downloadPDF('Modelo 3', 'markdown-openai')">Descargar PDF</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Controles del carrusel -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#resultsCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#resultsCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Botón de regreso -->
+    <div class="text-center mt-4">
+        <a href="{{ url_for('home.index') }}" class="btn btn-secondary">Regresar</a>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const converter = new showdown.Converter();
+        document.querySelectorAll(".formatted-text").forEach(element => {
+            element.innerHTML = converter.makeHtml(element.textContent);
+        });
+
+        document.getElementById("show-carousel").addEventListener("click", function () {
+            document.getElementById("google-result").style.display = "none";
+            document.getElementById("results-carousel-container").style.display = "block";
+            this.style.display = "none";
+            document.getElementById("show-main-result").style.display = "inline-block";
+        });
+
+        document.getElementById("show-main-result").addEventListener("click", function () {
+            document.getElementById("google-result").style.display = "block";
+            document.getElementById("results-carousel-container").style.display = "none";
+            this.style.display = "none";
+            document.getElementById("show-carousel").style.display = "inline-block";
+        });
+    });
+
+    // Función para descargar PDF con texto justificado (usando jsPDF)
+    function downloadPDF(title, elementId) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // Configuración del PDF
+        doc.setFontSize(10); // Tamaño de fuente más pequeño
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(0, 0, 0); // Color negro
+
+        // Título del PDF
+        doc.setFontSize(12);
+        doc.text(`Resultado - ${title}`, 10, 10);
+
+        // Obtener el contenido HTML del elemento
+        const contentElement = document.getElementById(elementId);
+        const contentHtml = contentElement.innerHTML;
+
+        // Convertir HTML a texto formateado
+        const tempElement = document.createElement("div");
+        tempElement.innerHTML = contentHtml;
+        const plainText = tempElement.textContent || tempElement.innerText;
+
+        // Dividir el texto en líneas y justificarlo
+        const lines = doc.splitTextToSize(plainText, 180); // Ancho máximo de 180 unidades
+        let yOffset = 20; // Posición vertical inicial
+
+        lines.forEach((line) => {
+            if (yOffset > 270) { // Si se alcanza el final de la página
+                doc.addPage(); // Añadir una nueva página
+                yOffset = 10; // Reiniciar la posición vertical
+            }
+            doc.text(line, 10, yOffset, { align: "justify" }); // Texto justificado
+            yOffset += 10; // Espaciado entre líneas
+        });
+
+        // Guardar el PDF
+        doc.save(`${title}_resultado.pdf`);
+    }
+
+    // Función alternativa para descargar PDF con formato HTML (usando html2pdf.js)
+    function downloadPDFWithHTML(title, elementId) {
+        const element = document.getElementById(elementId);
+        const opt = {
+            margin: 10, // Márgenes
+            filename: `${title}_resultado.pdf`,
+            image: { type: 'jpeg', quality: 0.98 }, // Calidad de las imágenes
+            html2canvas: { scale: 2 }, // Escala para mejorar la calidad
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } // Formato A4
+        };
+
+        // Generar el PDF
+        html2pdf().set(opt).from(element).save();
+    }
+</script>
+{% endblock %}
