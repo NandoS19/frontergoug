@@ -1,4 +1,4 @@
-def evaluate_owas(angles, load_weight):
+def evaluate_owas(posture_frequencies, load_weight):
     """
     Evalúa las posturas corporales utilizando el método OWAS.
     :param angles: Diccionario con ángulos corporales promedio.
@@ -6,37 +6,23 @@ def evaluate_owas(angles, load_weight):
     :return: Diccionario con categorías OWAS para espalda, brazos, piernas y carga.
     """
 
-    # Clasificación de espalda
-    if angles["back"] <= 20:
-        back_code = 1  # Espalda derecha
-    elif 20 < angles["back"] <= 45:
-        back_code = 2  # Espalda doblada
-    else:
-        back_code = 3  # Espalda con giro o doblada con giro
+    def get_most_frequent_category(frequencies):
+        """ Devuelve la categoría más frecuente en base a las observaciones. """
+        return max(frequencies, key=frequencies.get, default=1)
 
-    # Clasificación de brazos
-    if angles["arms"] <= 45:
-        arms_code = 1  # Dos brazos bajos
-    elif 45 < angles["arms"] <= 90:
-        arms_code = 2  # Un brazo bajo y el otro elevado
-    else:
-        arms_code = 3  # Dos brazos elevados
-
-    # Clasificación de piernas
-    if angles["legs"] <= 45:
-        legs_code = 1  # Sentado
-    elif 45 < angles["legs"] <= 90:
-        legs_code = 2  # De pie con las dos piernas rectas
-    else:
-        legs_code = 3  # De pie con una pierna recta y la otra flexionada
+    # Determinar categoría de espalda, brazos y piernas basados en frecuencia
+    back_category = get_most_frequent_category(posture_frequencies["back"])
+    arms_category = get_most_frequent_category(posture_frequencies["arms"])
+    legs_category = get_most_frequent_category(posture_frequencies["legs"])
 
     # Clasificación de carga
     if load_weight < 10:
-        load_code = 1  # Menos de 10 kg
+        load_code = 1
     elif 10 <= load_weight <= 20:
-        load_code = 2  # Entre 10 y 20 kg
+        load_code = 2
     else:
-        load_code = 3  # Más de 20 kg
+        load_code = 3
+
         
     risk_table = {
         # Espalda 1 (Derecha)
@@ -142,13 +128,30 @@ def evaluate_owas(angles, load_weight):
 
 
     # Calcular categoría de acción OWAS
-    action_category = risk_table.get((back_code, arms_code, legs_code, load_code), 1)
+    action_category = risk_table.get((back_category, arms_category, legs_category, load_code), 1)
+    
+    # Determinar nivel de riesgo global basado en frecuencias
+    max_freq = max(
+        max(posture_frequencies["back"].values(), default=0),
+        max(posture_frequencies["arms"].values(), default=0),
+        max(posture_frequencies["legs"].values(), default=0)
+    )
+
+    risk_level = "Bajo"
+    if max_freq >= 50:
+        risk_level = "Moderado"
+    if max_freq >= 70:
+        risk_level = "Alto"
+    if max_freq >= 90:
+        risk_level = "Muy Alto"
+
 
     return {
-        "back_category": back_code,
-        "arms_category": arms_code,
-        "legs_category": legs_code,
+        "back_category": back_category,
+        "arms_category": arms_category,
+        "legs_category": legs_category,
         "load_weight": load_code,
         "action_category": action_category,
-        "risk_level": "Bajo" if action_category == 1 else "Moderado" if action_category == 2 else "Alto"
+        "risk_level": risk_level
+
     }
