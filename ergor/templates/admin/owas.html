@@ -1,64 +1,54 @@
 {% extends 'base.html' %}
 
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+{% endblock %}
+
 {% block content %}
-<div class="container mt-5">
-    <header class="text-center">
-        <h1 class="display-4">Resultados de la Evaluación OWAS</h1>
-        <p class="text-muted">Usuario: <strong>{{ user.username }}</strong></p>
-    </header>
-
-    <main>
-        <div class="card mt-4 shadow">
-            <div class="card-body">
-                <h3 class="card-title">Detalles de la Evaluación</h3>
-                <table class="table table-bordered mt-3">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Parámetro</th>
-                            <th>Clasificación</th>
-                            <th>Categoría de Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Espalda</td>
-                            <td><strong>{{ scores.back_category }}</strong></td>
-                        </tr>
-                        <tr>
-                            <td>Brazos</td>
-                            <td><strong>{{ scores.arms_category }}</strong></td>
-                        </tr>
-                        <tr>
-                            <td>Piernas</td>
-                            <td><strong>{{ scores.legs_category }}</strong></td>
-                        </tr>
-                        <tr>
-                            <td>Carga</td>
-                            <td><strong>{{ scores.load_category }}</strong></td>
-                        </tr>
-                        <tr class="table-info">
-                            <td><strong>Peso de la Carga</strong></td>
-                            <td colspan="2"><strong>{{ scores.load_weight }} kg</strong></td>
-                        </tr>
-                        <tr class="table-warning">
-                            <td><strong>Categoría de Acción Total</strong></td>
-                            <td colspan="2"><strong>{{ scores.action_category }}</strong></td>
-                        </tr>
-                    </tbody>
-                    
-                </table>
-            </div>
+<div class="container mt-5"> 
+    <h1 class="display-4 text-center">Resultados de la Evaluación OWAS</h1>
+    <p class="text-center text-muted">Usuario: <strong>{{ user.username }}</strong></p>
+    <div class="card mt-4 shadow">
+        <div class="card-body">
+            <h3 class="card-title">Detalles de la Evaluación</h3>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Puntaje de espalda: <strong>{{ scores.back_category }}</strong></li>
+                <li class="list-group-item">Puntaje de brazos: <strong>{{ scores.arms_category }}</strong></li>
+                <li class="list-group-item">Puntaje de piernas: <strong>{{ scores.legs_category }}</strong></li>
+                <li class="list-group-item">Puntaje de carga: <strong>{{ scores.load_weight }}</strong></li>
+                <li class="list-group-item">Puntaje total: <strong>{{ scores.action_category}}</strong></li>
+                <li class="list-group-item">Nivel de riesgo: <strong>{{ scores.risk_level}}</strong></li>
+            </ul>
         </div>
+    </div>
 
-        <div class="text-center mt-4">
-            <a href="{{ url_for('evaluate.owas_plan', user_id=user.user_id, employee_id=employe.employe_id) }}" 
-               class="btn btn-primary">
-                <i class="bi bi-file-earmark-plus"></i> Generar Plan de Mejora
-            </a>
-            <a href="{{ url_for('auth.upload', id=user.user_id) }}" class="btn btn-secondary">
-                <i class="bi bi-arrow-left"></i> Volver a subir otro video
-            </a>
+    <!-- Explicación de las categorías de riesgo -->
+    <div class="card mt-4 shadow">
+        <div class="card-body">
+            <h3 class="card-title">Explicación del Nivel de Riesgo</h3>
+            <p class="card-text">
+                El nivel de riesgo se determina según la categoría de acción OWAS:
+            </p>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <strong>Categoría 1 (Riesgo Bajo):</strong> Postura normal y natural sin efectos dañinos en el sistema músculo-esquelético. No requiere acción.
+                </li>
+                <li class="list-group-item">
+                    <strong>Categoría 2 (Riesgo Moderado):</strong> Postura con posibilidad de causar daño al sistema músculo-esquelético. Se requieren acciones correctivas en un futuro cercano.
+                </li>
+                <li class="list-group-item">
+                    <strong>Categoría 3 (Riesgo Alto):</strong> Postura con efectos dañinos sobre el sistema músculo-esquelético. Se requieren acciones correctivas lo antes posible.
+                </li>
+                <li class="list-group-item">
+                    <strong>Categoría 4 (Riesgo Muy Alto):</strong> La carga causada por esta postura tiene efectos sumamente dañinos sobre el sistema músculo-esquelético. Se requiere tomar acciones correctivas inmediatamente.
+                </li>
+            </ul>
         </div>
-    </main>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{{ url_for('evaluate.owas_plan', user_id=user.user_id, employee_id=employe.employe_id) }}" class="btn btn-primary">Generar Plan de Mejora</a>
+        <a href="{{ url_for('auth.upload', id=user.user_id) }}" class="btn btn-secondary">Volver a subir otro video</a>
+    </div>
 </div>
-{% endblock %}  
+{% endblock %}

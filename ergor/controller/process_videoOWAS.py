@@ -54,11 +54,19 @@ def process_video(filepath):
                     landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].y]
             ankle = [landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].x,
                      landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].y]
+            
 
-            # Calcular ángulos OWAS
-            angles["back"].append(calculate_angle(knee, hip, shoulder))  # Ángulo de espalda
-            angles["arms"].append(calculate_angle(shoulder, elbow, wrist))  # Ángulo de brazos
-            angles["legs"].append(calculate_angle(hip, knee, ankle))  # Ángulo de piernas
+            if not all([shoulder, elbow, wrist, hip, knee, ankle]):
+                raise ValueError("No se detectaron todos los puntos clave del cuerpo en el video.")
+         
+            # Calcular ángulos
+            back_angle = calculate_angle(knee, hip, shoulder) # Ángulo de espalda
+            arms_angle = calculate_angle(shoulder, elbow, wrist) # Ángulo de brazos
+            legs_angle = calculate_angle(hip, knee, ankle) # Ángulo de piernas
+                        
+            angles["back"].append(back_angle)
+            angles["arms"].append(arms_angle)
+            angles["legs"].append(legs_angle)            
 
     cap.release()
     pose.close()

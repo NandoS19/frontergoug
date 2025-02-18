@@ -5,50 +5,150 @@ def evaluate_owas(angles, load_weight):
     :param load_weight: Peso de la carga manejada (en kg).
     :return: Diccionario con categorías OWAS para espalda, brazos, piernas y carga.
     """
-    back_category = 0
-    arms_category = 0
-    legs_category = 0
-    load_category = 0
 
     # Clasificación de espalda
     if angles["back"] <= 20:
-        back_category = 1  # Postura neutra
+        back_code = 1  # Espalda derecha
     elif 20 < angles["back"] <= 45:
-        back_category = 2  # Inclinación moderada
+        back_code = 2  # Espalda doblada
     else:
-        back_category = 3  # Flexión excesiva
+        back_code = 3  # Espalda con giro o doblada con giro
 
     # Clasificación de brazos
     if angles["arms"] <= 45:
-        arms_category = 1  # Postura neutra
+        arms_code = 1  # Dos brazos bajos
     elif 45 < angles["arms"] <= 90:
-        arms_category = 2  # Elevación moderada
+        arms_code = 2  # Un brazo bajo y el otro elevado
     else:
-        arms_category = 3  # Elevación extrema
+        arms_code = 3  # Dos brazos elevados
 
     # Clasificación de piernas
     if angles["legs"] <= 45:
-        legs_category = 1  # Postura neutra
+        legs_code = 1  # Sentado
     elif 45 < angles["legs"] <= 90:
-        legs_category = 2  # Inclinación o flexión moderada
+        legs_code = 2  # De pie con las dos piernas rectas
     else:
-        legs_category = 3  # Flexión extrema
+        legs_code = 3  # De pie con una pierna recta y la otra flexionada
 
     # Clasificación de carga
-    if load_weight <= 10:
-        load_category = 1  # Peso ligero
-    elif 10 < load_weight <= 20:
-        load_category = 2  # Peso moderado
+    if load_weight < 10:
+        load_code = 1  # Menos de 10 kg
+    elif 10 <= load_weight <= 20:
+        load_code = 2  # Entre 10 y 20 kg
     else:
-        load_category = 3  # Peso pesado
+        load_code = 3  # Más de 20 kg
+        
+    risk_table = {
+        # Espalda 1 (Derecha)
+        (1, 1, 1, 1): 1, (1, 1, 1, 2): 1, (1, 1, 1, 3): 1,
+        (1, 1, 2, 1): 1, (1, 1, 2, 2): 1, (1, 1, 2, 3): 1,
+        (1, 1, 3, 1): 1, (1, 1, 3, 2): 1, (1, 1, 3, 3): 1,
+        (1, 1, 4, 1): 2, (1, 1, 4, 2): 2, (1, 1, 4, 3): 2,
+        (1, 1, 5, 1): 2, (1, 1, 5, 2): 2, (1, 1, 5, 3): 2,
+        (1, 1, 6, 1): 1, (1, 1, 6, 2): 1, (1, 1, 6, 3): 1,
+        (1, 1, 7, 1): 1, (1, 1, 7, 2): 1, (1, 1, 7, 3): 1,
+
+        (1, 2, 1, 1): 1, (1, 2, 1, 2): 1, (1, 2, 1, 3): 1,
+        (1, 2, 2, 1): 1, (1, 2, 2, 2): 1, (1, 2, 2, 3): 1,
+        (1, 2, 3, 1): 1, (1, 2, 3, 2): 1, (1, 2, 3, 3): 1,
+        (1, 2, 4, 1): 2, (1, 2, 4, 2): 2, (1, 2, 4, 3): 2,
+        (1, 2, 5, 1): 2, (1, 2, 5, 2): 2, (1, 2, 5, 3): 2,
+        (1, 2, 6, 1): 1, (1, 2, 6, 2): 1, (1, 2, 6, 3): 1,
+        (1, 2, 7, 1): 1, (1, 2, 7, 2): 1, (1, 2, 7, 3): 1,
+
+        (1, 3, 1, 1): 1, (1, 3, 1, 2): 1, (1, 3, 1, 3): 1,
+        (1, 3, 2, 1): 1, (1, 3, 2, 2): 1, (1, 3, 2, 3): 1,
+        (1, 3, 3, 1): 1, (1, 3, 3, 2): 1, (1, 3, 3, 3): 2,
+        (1, 3, 4, 1): 2, (1, 3, 4, 2): 2, (1, 3, 4, 3): 3,
+        (1, 3, 5, 1): 2, (1, 3, 5, 2): 2, (1, 3, 5, 3): 3,
+        (1, 3, 6, 1): 1, (1, 3, 6, 2): 1, (1, 3, 6, 3): 2,
+        (1, 3, 7, 1): 1, (1, 3, 7, 2): 1, (1, 3, 7, 3): 1,
+
+        # Espalda 2 (Doblada)
+        (2, 1, 1, 1): 2, (2, 1, 1, 2): 2, (2, 1, 1, 3): 3,
+        (2, 1, 2, 1): 2, (2, 1, 2, 2): 2, (2, 1, 2, 3): 3,
+        (2, 1, 3, 1): 2, (2, 1, 3, 2): 2, (2, 1, 3, 3): 3,
+        (2, 1, 4, 1): 3, (2, 1, 4, 2): 3, (2, 1, 4, 3): 3,
+        (2, 1, 5, 1): 3, (2, 1, 5, 2): 3, (2, 1, 5, 3): 3,
+        (2, 1, 6, 1): 2, (2, 1, 6, 2): 2, (2, 1, 6, 3): 3,
+        (2, 1, 7, 1): 2, (2, 1, 7, 2): 2, (2, 1, 7, 3): 3,
+
+        (2, 2, 1, 1): 2, (2, 2, 1, 2): 2, (2, 2, 1, 3): 3,
+        (2, 2, 2, 1): 2, (2, 2, 2, 2): 2, (2, 2, 2, 3): 3,
+        (2, 2, 3, 1): 2, (2, 2, 3, 2): 3, (2, 2, 3, 3): 3,
+        (2, 2, 4, 1): 3, (2, 2, 4, 2): 4, (2, 2, 4, 3): 4,
+        (2, 2, 5, 1): 3, (2, 2, 5, 2): 4, (2, 2, 5, 3): 3,
+        (2, 2, 6, 1): 3, (2, 2, 6, 2): 3, (2, 2, 6, 3): 4,
+        (2, 2, 7, 1): 2, (2, 2, 7, 2): 3, (2, 2, 7, 3): 4,
+
+        (2, 3, 1, 1): 3, (2, 3, 1, 2): 3, (2, 3, 1, 3): 4,
+        (2, 3, 2, 1): 2, (2, 3, 2, 2): 2, (2, 3, 2, 3): 3,
+        (2, 3, 3, 1): 3, (2, 3, 3, 2): 3, (2, 3, 3, 3): 3,
+        (2, 3, 4, 1): 4, (2, 3, 4, 2): 4, (2, 3, 4, 3): 4,
+        (2, 3, 5, 1): 4, (2, 3, 5, 2): 4, (2, 3, 5, 3): 4,
+        (2, 3, 6, 1): 4, (2, 3, 6, 2): 4, (2, 3, 6, 3): 4,
+        (2, 3, 7, 1): 2, (2, 3, 7, 2): 3, (2, 3, 7, 3): 4,
+
+        # Espalda 3 (Con giro)
+        (3, 1, 1, 1): 1, (3, 1, 1, 2): 1, (3, 1, 1, 3): 2,
+        (3, 1, 2, 1): 1, (3, 1, 2, 2): 1, (3, 1, 2, 3): 1,
+        (3, 1, 3, 1): 1, (3, 1, 3, 2): 1, (3, 1, 3, 3): 1,
+        (3, 1, 4, 1): 3, (3, 1, 4, 2): 3, (3, 1, 4, 3): 3,
+        (3, 1, 5, 1): 4, (3, 1, 5, 2): 4, (3, 1, 5, 3): 4,
+        (3, 1, 6, 1): 1, (3, 1, 6, 2): 1, (3, 1, 6, 3): 1,
+        (3, 1, 7, 1): 1, (3, 1, 7, 2): 1, (3, 1, 7, 3): 1,
+
+        (3, 2, 1, 1): 2, (3, 2, 1, 2): 2, (3, 2, 1, 3): 3,
+        (3, 2, 2, 1): 1, (3, 2, 2, 2): 1, (3, 2, 2, 3): 1,
+        (3, 2, 3, 1): 1, (3, 2, 3, 2): 1, (3, 2, 3, 3): 2,
+        (3, 2, 4, 1): 4, (3, 2, 4, 2): 4, (3, 2, 4, 3): 4,
+        (3, 2, 5, 1): 4, (3, 2, 5, 2): 4, (3, 2, 5, 3): 4,
+        (3, 2, 6, 1): 3, (3, 2, 6, 2): 3, (3, 2, 6, 3): 3,
+        (3, 2, 7, 1): 1, (3, 2, 7, 2): 1, (3, 2, 7, 3): 1,
+
+        (3, 3, 1, 1): 2, (3, 3, 1, 2): 2, (3, 3, 1, 3): 3,
+        (3, 3, 2, 1): 1, (3, 3, 2, 2): 1, (3, 3, 2, 3): 1,
+        (3, 3, 3, 1): 2, (3, 3, 3, 2): 3, (3, 3, 3, 3): 3,
+        (3, 3, 4, 1): 4, (3, 3, 4, 2): 4, (3, 3, 4, 3): 4,
+        (3, 3, 5, 1): 4, (3, 3, 5, 2): 4, (3, 3, 5, 3): 4,
+        (3, 3, 6, 1): 4, (3, 3, 6, 2): 4, (3, 3, 6, 3): 4,
+        (3, 3, 7, 1): 1, (3, 3, 7, 2): 1, (3, 3, 7, 3): 1,
+
+        # Espalda 4 (Doblada con giro)
+        (4, 1, 1, 1): 2, (4, 1, 1, 2): 3, (4, 1, 1, 3): 3,
+        (4, 1, 2, 1): 2, (4, 1, 2, 2): 2, (4, 1, 2, 3): 3,
+        (4, 1, 3, 1): 2, (4, 1, 3, 2): 2, (4, 1, 3, 3): 3,
+        (4, 1, 4, 1): 4, (4, 1, 4, 2): 4, (4, 1, 4, 3): 4,
+        (4, 1, 5, 1): 4, (4, 1, 5, 2): 4, (4, 1, 5, 3): 4,
+        (4, 1, 6, 1): 4, (4, 1, 6, 2): 4, (4, 1, 6, 3): 4,
+        (4, 1, 7, 1): 2, (4, 1, 7, 2): 3, (4, 1, 7, 3): 4,
+
+        (4, 2, 1, 1): 3, (4, 2, 1, 2): 3, (4, 2, 1, 3): 4,
+        (4, 2, 2, 1): 2, (4, 2, 2, 2): 3, (4, 2, 2, 3): 4,
+        (4, 2, 3, 1): 3, (4, 2, 3, 2): 3, (4, 2, 3, 3): 4,
+        (4, 2, 4, 1): 4, (4, 2, 4, 2): 4, (4, 2, 4, 3): 4,
+        (4, 2, 5, 1): 4, (4, 2, 5, 2): 4, (4, 2, 5, 3): 4,
+        (4, 2, 6, 1): 4, (4, 2, 6, 2): 4, (4, 2, 6, 3): 4,
+        (4, 2, 7, 1): 2, (4, 2, 7, 2): 3, (4, 2, 7, 3): 4,
+
+        (4, 3, 1, 1): 4, (4, 3, 1, 2): 4, (4, 3, 1, 3): 4,
+        (4, 3, 2, 1): 2, (4, 3, 2, 2): 3, (4, 3, 2, 3): 4,
+        (4, 3, 3, 1): 3, (4, 3, 3, 2): 3, (4, 3, 3, 3): 4,
+        (4, 3, 4, 1): 4, (4, 3, 4, 2): 4, (4, 3, 4, 3): 4,
+        (4, 3, 5, 1): 4, (4, 3, 5, 2): 4, (4, 3, 5, 3): 4,
+        (4, 3, 6, 1): 4, (4, 3, 6, 2): 4, (4, 3, 6, 3): 4,
+        (4, 3, 7, 1): 2, (4, 3, 7, 2): 3, (4, 3, 7, 3): 4,
+    }
+
 
     # Calcular categoría de acción OWAS
-    action_category = back_category + arms_category + legs_category + load_category
+    action_category = risk_table.get((back_code, arms_code, legs_code, load_code), 1)
 
     return {
-        "back_category": back_category,
-        "arms_category": arms_category,
-        "legs_category": legs_category,
-        "load_category": load_category,
-        "action_category": action_category
+        "back_category": back_code,
+        "arms_category": arms_code,
+        "legs_category": legs_code,
+        "load_weight": load_code,
+        "action_category": action_category,
+        "risk_level": "Bajo" if action_category == 1 else "Moderado" if action_category == 2 else "Alto"
     }

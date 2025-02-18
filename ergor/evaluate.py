@@ -205,7 +205,6 @@ def reba_plan(user_id, employee_id):
 @login_required
 def owas(user_id, employee_id):
     # Lógica para procesar el video con el método OWAS
- 
     user = User.query.get_or_404(user_id)
     employe = Employe.query.get_or_404(employee_id)
 
@@ -224,17 +223,26 @@ def owas(user_id, employee_id):
     # Procesar el video para calcular ángulos
     try:
         angles = process_video(filepath)
-        load_weight = employe.weight
-        scores = evaluate_owas(angles, load_weight=load_weight)
+    except Exception as e:
+        flash(f"Error al procesar el video: {str(e)}")
+        return redirect(url_for('auth.upload', id=user.user_id))
+      
+    try:
+        #Obtener el peso de la carga desde la sesión
+        load_weight = session.get('load_weight')
+        if not load_weight:
+            flash("No se encontró el peso de la carga. Intente nuevamente.", "error")
+            return redirect(url_for('auth.upload', id=user.user_id))
+
+        scores = evaluate_owas(angles, load_weight)  
         
         owas_scores = OwasScore(
             employe_id=employe.employe_id,
             back_category=scores["back_category"],
             arms_category=scores["arms_category"],
             legs_category=scores["legs_category"],
-            load_category=scores["load_category"],
-            action_category=scores["action_category"],
-            load_weight=load_weight
+            load_weight=scores["load_weight"],
+            action_category=scores["action_category"]
         )
         
         db.session.add(owas_scores)
@@ -258,7 +266,7 @@ def owas_plan(user_id, employee_id):
         flash(result["error"])
         return redirect(url_for('evaluate.owas', id=id))
 
-    return render_template('admin/plan.html', user_id=id, employee_id=employee_id,method="OWAS", plan=result["diagnostic_plan"])
+    return render_template('admin/plan.html', user_id=user_id, employee_id=employee_id, method="OWAS", plan=result["diagnostic_plan"])
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

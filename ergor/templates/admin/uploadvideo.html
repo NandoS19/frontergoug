@@ -95,7 +95,7 @@
                             <script>
                                 document.getElementById('metodo').addEventListener('change', function () {
                                     const loadWeightContainer = document.getElementById('loadWeightContainer');
-                                    if (this.value === 'NIOSH') {
+                                    if (this.value === 'NIOSH' || this.value === 'OWAS') {
                                         loadWeightContainer.style.display = 'block';
                                     } else {
                                         loadWeightContainer.style.display = 'none';
