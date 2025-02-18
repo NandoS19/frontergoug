@@ -120,8 +120,9 @@ def generate_plan(user_id, employee_id, method):
             return {"error": "No se encontraron resultados para el método OWAS"}
 
         prompt = (
-            f"**FICHA MÉDICA ERGONÓMICA**\n\n"
             f"**Datos del Empleado**:\n"
+            f"**Caso de estudio: Evaluación ergonómica basada en el método OWAS**\n\n"
+            f"**Contexto del empleado:**\n"
             f"- Nombre: {employee.name} {employee.last_name}\n"
             f"- Puesto de Trabajo: {employee.job_title}\n"
             f"- Edad: {employee.age} años\n"
@@ -130,20 +131,26 @@ def generate_plan(user_id, employee_id, method):
             f"- Género: {employee.gender}\n"
             f"- Horas de trabajo por día: {employee.hours} horas\n\n"
             
-            f"**Método de Evaluación: OWAS**\n"
+            f"El método OWAS ha evaluado el entorno laboral del empleado, obteniendo los siguientes puntajes:\n"
             f"- Puntaje de espalda: {owas_score.back_category}\n"
             f"- Puntaje de brazos: {owas_score.arms_category}\n"
             f"- Puntaje de piernas: {owas_score.legs_category}\n"
-            f"- Puntaje de carga: {owas_score.load_category}\n\n"
+            f"- Puntaje de carga: {owas_score.load_weight}\n\n"
             f"- Puntaje de categoria: {owas_score.action_category}\n\n"
             
             f"**Diagnóstico**:\n"
             f"La postura durante el trabajo genera riesgos en la columna debido a las malas posiciones de espalda y brazos.\n\n"
             
-            f"**Plan de Mejora Ergonómica**:\n"
-            f"1. Proporcionar un soporte lumbar adecuado en la silla para corregir la postura de la espalda.\n"
-            f"2. Reajustar la altura de los brazos y las piernas para mejorar la ergonomía.\n"
-            f"3. Asegurar una correcta distribución de la carga para evitar la sobrecarga en los músculos.\n"
+            f"**Solicitudes:**\n"
+            f"Con base en los datos proporcionados, realiza las siguientes tareas:\n"
+            f"1. **Diagnóstico detallado:** Identifica las principales áreas de riesgo ergonómico relacionadas con los resultados del método OWAS. Describe cómo cada puntaje impacta en la salud del empleado y justifica por qué se consideran riesgos críticos.\n"
+            f"2. **Plan de mejora ergonómico personalizado:** Proporciona recomendaciones claras y prácticas para abordar los riesgos identificados. Asegúrate de incluir soluciones específicas, como prácticas preventivas y sugerencias de capacitación ergonómica.\n"
+            f"3. **Justificación del plan:** Explica brevemente por qué las soluciones propuestas son efectivas para mitigar los riesgos y cómo contribuyen al bienestar del empleado.\n\n"
+            f"**Notas adicionales:**\n"
+            f"- El diagnóstico debe ser lo más detallado posible, priorizando las áreas con mayor puntaje.\n"
+            f"- Las recomendaciones deben ser prácticas, priorizando aquellas de fácil implementación pero con alto impacto.\n"
+            f"- Considera el perfil físico del empleado y el contexto laboral para personalizar las soluciones."
+            f"- La respuesta debe ser devuelta como si fueras a llenar una ficha medica."
         )
 
     elif method == "REBA":
