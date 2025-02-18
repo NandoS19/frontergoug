@@ -156,10 +156,14 @@ def upload(id):
             flash(error)
             return redirect(url_for('auth.upload', id=user.user_id))
 
-        # Obtener el peso de la carga si se selecciona NIOSH
+        # Obtener el peso de la carga si se selecciona NIOSH u OWAS
         load_weight = None
         metodo = request.form.get('metodo')
         if metodo == "NIOSH":
+            load_weight = request.form.get("load_weight")
+            if not load_weight or float(load_weight) <= 0:
+                error = "El peso de la carga debe ser mayor a 0"
+        elif metodo == "OWAS":
             load_weight = request.form.get("load_weight")
             if not load_weight or float(load_weight) <= 0:
                 error = "El peso de la carga debe ser mayor a 0"
@@ -192,7 +196,14 @@ def upload(id):
             else:
                 flash("Error al guardar el peso de la carga.", "error")
                 return redirect(url_for('auth.upload', id=user.user_id))
-
+        elif metodo == "OWAS":
+            if load_weight:  # Asegurar que load_weight no es None o vacío
+                session['load_weight'] = float(load_weight)
+                flash("Peso de la carga guardado correctamente para OWAS.", "success")
+            else:
+                flash("Error al guardar el peso de la carga.", "error")
+                return redirect(url_for('auth.upload', id=user.user_id))
+            
         if 'uploadVideo' not in request.files:
             flash('No se ha seleccionado un archivo')
             return redirect(url_for('auth.upload', id=user.user_id))
