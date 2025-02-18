@@ -136,7 +136,7 @@ class RosaScore(db.Model):
     mouse_score = db.Column(db.Integer, db.CheckConstraint('mouse_score >= 0'), nullable=False)
     total_score = db.Column(db.Numeric(5, 2), db.CheckConstraint('total_score >= 0'), nullable=False)
     level_id = db.Column(db.Integer, db.ForeignKey('risk_levels.level_id'), nullable=True)
-    evaluation_date = db.Column(db.DateTime, default=func.now())  # Campo opcional recomendado
+    evaluation_date = db.Column(db.DateTime, default=datetime.now)  # Campo opcional recomendado
     
     def __init__(self, employe_id, chair_score, monitor_score, phone_score, keyboard_score, mouse_score, total_score, level_id=None):
         self.employe_id = employe_id
@@ -162,7 +162,7 @@ class OwasScore(db.Model):
     legs_category = db.Column(db.Integer, db.CheckConstraint('legs_category >= 0'), nullable=False)
     load_weight = db.Column(db.Numeric(5, 2), db.CheckConstraint('load_weight >= 0'), nullable=False)
     action_category = db.Column(db.Numeric(5, 2), db.CheckConstraint('action_category >= 0'), nullable=False)
-    evaluation_date = db.Column(db.DateTime, default=datetime.utcnow)
+    evaluation_date = db.Column(db.DateTime, default=func.now())
     level_id = db.Column(db.Integer, db.ForeignKey('risk_levels.level_id'), nullable=True)
     
     def __init__(self, employe_id, back_category, arms_category, legs_category, load_weight, action_category, level_id=None):
