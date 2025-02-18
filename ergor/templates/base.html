@@ -37,9 +37,13 @@
             z-index: 1000; /* Asegura que la barra lateral esté por encima del contenido */
             display: flex;
             flex-direction: column;
+            transform: translateX(-100%); /* Oculta la barra lateral por defecto */
         }
         .sidebar.collapsed {
             transform: translateX(-100%); /* Mueve la barra lateral fuera de la pantalla */
+        }
+        .sidebar.open {
+            transform: translateX(0); /* Muestra la barra lateral */
         }
         .sidebar a {
             color: white;
@@ -131,7 +135,7 @@
     {% block header %}
     <button class="sidebar-toggler" onclick="toggleSidebar()">☰</button>
     <button class="btn btn-dark" style="position: fixed; top: 10px; right: 10px;" onclick="toggleDarkMode()">Modo Oscuro</button>
-    <div class="sidebar" id="sidebar">
+    <div class="sidebar collapsed" id="sidebar">
         <div>
             <a href="{{ url_for('home.index') }}" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
                 <img src="{{ url_for('static', filename='img/ErgoUG.png') }}" alt="ergo ug" width="80">
@@ -197,9 +201,11 @@
             const toggler = document.querySelector(".sidebar-toggler");
             if (sidebar.classList.contains("collapsed")) {
                 sidebar.classList.remove("collapsed");
+                sidebar.classList.add("open");
                 toggler.style.left = "260px";
             } else {
                 sidebar.classList.add("collapsed");
+                sidebar.classList.remove("open");
                 toggler.style.left = "10px";
             }
         }
@@ -217,6 +223,7 @@
 
             if (!isClickInsideSidebar && !isClickOnToggler && !sidebar.classList.contains("collapsed")) {
                 sidebar.classList.add("collapsed");
+                sidebar.classList.remove("open");
                 toggler.style.left = "10px";
             }
         });
