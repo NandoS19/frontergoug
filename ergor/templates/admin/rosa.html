@@ -10,59 +10,69 @@
             <h3 class="card-title">Detalles de la Evaluación</h3>
             <ul class="list-group list-group-flush">
                 <!-- Puntaje de silla con desglose -->
-                <li class="list-group-item">
-                    <strong>Puntaje de silla:</strong> {{ scores.chair_score }}
-                    <button class="btn btn-link" onclick="toggleDetails('sillaDetails')">Ver detalles</button>
-                    <div id="sillaDetails" style="display: none;">
-                        <p>Suma Altura + Profundidad: {{ suma_altura_profundidad }}</p>
-                        <p>Suma Reposabrazos + Respaldo: {{ suma_reposabrazos_respaldo }}</p>
-                        <h5>Tabla A</h5>
-                        <img src="{{ url_for('static', filename='img/TablaA.png') }}" alt="Tabla A" class="img-fluid">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>Puntaje de silla:</strong> {{ scores.chair_score }}
                     </div>
+                    <button class="btn btn-link" onclick="toggleDetails('sillaDetails')">Ver detalles</button>
                 </li>
+                <div id="sillaDetails" style="display: none;" class="mt-2">
+                    <p>Suma Altura + Profundidad: {{ suma_altura_profundidad }}</p>
+                    <p>Suma Reposabrazos + Respaldo: {{ suma_reposabrazos_respaldo }}</p>
+                    <h5>Tabla A</h5>
+                    <img src="{{ url_for('static', filename='img/TablaA.png') }}" alt="Tabla A" class="img-fluid mx-auto d-block">
+                </div>
 
                 <!-- Puntaje de monitor con desglose -->
-                <li class="list-group-item">
-                    <strong>Puntaje de monitor:</strong> {{ scores.monitor_score }}
-                    <!-- <button class="btn btn-link" onclick="toggleDetails('monitorDetails')">Ver detalles</button>
-                    <div id="monitorDetails" style="display: none;"></div> -->
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>Puntaje de monitor:</strong> {{ scores.monitor_score }}
+                    </div>
+                    <!-- <button class="btn btn-link" onclick="toggleDetails('monitorDetails')">Ver detalles</button> -->
                 </li>
 
                 <!-- Puntaje de teclado con desglose -->
-                <li class="list-group-item">
-                    <strong>Puntaje de teclado:</strong> {{ scores.keyboard_score }}
-                    <!-- <button class="btn btn-link" onclick="toggleDetails('tecladoDetails')">Ver detalles</button>
-                    <div id="tecladoDetails" style="display: none;"></div> -->
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>Puntaje de teclado:</strong> {{ scores.keyboard_score }}
+                    </div>
+                    <!-- <button class="btn btn-link" onclick="toggleDetails('tecladoDetails')">Ver detalles</button> -->
                 </li>
 
                 <!-- Puntaje de teléfono -->
-                <li class="list-group-item">
-                    <strong>Puntaje del mouse:</strong> {{ scores.mouse_score }}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>Puntaje del mouse:</strong> {{ scores.mouse_score }}
+                    </div>
                 </li>
 
                 <!-- Puntaje de teléfono -->
-                <li class="list-group-item">
-                    <strong>Puntaje de teléfono:</strong> {{ scores.phone_score }}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>Puntaje de teléfono:</strong> {{ scores.phone_score }}
+                    </div>
                 </li>
 
                 <!-- Puntaje total con desglose -->
-                <li class="list-group-item">
-                    <strong>Puntaje total:</strong> {{ scores.total_score }}
-                    <button class="btn btn-link" onclick="toggleDetails('totalDetails')">Ver detalles</button>
-                    <div id="totalDetails" style="display: none;">
-                        <p>Puntaje Monitor + Teléfono: {{ monitor_phone_score }}</p>
-                        <h5>Tabla B</h5>
-                        <img src="{{ url_for('static', filename='img/TablaB.png') }}" alt="Tabla B" class="img-fluid">
-                        <p>Puntaje Teclado + Mouse: {{ keyboard_mouse_score }}</p>
-                        <h5>Tabla C</h5>
-                        <img src="{{ url_for('static', filename='img/TablaC.png') }}" alt="Tabla C" class="img-fluid">
-                        <p>Puntaje Periféricos: {{ peripherals_score }}</p>
-                        <h5>Tabla D</h5>
-                        <img src="{{ url_for('static', filename='img/TablaD.png') }}" alt="Tabla D" class="img-fluid">
-                        <h5>Tabla E</h5>
-                        <img src="{{ url_for('static', filename='img/TablaE.png') }}" alt="Tabla E" class="img-fluid">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>Puntaje total:</strong> {{ scores.total_score }}
                     </div>
+                    <button class="btn btn-link" onclick="toggleDetails('totalDetails')">Ver detalles</button>
                 </li>
+                <div id="totalDetails" style="display: none;" class="mt-2">
+                    <p>Puntaje Monitor + Teléfono: {{ monitor_phone_score }}</p>
+                    <h5>Tabla B</h5>
+                    <img src="{{ url_for('static', filename='img/TablaB.png') }}" alt="Tabla B" class="img-fluid mx-auto d-block">
+                    <p>Puntaje Teclado + Mouse: {{ keyboard_mouse_score }}</p>
+                    <h5>Tabla C</h5>
+                    <img src="{{ url_for('static', filename='img/TablaC.png') }}" alt="Tabla C" class="img-fluid mx-auto d-block">
+                    <p>Puntaje Periféricos: {{ peripherals_score }}</p>
+                    <h5>Tabla D</h5>
+                    <img src="{{ url_for('static', filename='img/TablaD.png') }}" alt="Tabla D" class="img-fluid mx-auto d-block">
+                    <h5>Tabla E</h5>
+                    <img src="{{ url_for('static', filename='img/TablaE.png') }}" alt="Tabla E" class="img-fluid mx-auto d-block">
+                </div>
             </ul>
         </div>
     </div>
@@ -71,6 +81,12 @@
         <a href="{{ url_for('evaluate.rosa_plan', user_id=user.user_id, employee_id=employe.employe_id) }}" class="btn btn-primary">Generar Plan de Mejora</a>
         <a href="{{ url_for('auth.upload', id=user.user_id) }}" class="btn btn-secondary">Volver a subir otro video</a>
     </div>
+</div>
+
+<!-- Sección de la imagen de resultados -->
+<div class="text-center mt-4" data-aos="fade-up">
+    <img src="{{ url_for('static', filename='img/puntajerosa.jpeg') }}" alt="Resultados ROSA" class="img-fluid rounded-3 shadow-sm mx-auto d-block" style="max-width: 100%; height: auto;">
+    <p class="text-muted mt-2">Imagen generada a partir de los resultados de la evaluación.</p>
 </div>
 
 <script>
