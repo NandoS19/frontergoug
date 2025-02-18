@@ -90,7 +90,7 @@ def generate_plan(user_id, employee_id, method):
             f"- Edad: {employee.age} años\n"
             f"- Altura: {employee.height} m\n"
             f"- Peso: {employee.weight} kg\n"
-            f"- Género: {employee.gender}\n"
+            f"- Género: Masculino\n"
             f"- Horas de trabajo por día: {employee.hours} horas\n\n"
             
             f"**Método de Evaluación: NIOSH**\n"
@@ -106,12 +106,8 @@ def generate_plan(user_id, employee_id, method):
             
             
             f"**Diagnóstico**:\n"
-            f"Se ha detectado que el empleado está expuesto a un riesgo elevado de lesiones en la columna debido al índice de levantamiento (LI) y peso de la carga.\n\n"
             
             f"**Plan de Mejora Ergonómica**:\n"
-            f"1. Reducir el peso de la carga para evitar esfuerzo excesivo.\n"
-            f"2. Optimizar la distancia entre el trabajador y la carga.\n"
-            f"3. Asegurar una técnica adecuada de levantamiento para reducir el riesgo de lesiones.\n"
         )
 
     elif method == "OWAS":
