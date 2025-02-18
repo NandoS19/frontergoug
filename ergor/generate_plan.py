@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 import google.generativeai as genai
 from llamaapi import LlamaAPI
 import openai
-from fpdf import FPDF
 from ergor.models import User, RosaScore, NioshScore, OwasScore, RebaScore, Employe, RiskLevel
 from ergor import db
 
@@ -229,60 +228,4 @@ def generate_plan(user_id, employee_id, method):
 
     return {"diagnostic_plan": results}
 
-def generate_pdf(employee, method, scores, diagnosis, improvement_plan):
-    # Crear una instancia de FPDF
-    pdf = FPDF()
-    pdf.set_auto_page_break(auto=True, margin=15)
-    
-    # Agregar una página
-    pdf.add_page()
-    
-    # Configuración de fuente para el título
-    pdf.set_font("Arial", style='B', size=16)
-    pdf.cell(200, 10, "FICHA MÉDICA ERGONÓMICA", ln=True, align='C')
-    pdf.ln(10)
-    
-    # Datos del empleado
-    pdf.set_font("Arial", style='B', size=12)
-    pdf.cell(0, 10, "Datos del Empleado", ln=True)
-    pdf.set_font("Arial", size=12)
-    pdf.multi_cell(0, 10, f"Nombre: {employee['name']} {employee['last_name']}\n"
-                        f"Puesto de Trabajo: {employee['job_title']}\n"
-                        f"Edad: {employee['age']} años\n"
-                        f"Altura: {employee['height']} m\n"
-                        f"Peso: {employee['weight']} kg\n"
-                        f"Género: {employee['gender']}\n"
-                        f"Horas de trabajo por día: {employee['hours']} horas\n")
-    pdf.ln(5)
-    
-    # Método de evaluación y puntajes
-    pdf.set_font("Arial", style='B', size=12)
-    pdf.cell(0, 10, f"Método de Evaluación: {method}", ln=True)
-    pdf.set_font("Arial", size=12)
-    for key, value in scores.items():
-        pdf.cell(0, 10, f"{key}: {value}", ln=True)
-    pdf.ln(5)
-    
-    # Diagnóstico
-    pdf.set_font("Arial", style='B', size=12)
-    pdf.cell(0, 10, "Diagnóstico", ln=True)
-    pdf.set_font("Arial", size=12)
-    pdf.multi_cell(0, 10, diagnosis)
-    pdf.ln(5)
-    
-    # Plan de mejora
-    pdf.set_font("Arial", style='B', size=12)
-    pdf.cell(0, 10, "Plan de Mejora Ergonómica", ln=True)
-    pdf.set_font("Arial", size=12)
-    pdf.multi_cell(0, 10, improvement_plan)
-    
-    # Crear la carpeta pdf_planes si no existe
-    folder_path = "pdf_planes"
-    if not os.path.exists(folder_path):
-        os.makedirs(folder_path)
-    
-    # Guardar el archivo en la carpeta pdf_planes
-    output_path = os.path.join(folder_path, f"plan_mejora_{employee['name']}_{method}.pdf")
-    pdf.output(output_path)
-    
-    return output_path
+
