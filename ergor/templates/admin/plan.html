@@ -5,6 +5,7 @@
 <script src="https://cdn.jsdelivr.net/npm/showdown/dist/showdown.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 {% endblock %}
 {% block content %}
 <div class="container mt-5">
@@ -17,6 +18,7 @@
         <h2 class="text-center">Resultado Modelo 1</h2>
         <div id="markdown-google" class="formatted-text">{{ plan.google | safe }}</div>
         <button class="btn btn-success mt-3" onclick="downloadPDF('Modelo 1', 'markdown-google')">Descargar PDF</button>
+        <button class="btn btn-info mt-3" onclick="downloadExcel('Modelo 1', 'markdown-google')">Descargar Excel</button>
     </div>
 
     <!-- Botón para mostrar otros resultados -->
@@ -35,6 +37,7 @@
                         <h2 class="text-center">Resultado Modelo 2</h2>
                         <div id="markdown-llama" class="formatted-text">{{ plan.llama | safe }}</div>
                         <button class="btn btn-success mt-3" onclick="downloadPDF('Modelo 2', 'markdown-llama')">Descargar PDF</button>
+                        <button class="btn btn-info mt-3" onclick="downloadExcel('Modelo 2', 'markdown-llama')">Descargar Excel</button>
                     </div>
                 </div>
                 <!-- Resultado Modelo 3 -->
@@ -43,6 +46,7 @@
                         <h2 class="text-center">Resultado Modelo 3</h2>
                         <div id="markdown-openai" class="formatted-text">{{ plan.openai | safe }}</div>
                         <button class="btn btn-success mt-3" onclick="downloadPDF('Modelo 3', 'markdown-openai')">Descargar PDF</button>
+                        <button class="btn btn-info mt-3" onclick="downloadExcel('Modelo 3', 'markdown-openai')">Descargar Excel</button>
                     </div>
                 </div>
             </div>
@@ -123,19 +127,27 @@
         doc.save(`${title}_resultado.pdf`);
     }
 
-    // Función alternativa para descargar PDF con formato HTML (usando html2pdf.js)
-    function downloadPDFWithHTML(title, elementId) {
-        const element = document.getElementById(elementId);
-        const opt = {
-            margin: 10, // Márgenes
-            filename: `${title}_resultado.pdf`,
-            image: { type: 'jpeg', quality: 0.98 }, // Calidad de las imágenes
-            html2canvas: { scale: 2 }, // Escala para mejorar la calidad
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } // Formato A4
-        };
+    // Función para descargar Excel
+    function downloadExcel(title, elementId) {
+        const contentElement = document.getElementById(elementId);
+        const contentHtml = contentElement.innerHTML;
 
-        // Generar el PDF
-        html2pdf().set(opt).from(element).save();
+        // Convertir HTML a texto formateado
+        const tempElement = document.createElement("div");
+        tempElement.innerHTML = contentHtml;
+        const plainText = tempElement.textContent || tempElement.innerText;
+
+        // Dividir el texto en párrafos y celdas
+        const paragraphs = plainText.split('\n\n').filter(para => para.trim() !== '');
+        const data = paragraphs.map(para => [para]); // Cada párrafo en una celda separada
+
+        // Crear un libro de trabajo y una hoja
+        const ws = XLSX.utils.aoa_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Resultado");
+
+        // Generar el archivo Excel y descargarlo
+        XLSX.writeFile(wb, `${title}_resultado.xlsx`);
     }
 </script>
 {% endblock %}
